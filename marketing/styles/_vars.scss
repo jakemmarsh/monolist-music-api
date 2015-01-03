@@ -1,0 +1,50 @@
+// Basic colors
+$white: #ffffff;
+$black: #000000;
+
+// Shades of grey for backgrounds
+$light-grey-background: #3b3f53; // Main content background
+$medium-grey-background: #2e3243; // Sidebar(s) background
+$medium-dark-grey-background: #272938; // Highlight current/active items
+$hover-grey-background: #35394b;
+$dark-grey-background: #1f2332; // header background
+
+// Shades of grey for borders
+$light-grey-border: #333849; // item border
+$grey-border: #282b3a; // Sidebar  border
+$dark-grey-border: #232739; // Sidebar title underline
+
+// Shades of grey for text
+$extra-light-grey-text: #b5bad0; // Artist name in 'Currently Playing', control bar timestamps
+$light-grey-text: #7d8195; // Most text
+$dark-grey-text: #414558; // Dull header text
+
+// Highlight color (bright blue)
+$highlight: #5ac6e3;
+
+$red: #bf616a;
+
+$star-yellow: #f0c54a;
+
+// Source colors
+$soundcloud-orange: #ff5419;
+$youtube-red: #de1a2a;
+$bandcamp-blue: #639aa8;
+$spotify-green: #8ec63f;
+
+// Social media colors
+$facebook-blue: #3B5998;
+$twitter-blue: #55acee;
+$google-orange: #dd4b39;
+
+// Sizing and spacing
+$half-space: 20px;
+$full-space: $half-space*2;
+
+$window-menu-bar-height: 32px; /* 12px high buttons, 10px padding */
+$header-height: 75px;
+$sidebar-width: 270px;
+$full-currently-playing-height: 215px;
+$minimized-currently-playing-height: 100px;
+$currently-playing-toggle-height: 20px;
+$currently-playing-control-height: 65px;

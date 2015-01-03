@@ -1,0 +1,94 @@
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700);
+
+body, html {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  margin: $half-space 0;
+}
+
+h1, .alpha {
+  font-size: 36px !important;
+}
+
+h2, .beta {
+  font-size: 32px !important;
+}
+
+h3, .gamma {
+  font-size: 28px !important;
+}
+
+h4, .delta {
+  font-size: 24px !important;
+}
+
+h5, .epsilon {
+  font-size: 20px !important;
+}
+
+h6, .zeta {
+  font-size: 16px !important;
+}
+
+.small {
+  font-size: 12px !important;
+}
+
+.giga {
+  font-size: 72px !important;
+}
+
+.caps {
+  text-transform: uppercase;
+}
+
+.highlight {
+  color: $highlight;
+}
+
+.white {
+  color: $white;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.light {
+  font-weight: 300;
+}
+
+a {
+  color: $extra-light-grey-text;
+  font-weight: 600;
+  text-decoration: none;
+
+  @include transition(color 0.1s ease-in-out);
+
+  &:hover {
+    color: $highlight;
+  }
+}
+
+.error, .error-container {
+  color: $red;
+}
+
+::-webkit-input-placeholder { color: $dark-grey-text; }
+:-moz-placeholder { color: $dark-grey-text; }
+::-moz-placeholder { color: $dark-grey-text;  }
+
+:-ms-input-placeholder { color: $dark-grey-text; }
