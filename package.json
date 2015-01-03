@@ -45,7 +45,7 @@
     "swig": "^1.4.2",
     "gulp": "^3.8.6",
     "gulp-sass": "^0.7.2",
-    "gulp-uglify": "^0.3.1",
+    "gulp-uglify": "^1.0.1",
     "gulp-rename": "^1.2.0",
     "jquery": "^2.1.1",
     "gulp-assemble": "^0.1.7",
