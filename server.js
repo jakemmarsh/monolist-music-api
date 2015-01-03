@@ -10,7 +10,7 @@ var cookieParser   = require('cookie-parser');
 var session        = require('express-session');
 var favicon        = require('serve-favicon');
 var passport       = require('passport');
-var vhost          = require('vhost');
+// var vhost          = require('vhost');
 var server         = express();
 var models         = require('./api/models');
 var config         = require('./config');
@@ -88,13 +88,13 @@ server.use(favicon('./favicon.ico'));
 /* ====================================================== */
 
 // Mount the API and marketing site
-if ( process.env.NODE_ENV === 'production' ) {
-  server.use(vhost('api.monolist.co', api));
-  server.use(vhost('monolist.co', express.static(__dirname + '/build')));
-} else {
+// if ( process.env.NODE_ENV === 'production' ) {
+//   server.use(vhost('api.monolist.co', api));
+//   server.use(vhost('monolist.co', express.static(__dirname + '/build')));
+// } else {
   server.use('/api/v1', api);
   server.use('/', express.static(__dirname + '/build'));
-}
+// }
 
 /* ====================================================== */
 
