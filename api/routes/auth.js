@@ -37,15 +37,19 @@ exports.register = function(req, res) {
 
   var createUser = function(user) {
     var deferred = when.defer();
-
-    user = {
+    var newUser = {
       username: user.username || user.Username,
       email: user.email || user.Email,
-      imageUrl: user.imageUrl || user.ImageUrl,
-      hash: user.password || user.Password
+      imageUrl: user.imageUrl || user.ImageUrl
     };
 
-    models.User.create(user).then(function(createdUser) {
+    if ( user.password || user.Password ) {
+      newUser.hash = user.password || user.Password;
+    } else if ( user.facebookId || user.FacebookId ) {
+      newUser.facebookId = user.facebookId || user.FacebookId;
+    }
+
+    models.User.create(newUser).then(function(createdUser) {
       deferred.resolve(createdUser);
     }).catch(function(err) {
       console.log('error creating user:', err);
@@ -79,12 +83,19 @@ exports.login = function(req, res, next) {
         if ( err ) {
           return next(err);
         } else {
-          req.session.cookie.maxAge = 1000*60*60*24*7; // seven days
+          req.session.cookie.maxAge = 1000*60*60*24*7*4; // four weeks
           return res.status(200).json(user);
         }
       });
     }
   })(req, res, next);
+
+};
+
+/* ====================================================== */
+
+exports.facebookLogin = function(req, res, next) {
+
 
 };
 
