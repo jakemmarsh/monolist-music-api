@@ -10,6 +10,11 @@ body, html {
   padding: 0;
 }
 
+body {
+  background: $light-grey-background;
+  color: $light-grey-text;
+}
+
 .wrapper {
   display: block;
   width: 100%;
