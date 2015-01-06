@@ -2,7 +2,7 @@
 
 var $ = require('jquery');
 
-module.exports = function() {
+module.exports = (function() {
 
   var os = 'Unknown OS';
 
@@ -26,4 +26,4 @@ module.exports = function() {
     $('.osx-download').hide();
   }
 
-};
+})();

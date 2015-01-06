@@ -2,25 +2,39 @@
 
 var $ = require('jquery');
 
-var determineOS = require('./operatingSystem');
-var scrollHandler = require('./scrollHandler');
+function route(path, cb) {
+  var regex = new RegExp(path, 'i');
+  cb = cb || function() {};
+
+  if ( (path === 'index' || path === '' || path === '/') && window.location.pathname === '/' ) {
+    cb();
+  } else if ( path.length > 1 && regex.test(window.location.pathname) ) {
+    cb();
+  }
+}
 
 $(document).ready(function() {
 
-  var $content = $('.content');
-  var $scrollDownButton = $('.scroll-down-container');
-  var $copyrightDateSpan = $('.year-span');
+  route('/', function() {
+    var $content = $('.content');
+    var $scrollDownButton = $('.scroll-down-container');
+    var $copyrightDateSpan = $('.year-span');
 
-  $copyrightDateSpan.text((new Date().getFullYear()).toString());
+    $copyrightDateSpan.text((new Date().getFullYear()).toString());
 
-  $scrollDownButton.click(function() {
-    $('html, body').animate({
-      scrollTop: $content.offset().top
-    }, 1500);
+    $scrollDownButton.click(function() {
+      $('html, body').animate({
+        scrollTop: $content.offset().top
+      }, 1500);
+    });
+
+    require('./operatingSystem');
+
+    require('./scrollHandler');
   });
 
-  determineOS();
-
-  $(window).scroll(scrollHandler);
+  route('/reset', function() {
+    require('./passwordResetPage');
+  });
 
 });
