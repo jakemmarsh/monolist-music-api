@@ -153,18 +153,19 @@ exports.stream = function(req, res) {
     var deferred = when.defer();
     var requestUrl = 'http://youtube.com/watch?v=' + videoId;
     var webmRegex = new RegExp('audio/webm', 'i');
-    var mp4Regex = new RegExp('audio/mp4', 'i');
+    // var mp4Regex = new RegExp('audio/mp4', 'i');
+    var match = null;
 
     ytdl.getInfo(requestUrl, { downloadURL: true }, function(err, info) {
       if ( err ) {
         deferred.reject({ status: 500, body: err });
       } else {
         if ( info.formats ) {
-          _.each(info.formats, function(format) {
-            if ( webmRegex.test(format.type) || mp4Regex.test(format.type) ) {
-              deferred.resolve(request(format.url));
-            }
+          match = _.find(info.formats, function(format) {
+            return webmRegex.test(format.type);
           });
+
+          if ( match ) { deferred.resolve(request(match.url)); }
         } else {
           deferred.reject();
         }

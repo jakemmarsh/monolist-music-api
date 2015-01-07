@@ -112,7 +112,7 @@ exports.forgotPassword = function(req, res) {
       if ( !_.isEmpty(retrievedUser) ) {
         deferred.resolve(retrievedUser);
       } else {
-        deferred.reject({ status: 404, body: 'User could not be found matching that username.' });
+        deferred.reject({ status: 404, body: 'No user could not be found matching that username.' });
       }
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
@@ -178,7 +178,7 @@ exports.resetPassword = function(req, res) {
           deferred.reject({ status: 401, body: 'That password reset key is invalid.' });
         }
       } else {
-        deferred.reject({ status: 404, body: 'User could not be found matching that user ID and password reset key.' });
+        deferred.reject({ status: 404, body: 'No user could not be found matching the user ID and password reset key.' });
       }
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
