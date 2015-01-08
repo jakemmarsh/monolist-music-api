@@ -7,10 +7,9 @@
 {% block content %}
   <h1>Welcome to Monolist, {{ user.username }}!</h1>
   <h3>Get ready to create, share, and discover</h3>
-  Now that you're registered for Monolist, you can easily sign in using the link below and begin creating and collaborating! Here are just some of the features that Monolist offers:
+  Now that you're registered for Monolist, you're ready to begin creating and collaborating!
   <br />
-  <br />
-  <a class="block" href="https://www.monolist.co/login" target="_blank">Get started</a>
+  Here are just some of the features that Monolist offers:
 {% endblock %}
 
 {% block columns %}
@@ -19,7 +18,7 @@
       <!-- BEGIN COLUMNS // -->
       <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateColumns">
         <tr mc:repeatable>
-          <td align="center" valign="top" class="templateColumnContainer" style="padding-top:20px;">
+          <td align="center" valign="top" class="templateColumnContainer">
             <table border="0" cellpadding="20" cellspacing="0" width="100%">
               <tr>
                 <td class="leftColumnContent">
@@ -34,7 +33,7 @@
               </tr>
             </table>
           </td>
-          <td align="center" valign="top" class="templateColumnContainer" style="padding-top:20px;">
+          <td align="center" valign="top" class="templateColumnContainer">
             <table border="0" cellpadding="20" cellspacing="0" width="100%">
               <tr>
                 <td class="centerColumnContent">
@@ -49,7 +48,7 @@
               </tr>
             </table>
           </td>
-          <td align="center" valign="top" class="templateColumnContainer" style="padding-top:20px;">
+          <td align="center" valign="top" class="templateColumnContainer">
             <table border="0" cellpadding="20" cellspacing="0" width="100%">
               <tr>
                 <td class="rightColumnContent">
