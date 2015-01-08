@@ -42,6 +42,8 @@ api.get('/user/:id/stars', routes.user.getStars);
 // Playlist endpoints
 api.get('/playlist/:identifier', routes.playlist.get);
 api.get('/playlist/search/:query', routes.playlist.search);
+api.get('/playlists/trending', routes.playlist.getTrending);
+api.get('/playlists/newest', routes.playlist.getNewest);
 api.post('/playlist', routes.auth.isAuthenticated, routes.playlist.create);
 api.post('/playlist/:id/play', routes.playlist.recordPlay);
 api.post('/playlist/:id/follow', routes.auth.isAuthenticated, routes.playlist.follow);

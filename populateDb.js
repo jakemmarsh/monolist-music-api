@@ -71,7 +71,24 @@ module.exports = function(models, mailer) {
     models.Playlist.create(playlist).then(function(createdPlaylist) {
       deferred.resolve(createdPlaylist);
     }).catch(function(err) {
-      console.log('error creating playlist:', err);
+      console.log('error creating playlists:', err);
+    });
+
+    return deferred.promise;
+  };
+
+  var createSecondPlaylist = function() {
+    var deferred = when.defer();
+    var playlist = {
+      UserId: 1,
+      title: 'Second Playlist That Is Private',
+      privacy: 'private'
+    };
+
+    models.Playlist.create(playlist).then(function(createdPlaylist) {
+      deferred.resolve(createdPlaylist);
+    }).catch(function(err) {
+      console.log('error creating playlists:', err);
     });
 
     return deferred.promise;
@@ -93,17 +110,53 @@ module.exports = function(models, mailer) {
     return deferred.promise;
   };
 
-  var createPlaylistLike = function() {
+  var createPlaylistLikes = function() {
     var deferred = when.defer();
-    var like = {
-      UserId: 1,
-      PlaylistId: 1
-    };
+    var likes = [
+      {
+        UserId: 1,
+        PlaylistId: 1
+      },
+      {
+        UserId: 2,
+        PlaylistId: 1
+      },
+      {
+        UserId: 1,
+        PlaylistId: 2
+      }
+    ];
 
-    models.PlaylistLike.create(like).then(function(createdLike) {
-      deferred.resolve(createdLike);
+    models.PlaylistLike.bulkCreate(likes, { hooks: false, individualHooks: true }).then(function(createdLikes) {
+      deferred.resolve(createdLikes);
     }).catch(function(err) {
-      console.log('error creating like:', err);
+      console.log('error creating likes:', err);
+    });
+
+    return deferred.promise;
+  };
+
+  var createPlaylistPlays = function() {
+    var deferred = when.defer();
+    var plays = [
+      {
+        UserId: 1,
+        PlaylistId: 1
+      },
+      {
+        UserId: 2,
+        PlaylistId: 1
+      },
+      {
+        UserId: 2,
+        PlaylistId: 2
+      }
+    ];
+
+    models.PlaylistPlay.bulkCreate(plays, { hooks: false, individualHooks: true }).then(function(createdPlays) {
+      deferred.resolve(createdPlays);
+    }).catch(function(err) {
+      console.log('error creating plays:', err);
     });
 
     return deferred.promise;
@@ -128,30 +181,14 @@ module.exports = function(models, mailer) {
     });
   };
 
-  var createSecondPlaylist = function() {
-    var deferred = when.defer();
-    var playlist = {
-      UserId: 1,
-      title: 'Second Playlist That Is Private',
-      privacy: 'private'
-    };
-
-    models.Playlist.create(playlist).then(function(createdPlaylist) {
-      deferred.resolve(createdPlaylist);
-    }).catch(function(err) {
-      console.log('error creating second playlist:', err);
-    });
-
-    return deferred.promise;
-  };
-
   createUser()
   .then(createSecondUser)
   .then(createThirdUser)
   .then(createPlaylist)
+  .then(createSecondPlaylist)
   .then(createCollaboration)
-  .then(createPlaylistLike)
-  .then(addTrackToPlaylist)
-  .then(createSecondPlaylist);
+  .then(createPlaylistLikes)
+  .then(createPlaylistPlays)
+  .then(addTrackToPlaylist);
 
 };

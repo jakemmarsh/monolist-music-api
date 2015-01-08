@@ -200,6 +200,147 @@ exports.search = function(req, res) {
 
 /* ====================================================== */
 
+exports.getTrending = function(req, res) {
+
+  var getLikes = function() {
+    var deferred = when.defer();
+
+    models.PlaylistLike.findAll({
+      attributes: ['PlaylistId'],
+      order: ['createdAt']
+    }).then(function(likes) {
+      deferred.resolve(likes);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var getPlays = function(likes) {
+    var deferred = when.defer();
+
+    models.PlaylistPlay.findAll({
+      attributes: ['PlaylistId'],
+      order: ['createdAt']
+    }).then(function(plays) {
+      deferred.resolve([likes, plays]);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var process = function(data) {
+    var deferred = when.defer();
+    var likes = _.countBy(data[0], function(like) { return like.PlaylistId; });
+    var plays = _.countBy(data[0], function(play) { return play.PlaylistId; });
+    var merged = _.merge(likes, plays, function(a, b) { return a + b; });
+    var formatted = [];
+    var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 20;
+    var results;
+
+    _.forOwn(merged, function(num, key) {
+      formatted.push({
+        'PlaylistId': parseInt(key),
+        'NumInteractions': num
+      });
+    });
+
+    results = _.sortBy(formatted, function(item) { return -item.NumInteractions; }).slice(0, limit);
+
+    deferred.resolve(_.pluck(results, 'PlaylistId'));
+
+    return deferred.promise;
+  };
+
+  var getPlaylists = function(playlistIds) {
+    var deferred = when.defer();
+
+    models.Playlist.findAll({
+      where: Sequelize.and(
+        { id: playlistIds },
+        Sequelize.or(
+          { privacy: 'public' },
+          { UserId: req.user ? req.user.id : null }
+        )
+      ),
+      include: [
+        {
+          model: models.PlaylistLike,
+          as: 'Likes'
+        },
+        {
+          model: models.PlaylistPlay,
+          as: 'Plays'
+        }
+      ]
+    }).then(function(playlists) {
+      deferred.resolve(playlists);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  getLikes()
+  .then(getPlays)
+  .then(process)
+  .then(getPlaylists)
+  .then(function(playlists) {
+    res.status(200).json(playlists);
+  }).catch(function(err) {
+    res.status(err.status).json({ status: err.status, message: err.body });
+  });
+
+};
+
+/* ====================================================== */
+
+exports.getNewest = function(req, res) {
+
+  var getPlaylists = function(limit) {
+    var deferred = when.defer();
+    limit = ( limit && limit < 50 ) ? limit : 20;
+
+    models.Playlist.findAll({
+      where: Sequelize.or(
+        { privacy: 'public' },
+        { UserId: req.user ? req.user.id : null }
+      ),
+      limit: limit,
+      order: ['createdAt'],
+      include: [
+        {
+          model: models.PlaylistLike,
+          as: 'Likes'
+        },
+        {
+          model: models.PlaylistPlay,
+          as: 'Plays'
+        }
+      ]
+    }).then(function(playlists) {
+      deferred.resolve(playlists);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  getPlaylists(req.query.limit).then(function(playlists) {
+    res.status(200).json(playlists);
+  }).catch(function(err) {
+    res.status(err.status).json({ status: err.status, message: err.body });
+  });
+
+};
+
+/* ====================================================== */
+
 exports.create = function(req, res) {
 
   var createPlaylist = function(playlist, currentUserId) {
