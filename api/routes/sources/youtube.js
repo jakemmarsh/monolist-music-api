@@ -149,7 +149,7 @@ exports.search = function(query, limit) {
 
 exports.stream = function(req, res) {
 
-  var getTrackFile = function(videoId) {
+  var getTrackUrl = function(videoId) {
     var deferred = when.defer();
     var requestUrl = 'http://youtube.com/watch?v=' + videoId;
     var webmRegex = new RegExp('audio/webm', 'i');
@@ -165,7 +165,7 @@ exports.stream = function(req, res) {
             return webmRegex.test(format.type);
           });
 
-          if ( match ) { deferred.resolve(request(match.url)); }
+          if ( match ) { deferred.resolve(match.url); }
         } else {
           deferred.reject();
         }
@@ -175,8 +175,8 @@ exports.stream = function(req, res) {
     return deferred.promise;
   };
 
-  getTrackFile(req.params.videoId).then(function(track) {
-    track.pipe(res);
+  getTrackUrl(req.params.videoId).then(function(url) {
+    request.get(url).pipe(res);
   }).catch(function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
   });

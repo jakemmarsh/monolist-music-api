@@ -127,7 +127,7 @@ exports.stream = function(req, res) {
    *
    * @param {String} url
    */
-  var getTrackFile = function(url) {
+  var getTrackUrl = function(url) {
     var deferred = when.defer();
     var trackRegex = /{"mp3-128":"(.+?)"/ig;
     var urlResults;
@@ -139,7 +139,7 @@ exports.stream = function(req, res) {
         urlResults = trackRegex.exec(body);
 
         if ( urlResults !== null ) {
-          deferred.resolve(request.get(urlResults[1]));
+          deferred.resolve(urlResults[1]);
         } else {
           deferred.reject('Unable to retrieve the MP3 file for the specified URL.');
         }
@@ -149,8 +149,8 @@ exports.stream = function(req, res) {
     return deferred.promise;
   };
 
-  getTrackFile(bandcampUrl).then(function(track) {
-    track.pipe(res);
+  getTrackUrl(bandcampUrl).then(function(url) {
+    request.get(url).pipe(res);
   }, function(err) {
     res.status(500).send(err);
   });

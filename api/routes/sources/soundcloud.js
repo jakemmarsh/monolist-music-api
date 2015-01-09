@@ -82,7 +82,7 @@ exports.search = function(query, limit) {
 
 exports.stream = function(req, res) {
 
-  var getTrack = function(trackId) {
+  var getTrackUrl = function(trackId) {
     var deferred = when.defer();
 
     var queryUrl = '/tracks/' + trackId + '/stream';
@@ -91,15 +91,15 @@ exports.stream = function(req, res) {
       if ( err ) {
         deferred.reject(err);
       } else {
-        deferred.resolve(request(trackInfo.location));
+        deferred.resolve(trackInfo.location);
       }
     });
 
     return deferred.promise;
   };
 
-  getTrack(req.params.trackId).then(function(track) {
-    track.pipe(res);
+  getTrackUrl(req.params.trackId).then(function(url) {
+    request.get(url).pipe(res);
   }, function(err) {
     res.status(500).send(err);
   });
