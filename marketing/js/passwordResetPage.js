@@ -5,14 +5,14 @@ var qs = require('querystring');
 
 module.exports = (function() {
 
-  var $resetForm = $('#reset-form');
-  var $successMessage = $('.success-message-container');
-  var $passwordInput = $('input#password');
-  var $confirmInput = $('input#confirm');
-  var $submitButton = $('input#submit');
+  var $resetForm        = $('#reset-form');
+  var $successContainer = $('.success-container');
+  var $passwordInput    = $('input#password');
+  var $confirmInput     = $('input#confirm');
+  var $submitButton     = $('input#submit');
   var $spinnerContainer = $('.spinner-container');
-  var $errorContainer = $('.error-container');
-  var qsParams = qs.parse(document.URL.split('?')[1]);
+  var $errorContainer   = $('.error-container');
+  var qsParams          = qs.parse(document.URL.split('?')[1]);
 
   $('#reset-form input').focus(function() {
     var labelId = '#' + $(this).attr('id') + '-label';
@@ -48,14 +48,12 @@ module.exports = (function() {
     $.ajax({
       type: 'POST',
       url: 'https://monolist.co/api/v1/auth/reset/' + qsParams.user + '/' + qsParams.key,
-    }).then(function(resp) {
-      console.log('success:', resp);
+    }).then(function() {
       $errorContainer.hide();
       $spinnerContainer.hide();
       $resetForm.hide();
-      $successMessage.show();
+      $successContainer.show();
     }).fail(function(err) {
-      console.log('error:', err);
       $spinnerContainer.hide();
       $errorContainer.text(JSON.parse(err.responseText).message);
       $errorContainer.show();

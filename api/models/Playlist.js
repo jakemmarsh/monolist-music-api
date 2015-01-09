@@ -29,7 +29,11 @@ module.exports = function(sequelize, DataTypes) {
         Playlist.count({
           where: { slug: titleSlug }
         }).then(function(c) {
-          if ( c > 0 ) {
+          // TODO: fix this dirty fix. When operating on prod DB (Amazon RDS Postgres),
+          // even the first playlist with a unique slug is appended '-1'
+          if ( process.env.NODE_ENV === 'production' && c > 1 ) {
+            titleSlug += '-' + c;
+          } else if ( process.env.NODE_ENV !== 'production' && c > 0 ) {
             titleSlug += '-' + c;
           }
           playlist.setDataValue('slug', titleSlug);
