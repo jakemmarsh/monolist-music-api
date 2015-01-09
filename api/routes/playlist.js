@@ -124,11 +124,13 @@ exports.get = function(req, res) {
         },
         {
           model: models.PlaylistLike,
-          as: 'Likes'
+          as: 'Likes',
+          attributes: ['id', 'UserId']
         },
         {
           model: models.PlaylistPlay,
-          as: 'Plays'
+          as: 'Plays',
+          attributes: ['id']
         }
       ]
     }).then(function(playlist) {
@@ -315,11 +317,13 @@ exports.getNewest = function(req, res) {
       include: [
         {
           model: models.PlaylistLike,
-          as: 'Likes'
+          as: 'Likes',
+          attributes: ['id', 'UserId']
         },
         {
           model: models.PlaylistPlay,
-          as: 'Plays'
+          as: 'Plays',
+          attributes: ['id']
         }
       ]
     }).then(function(playlists) {
