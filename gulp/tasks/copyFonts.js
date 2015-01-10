@@ -4,6 +4,7 @@ var gulp = require('gulp');
 
 gulp.task('copyFonts', function() {
 
-  gulp.src('./marketingfonts/**/*').pipe(gulp.dest('./build/fonts/'));
+  return gulp.src('./marketing/fonts/**/*')
+  .pipe(gulp.dest('./build/fonts/'));
 
 });
