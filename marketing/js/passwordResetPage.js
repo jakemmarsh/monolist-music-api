@@ -36,9 +36,6 @@ module.exports = (function() {
   });
 
   $('#reset-form').submit(function(evt) {
-    var password = $passwordInput.val();
-    var confirmPassword = $confirmInput.val();
-
     evt.preventDefault();
     evt.stopPropagation();
 
@@ -48,6 +45,9 @@ module.exports = (function() {
     $.ajax({
       type: 'POST',
       url: 'https://monolist.co/api/v1/auth/reset/' + qsParams.user + '/' + qsParams.key,
+      data: {
+        password: $passwordInput.val()
+      }
     }).then(function() {
       $errorContainer.hide();
       $spinnerContainer.hide();
@@ -58,10 +58,6 @@ module.exports = (function() {
       $errorContainer.text(JSON.parse(err.responseText).message);
       $errorContainer.show();
     });
-
-    console.log(qsParams);
-    console.log(password);
-    console.log(confirmPassword);
   });
 
 })();
