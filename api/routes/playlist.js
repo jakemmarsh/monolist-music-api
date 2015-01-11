@@ -558,6 +558,7 @@ exports.addTrack = function(req, res) {
       UserId: req.user.id || req.body.userId || req.body.UserId,
       title: req.body.title || req.body.Title,
       artist: req.body.artist || req.body.Artist,
+      duration: req.body.duration || req.body.Duration,
       source: req.body.source || req.body.Source,
       sourceParam: req.body.sourceParam || req.body.SourceParam,
       sourceUrl: req.body.sourceUrl || req.body.SourceUrl,

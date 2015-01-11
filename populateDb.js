@@ -171,7 +171,8 @@ module.exports = function(models, mailer) {
       source: "soundcloud",
       sourceParam: "159945668",
       sourceUrl: "http://soundcloud.com/rustie/attak-feat-danny-brown",
-      title: "Attak (feat. Danny Brown)"
+      title: "Attak (feat. Danny Brown)",
+      duration: 181
     };
 
     models.Track.create(track).then(function(createdTrack) {
