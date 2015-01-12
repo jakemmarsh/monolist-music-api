@@ -34,12 +34,12 @@ exports.sendWelcome = function(user) {
         mailOptions.html = html;
         mailOptions.text = text;
 
-        transport.sendMail(mailOptions, function(err, response) {
+        transport.sendMail(mailOptions, function(err/*, response*/) {
           if ( err ) {
             // Still resolve since user was successfully registered before sending email
-            deferred.resolve();
+            deferred.resolve(user);
           } else {
-            deferred.resolve(response.message);
+            deferred.resolve(user);
           }
         });
       });

@@ -35,6 +35,40 @@ exports.isAdmin = function(req, res, next) {
 
 exports.register = function(req, res) {
 
+  var checkUsername = function(user) {
+    var deferred = when.defer();
+    var username = user.username || user.Username;
+
+    models.User.find({
+      where: { username: username }
+    }).then(function(retrievedUser) {
+      if ( !_.isEmpty(retrievedUser) ) {
+        deferred.reject({ status: 400, body: 'That username is already taken.' });
+      } else {
+        deferred.resolve(user);
+      }
+    });
+
+    return deferred.promise;
+  };
+
+  var checkEmail = function(user) {
+    var deferred = when.defer();
+    var email = user.email || user.Email;
+
+    models.User.find({
+      where: { email: email }
+    }).then(function(retrievedUser) {
+      if ( !_.isEmpty(retrievedUser) ) {
+        deferred.reject({ status: 400, body: 'That email address is already registered.' });
+      } else {
+        deferred.resolve(user);
+      }
+    });
+
+    return deferred.promise;
+  };
+
   var createUser = function(user) {
     var deferred = when.defer();
     var newUser = {
@@ -59,7 +93,9 @@ exports.register = function(req, res) {
     return deferred.promise;
   };
 
-  createUser(req.body)
+  checkUsername(req.body)
+  .then(checkEmail)
+  .then(createUser)
   .then(mailer.sendWelcome)
   .then(function(user) {
     res.status(200).json(user);
