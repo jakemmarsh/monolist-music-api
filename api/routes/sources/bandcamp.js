@@ -139,7 +139,7 @@ exports.stream = function(req, res) {
         urlResults = trackRegex.exec(body);
 
         if ( urlResults !== null ) {
-          deferred.resolve(urlResults[1]);
+          deferred.resolve(request.get(urlResults[1]));
         } else {
           deferred.reject('Unable to retrieve the MP3 file for the specified URL.');
         }
@@ -149,8 +149,8 @@ exports.stream = function(req, res) {
     return deferred.promise;
   };
 
-  getTrackUrl(bandcampUrl).then(function(url) {
-    request.get(url).pipe(res);
+  getTrackUrl(bandcampUrl).then(function(audioRes) {
+    audioRes.pipe(res);
   }, function(err) {
     res.status(500).send(err);
   });

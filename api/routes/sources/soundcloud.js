@@ -91,15 +91,15 @@ exports.stream = function(req, res) {
       if ( err ) {
         deferred.reject(err);
       } else {
-        deferred.resolve(trackInfo.location);
+        deferred.resolve(request.get(trackInfo.location));
       }
     });
 
     return deferred.promise;
   };
 
-  getTrackUrl(req.params.trackId).then(function(url) {
-    request.get(url).pipe(res);
+  getTrackUrl(req.params.trackId).then(function(audioRes) {
+    audioRes.pipe(res);
   }, function(err) {
     res.status(500).send(err);
   });

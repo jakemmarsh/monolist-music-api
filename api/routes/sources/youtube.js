@@ -1,12 +1,11 @@
 'use strict';
 
-var path    = require('path');
 var when    = require('when');
 var qs      = require('querystring');
 var request = require('request');
 var _       = require('lodash');
 var ytdl    = require('ytdl-core');
-var config  = require(path.join(__dirname, '../../../config'));
+var config  = require('../../../config');
 
 /* ====================================================== */
 
@@ -165,7 +164,11 @@ exports.stream = function(req, res) {
             return webmRegex.test(format.type);
           });
 
-          if ( match ) { deferred.resolve(match.url); }
+          if ( match ) {
+            deferred.resolve(request.get(match.url));
+          } else {
+            deferred.reject();
+          }
         } else {
           deferred.reject();
         }
@@ -175,8 +178,8 @@ exports.stream = function(req, res) {
     return deferred.promise;
   };
 
-  getTrackUrl(req.params.videoId).then(function(url) {
-    request.get(url).pipe(res);
+  getTrackUrl(req.params.videoId).then(function(audioRes) {
+    audioRes.pipe(res);
   }).catch(function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
   });
