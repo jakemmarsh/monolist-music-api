@@ -103,7 +103,7 @@ function updateEntity(data) {
     var deferred = when.defer();
 
     item.updateAttributes({
-      imageUrl: 'https://assets.monolist.co' + imagePath
+      imageUrl: 'http://assets.monolist.co' + imagePath
     }).then(function(updatedItem) {
       deferred.resolve(updatedItem);
     }).catch(function(err) {
