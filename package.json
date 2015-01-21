@@ -24,7 +24,7 @@
     "superagent": "^0.18.2",
     "serve-favicon": "^2.1.5",
     "bcrypt": "^0.8.0",
-    "when": "^3.6.0",
+    "when": "^3.6.4",
     "sequelize": "^2.0.0-rc2",
     "slug": "^0.8.0",
     "express-session": "^1.9.1",

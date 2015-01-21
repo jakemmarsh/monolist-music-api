@@ -1,6 +1,7 @@
 'use strict';
 
-var $ = require('jquery');
+var $               = require('jquery');
+var getDownloadLink = require('./getDownloadLink');
 
 module.exports = (function() {
 
@@ -16,14 +17,14 @@ module.exports = (function() {
     os = 'linux';
   }
 
-  console.log('os:', os);
-
-  if ( os === 'mac' ) {
-    $('.osx-download').show();
-    $('.win-download').hide();
-  } else if ( os === 'win' ) {
-    $('.win-download').show();
-    $('.osx-download').hide();
-  }
+  getDownloadLink(os).then(function(downloadLink) {
+    if ( os === 'mac' ) {
+      $('.osx-download').attr('href', downloadLink).show();
+      $('.win-download').hide();
+    } else if ( os === 'win' ) {
+      $('.win-download').attr('href', downloadLink).show();
+      $('.osx-download').hide();
+    }
+  });
 
 })();
