@@ -138,6 +138,67 @@ exports.update = function(req, res) {
 
 /* ====================================================== */
 
+exports.getNotifications = function(req, res) {
+
+  var fetchNotifications = function(userId) {
+    var deferred = when.defer();
+
+    models.Notification.findAll({
+      where: { RecipientId: userId }
+    }).then(function(retrievedNotifications) {
+      deferred.resolve(retrievedNotifications);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  fetchNotifications(req.params.id).then(function(notifications) {
+    res.status(200).json(notifications);
+  }).catch(function(err) {
+    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+  });
+
+};
+
+/* ====================================================== */
+
+exports.markNotificationsAsRead = function(req, res) {
+
+  var modifyNotifications = function(userId, notificationIds) {
+    var deferred = when.defer();
+
+    if ( notificationIds.indexOf(',') !== -1 ) {
+      notificationIds = notificationIds.split(',');
+    } else {
+      notificationIds = [notificationIds];
+    }
+
+    models.Notification.update(
+      { read: true },
+      { where: {
+        id: notificationIds,
+        RecipientId: userId
+      }}
+    ).then(function() {
+      deferred.resolve();
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  modifyNotifications(req.params.userId, req.params.ids).then(function() {
+    res.status(200).json('Notifications successfully marked as read.');
+  }).catch(function(err) {
+    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+  });
+};
+
+/* ====================================================== */
+
 exports.follow = function(req, res) {
 
   var followUser = function(currentUserId, targetUserId) {
