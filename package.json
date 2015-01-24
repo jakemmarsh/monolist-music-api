@@ -59,7 +59,8 @@
     "gulp-streamify": "0.0.5",
     "gulp-util": "^3.0.1",
     "watchify": "^2.2.1",
-    "gulp-notify": "^2.1.0"
+    "gulp-notify": "^2.1.0",
+    "pg-hstore": "^2.3.1"
   },
   "devDependencies": {
     "supervisor": "^0.6.0"
