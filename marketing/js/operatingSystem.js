@@ -18,12 +18,12 @@ module.exports = (function() {
   }
 
   getDownloadLink(os).then(function(downloadLink) {
+    $('.spinner').fadeOut(500);
+
     if ( os === 'mac' ) {
-      $('.osx-download').attr('href', downloadLink).show();
-      $('.win-download').hide();
+      $('.osx-download').attr('href', downloadLink).delay(500).fadeIn();
     } else if ( os === 'win' ) {
-      $('.win-download').attr('href', downloadLink).show();
-      $('.osx-download').hide();
+      $('.win-download').attr('href', downloadLink).delay(500).fadeIn();
     }
   });
 

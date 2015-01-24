@@ -6,16 +6,18 @@ var when = require('when');
 module.exports = function(os) {
 
   var deferred = when.defer();
-  var returnString = 'Monolist-';
+  var returnString = 'https://assets.monolist.co/releases/' + (os === 'mac' ? 'mac/' : 'win/') + 'Monolist-';
 
-  $.getJSON('http://assets.monolist.co/app/package.json', function(p) {
+  $.getJSON('https://assets.monolist.co/app/package.json', function(p) {
     returnString += p.version;
 
     if ( os === 'mac' ) {
-      deferred.resolve(returnString + '-osx.dmg');
+      returnString += '-osx.dmg';
     } else if ( os === 'win' ) {
-      deferred.resolve(returnString + '-win.zip');
+      returnString += '-win.zip';
     }
+
+    deferred.resolve(returnString);
   });
 
   return deferred.promise;
