@@ -22,7 +22,7 @@
             <table border="0" cellpadding="20" cellspacing="0" width="100%">
               <tr>
                 <td class="leftColumnContent">
-                  <img src="http://assets.monolist.co/images/email/users-icon.png" style="max-width:160px;" class="columnImage" mc:label="left_column_image" mc:edit="left_column_image" />
+                  <img src="http://assets.monolist.co/marketing/images/email/users-icon.png" style="max-width:160px;" class="columnImage" mc:label="left_column_image" mc:edit="left_column_image" />
                 </td>
               </tr>
               <tr>
@@ -37,7 +37,7 @@
             <table border="0" cellpadding="20" cellspacing="0" width="100%">
               <tr>
                 <td class="centerColumnContent">
-                  <img src="http://assets.monolist.co/images/email/add-icon.png" style="max-width:160px;" class="columnImage" mc:label="center_column_image" mc:edit="center_column_image" />
+                  <img src="http://assets.monolist.co/marketing/images/email/add-icon.png" style="max-width:160px;" class="columnImage" mc:label="center_column_image" mc:edit="center_column_image" />
                 </td>
               </tr>
               <tr>
@@ -52,7 +52,7 @@
             <table border="0" cellpadding="20" cellspacing="0" width="100%">
               <tr>
                 <td class="rightColumnContent">
-                  <img src="http://assets.monolist.co/images/email/compass-icon.png" style="max-width:160px;" class="columnImage" mc:label="right_column_image" mc:edit="right_column_image" />
+                  <img src="http://assets.monolist.co/marketing/images/email/compass-icon.png" style="max-width:160px;" class="columnImage" mc:label="right_column_image" mc:edit="right_column_image" />
                 </td>
               </tr>
               <tr>
