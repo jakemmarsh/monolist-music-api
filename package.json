@@ -49,7 +49,7 @@
     "gulp-rename": "^1.2.0",
     "jquery": "^2.1.1",
     "gulp-assemble": "^0.1.7",
-    "gulp-imagemin": "^1.0.1",
+    "gulp-imagemin": "^2.1.0",
     "run-sequence": "^0.3.6",
     "gulp-if": "^1.2.4",
     "vhost": "^3.0.0",
