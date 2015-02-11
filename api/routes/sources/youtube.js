@@ -168,7 +168,6 @@ exports.stream = function(req, res) {
   var streamTrack = function(videoId) {
     var requestUrl = 'http://youtube.com/watch?v=' + videoId;
     var webmRegex = new RegExp('audio/webm', 'i');
-    var mp4Regex = new RegExp('audio/mp4', 'i');
     var matches = null;
 
     ytdl.getInfo(requestUrl, { downloadURL: true }, function(err, info) {
@@ -177,7 +176,7 @@ exports.stream = function(req, res) {
       } else {
         if ( info.formats ) {
           matches = _.filter(info.formats, function(format) {
-            return webmRegex.test(format.type) || mp4Regex.test(format.type);
+            return webmRegex.test(format.type);
           });
 
           if ( matches && matches.length ) {
