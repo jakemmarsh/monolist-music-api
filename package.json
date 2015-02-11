@@ -39,7 +39,7 @@
     "knox": "^0.9.1",
     "connect-busboy": "0.0.2",
     "email-templates": "^1.1.2",
-    "ytdl-core": "^0.2.4",
+    "ytdl-core": "^0.4.x",
     "pg": "^4.1.1",
     "pg-native": "^1.7.1",
     "swig": "^1.4.2",
@@ -62,7 +62,8 @@
     "gulp-notify": "^2.1.0",
     "pg-hstore": "^2.3.1",
     "gulp-cdnizer": "^1.1.1",
-    "gulp-awspublish": "0.0.24"
+    "gulp-awspublish": "0.0.24",
+    "fallback": "^1.0.1"
   },
   "devDependencies": {
     "supervisor": "^0.6.0"

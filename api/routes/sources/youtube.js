@@ -5,6 +5,7 @@ var qs      = require('querystring');
 var request = require('request');
 var _       = require('lodash');
 var ytdl    = require('ytdl-core');
+var fallback = require('fallback');
 var config  = require('../../../config');
 
 /* ====================================================== */
@@ -15,33 +16,31 @@ var config  = require('../../../config');
 function parseYouTubeDuration(duration) {
     var a = duration.match(/\d+/g);
 
-    if (duration.indexOf('M') >= 0 && duration.indexOf('H') === -1 && duration.indexOf('S') === -1) {
-        a = [0, a[0], 0];
+    if ( duration.indexOf('M') >= 0 && duration.indexOf('H') === -1 && duration.indexOf('S') === -1 ) {
+      a = [0, a[0], 0];
     }
-
-    if (duration.indexOf('H') >= 0 && duration.indexOf('M') === -1) {
-        a = [a[0], 0, a[1]];
+    if ( duration.indexOf('H') >= 0 && duration.indexOf('M') === -1 ) {
+      a = [a[0], 0, a[1]];
     }
-    if (duration.indexOf('H') >= 0 && duration.indexOf('M') === -1 && duration.indexOf('S') === -1) {
-        a = [a[0], 0, 0];
+    if ( duration.indexOf('H') >= 0 && duration.indexOf('M') === -1 && duration.indexOf('S') === -1 ) {
+      a = [a[0], 0, 0];
     }
 
     duration = 0;
 
-    if (a.length === 3) {
-        duration = duration + parseInt(a[0]) * 3600;
-        duration = duration + parseInt(a[1]) * 60;
-        duration = duration + parseInt(a[2]);
+    if ( a.length === 3 ) {
+      duration = duration + parseInt(a[0]) * 3600;
+      duration = duration + parseInt(a[1]) * 60;
+      duration = duration + parseInt(a[2]);
+    }
+    if ( a.length === 2 ) {
+      duration = duration + parseInt(a[0]) * 60;
+      duration = duration + parseInt(a[1]);
+    }
+    if ( a.length === 1 ) {
+      duration = duration + parseInt(a[0]);
     }
 
-    if (a.length === 2) {
-        duration = duration + parseInt(a[0]) * 60;
-        duration = duration + parseInt(a[1]);
-    }
-
-    if (a.length === 1) {
-        duration = duration + parseInt(a[0]);
-    }
     return duration;
 }
 
@@ -116,7 +115,6 @@ exports.search = function(query, limit) {
       } else {
         body = JSON.parse(body);
 
-        // process each search result
         searchResults = _.map(body.items, function(item) {
           return {
             source: 'youtube',
@@ -148,40 +146,52 @@ exports.search = function(query, limit) {
 
 exports.stream = function(req, res) {
 
-  var getTrackUrl = function(videoId) {
-    var deferred = when.defer();
+  var attemptRequest = function(videoInfo, cb) {
+    console.log('trying:', videoInfo);
+
+    request(videoInfo.url)
+    .on('error', function(err) {
+      cb(err);
+    })
+    .on('response', function(resp) {
+      cb(null, resp);
+    })
+    .pipe(res);
+  };
+
+  var handleRequestError = function(err) {
+    if ( err ) {
+      res.status(500).json({ status: 500, message: err });
+    }
+  };
+
+  var streamTrack = function(videoId) {
     var requestUrl = 'http://youtube.com/watch?v=' + videoId;
     var webmRegex = new RegExp('audio/webm', 'i');
-    // var mp4Regex = new RegExp('audio/mp4', 'i');
-    var match = null;
+    //var mp4Regex = new RegExp('audio/mp4', 'i');
+    var matches = null;
 
     ytdl.getInfo(requestUrl, { downloadURL: true }, function(err, info) {
       if ( err ) {
-        deferred.reject({ status: 500, body: err });
+        res.status(500).json({ status: 500, message: err });
       } else {
         if ( info.formats ) {
-          match = _.find(info.formats, function(format) {
+          matches = _.filter(info.formats, function(format) {
             return webmRegex.test(format.type);
           });
 
-          if ( match ) {
-            deferred.resolve(request.get(match.url));
+          if ( matches && matches.length ) {
+            fallback(matches, attemptRequest, handleRequestError);
           } else {
-            deferred.reject();
+            res.status(500).json({ status: 500, message: 'No suitable audio file could be found for that video.' });
           }
         } else {
-          deferred.reject();
+          res.status(500).json({ status: 500, message: 'No available formats could be found for that video.' });
         }
       }
     });
-
-    return deferred.promise;
   };
 
-  getTrackUrl(req.params.videoId).then(function(audioRes) {
-    audioRes.pipe(res);
-  }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
-  });
+  streamTrack(req.params.videoId);
 
 };
