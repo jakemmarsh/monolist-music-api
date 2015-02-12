@@ -24,6 +24,8 @@ module.exports = (function() {
       $('.osx-download').attr('href', downloadLink).delay(500).fadeIn();
     } else if ( os === 'win' ) {
       $('.win-download').attr('href', downloadLink).delay(500).fadeIn();
+    } else {
+      $('.not-supported-download').delay(500).fadeIn();
     }
   });
 
