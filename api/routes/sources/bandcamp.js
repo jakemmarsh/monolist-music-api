@@ -105,7 +105,7 @@ exports.search = function(query, limit) {
   getSearchResults(query, 1, limit, []).then(function(results) {
     mainDeferred.resolve(results);
   }, function(err) {
-    mainDeferred.reject(err);
+    mainDeferred.reject({ status: 500, body: err.toString() });
   });
 
   return mainDeferred.promise;

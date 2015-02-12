@@ -58,7 +58,7 @@ module.exports = function(req, res) {
     });
     res.status(200).json(searchResults);
   }, function(err) {
-    res.status(500).json({ error: err });
+    res.status(err.status).json({ status: err.status, message: err.body });
   });
 
 };

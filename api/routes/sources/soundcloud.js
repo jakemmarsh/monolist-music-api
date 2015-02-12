@@ -71,7 +71,7 @@ exports.search = function(query, limit) {
   getSearchResults(query).then(function(results) {
     mainDeferred.resolve(results);
   }).catch(function() {
-    mainDeferred.reject('Unable to retrieve Soundcloud search results.');
+    mainDeferred.reject({ status: 500, body: 'Unable to retrieve Soundcloud search results.' });
   });
 
   return mainDeferred.promise;
@@ -89,7 +89,7 @@ exports.stream = function(req, res) {
 
     SC.get(queryUrl, function(err, trackInfo) {
       if ( err ) {
-        deferred.reject(err);
+        deferred.reject({ status: 500, body: err.toString() });
       } else {
         deferred.resolve(request.get(trackInfo.location));
       }
@@ -101,7 +101,7 @@ exports.stream = function(req, res) {
   getTrackUrl(req.params.trackId).then(function(audioRes) {
     audioRes.pipe(res);
   }, function(err) {
-    res.status(500).send(err);
+    res.status(err.status).json({ status: err.status, message: err.body });
   });
 
 };

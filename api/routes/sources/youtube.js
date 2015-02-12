@@ -56,7 +56,7 @@ exports.search = function(query, limit) {
 
     request(infoUrl, function(err, response, body) {
       if ( err ) {
-        deferred.reject(err);
+        deferred.reject({ status: 500, body: err.toString() });
       } else {
         body = JSON.parse(body);
 
@@ -135,7 +135,7 @@ exports.search = function(query, limit) {
   getSearchResults(query).then(function(results) {
     mainDeferred.resolve(results);
   }, function(err) {
-    mainDeferred.reject(err);
+    mainDeferred.reject({ status: 500, body: err.toString() });
   });
 
   return mainDeferred.promise;
