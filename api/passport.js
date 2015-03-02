@@ -30,9 +30,13 @@ module.exports = function() {
     });
   }));
 
+  /* ====================================================== */
+
   passport.serializeUser(function(user, done) {
     done(null, user.username);
   });
+
+  /* ====================================================== */
 
   passport.deserializeUser(function(username, done) {
     models.User.find({

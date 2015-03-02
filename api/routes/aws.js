@@ -6,15 +6,14 @@ var Knox   = require('knox');
 var crypto = require('crypto');
 var moment = require('moment');
 var mime   = require('mime-types');
-var config = require('../../config');
 var models = require('../models');
 
 /* ====================================================== */
 
 var AWS = Knox.createClient({
-  key: config.aws.key,
-  secret: config.aws.secret,
-  bucket: config.aws.bucket
+  key: process.env.AWS_KEY,
+  secret: process.env.AWS_SECRET,
+  bucket: process.env.S3_BUCKET
 });
 
 /* ====================================================== */

@@ -130,8 +130,38 @@ exports.login = function(req, res, next) {
 
 /* ====================================================== */
 
-exports.facebookLogin = function(req, res, next) {
+exports.facebookLogin = function(req, res) {
 
+  var fetchUser = function(username, facebookId) {
+    var deferred = when.defer();
+
+    models.User.find({
+      where: { username: username, facebookId: facebookId }
+    }).then(function(retrievedUser) {
+      if ( !_.isEmpty(retrievedUser) ) {
+        deferred.resolve(retrievedUser);
+      } else {
+        deferred.reject({ status: 401, body: 'There is no user associated with that Facebook ID.' });
+      }
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  fetchUser(req.body.username, req.body.facebookId).then(function(user) {
+    req.login(user, function(err) {
+      if ( !err ) {
+        req.session.cookie.maxAge = 1000*60*60*24*7*4; // four weeks
+        res.status(200).json(user);
+      } else {
+        res.status(500).json({ status: 500, message: err.toString() });
+      }
+    });
+  }).catch(function(err) {
+    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+  });
 
 };
 

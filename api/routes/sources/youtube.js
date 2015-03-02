@@ -1,12 +1,11 @@
 'use strict';
 
-var when    = require('when');
-var qs      = require('querystring');
-var request = require('request');
-var _       = require('lodash');
-var ytdl    = require('ytdl-core');
+var when     = require('when');
+var qs       = require('querystring');
+var request  = require('request');
+var _        = require('lodash');
+var ytdl     = require('ytdl-core');
 var fallback = require('fallback');
-var config  = require('../../../config');
 
 /* ====================================================== */
 
@@ -76,7 +75,7 @@ exports.search = function(query, limit) {
       part: 'snippet',
       q: searchQuery.replace(/(%20)|( )/gi, '+'),
       maxResults: limit,
-      key: config.youtube.key
+      key: process.env.YOUTUBE_KEY
     };
     var searchResults;
 

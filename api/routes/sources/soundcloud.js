@@ -1,18 +1,16 @@
 'use strict';
 
-var path    = require('path');
 var qs      = require('querystring');
 var request = require('request');
 var _       = require('lodash');
 var SC      = require('node-soundcloud');
-var config  = require(path.join(__dirname, '../../../config'));
 var when    = require('when');
 
 /* ====================================================== */
 
 SC.init({
-  id: config.soundcloud.id,
-  secret: config.soundcloud.secret
+  id: process.env.SOUNDCLOUD_ID,
+  secret: process.env.SOUNDCLOUD_SECRET
 });
 
 /* ====================================================== */

@@ -6,10 +6,9 @@ var nodemailer     = require('nodemailer');
 var emailTemplates = require('email-templates');
 var templatesDir   = path.join(__dirname, 'templates');
 var ses            = require('nodemailer-ses-transport');
-var config         = require('../../config');
 var transport      = nodemailer.createTransport(ses({
-    accessKeyId: config.aws.key,
-    secretAccessKey: config.aws.secret
+    accessKeyId: process.env.AWS_KEY,
+    secretAccessKey: process.env.AWS_SECRET
 }));
 
 /* ====================================================== */

@@ -11,11 +11,15 @@ var session        = require('express-session');
 var passport       = require('passport');
 var server         = express();
 var models         = require('./api/models');
-var config         = require('./config');
 var populateDb     = require('./populateDb');
 var mailer         = require('./api/mailer');
 var api            = require('./api');
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
+var dotenv         = require('dotenv');
+
+/* ====================================================== */
+
+dotenv.load();
 
 /* ====================================================== */
 
@@ -28,7 +32,7 @@ server.use(busboy());          // Parse multipart/form-data
 server.use(cookieParser());
 server.set('json spaces', 0);  // Remove superfluous spaces from JSON responses
 server.use(session({
-  secret: config.secret,
+  secret: process.env.SECRET,
   cookie: {
     maxAge: 1000*60*30 // only 30 minutes until user logs in
   },
