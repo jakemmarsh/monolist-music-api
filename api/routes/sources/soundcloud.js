@@ -87,7 +87,7 @@ exports.stream = function(req, res) {
 
     SC.get(queryUrl, function(err, trackInfo) {
       if ( err ) {
-        deferred.reject({ status: 500, body: err.toString() });
+        deferred.reject({ status: 500, body: err.message || err });
       } else {
         deferred.resolve(request.get(trackInfo.location));
       }
@@ -99,7 +99,7 @@ exports.stream = function(req, res) {
   getTrackUrl(req.params.trackId).then(function(audioRes) {
     audioRes.pipe(res);
   }, function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body });
+    res.status(err.status).json({ status: err.status, message: err.body.toString() });
   });
 
 };

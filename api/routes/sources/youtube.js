@@ -144,7 +144,7 @@ exports.stream = function(req, res) {
 
     ytdl.getInfo(requestUrl, { downloadURL: true }, function(err, info) {
       if ( err ) {
-        res.status(500).json({ status: 500, message: err });
+        res.status(500).json({ status: 500, message: err.body || err });
       } else {
         if ( info.formats ) {
           matches = _.filter(info.formats, function(format) {

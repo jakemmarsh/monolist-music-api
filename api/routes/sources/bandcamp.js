@@ -134,14 +134,14 @@ exports.stream = function(req, res) {
 
     request(url, function(err, response, body) {
       if ( err ) {
-        deferred.reject('Unable to retrieve the MP3 file for the specified URL.');
+        deferred.reject({ status: 500, body: 'Unable to retrieve the MP3 file for the specified URL.' });
       } else {
         urlResults = trackRegex.exec(body);
 
         if ( urlResults !== null ) {
           deferred.resolve(request.get(urlResults[1]));
         } else {
-          deferred.reject('Unable to retrieve the MP3 file for the specified URL.');
+          deferred.reject({ status: 404, body: 'Unable to retrieve the MP3 file for the specified URL.' });
         }
       }
     });
@@ -152,7 +152,7 @@ exports.stream = function(req, res) {
   getTrackUrl(bandcampUrl).then(function(audioRes) {
     audioRes.pipe(res);
   }, function(err) {
-    res.status(500).send(err);
+    res.status(err.status).json({ status: err.status, message: err.body.toString() });
   });
 
 };
