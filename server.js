@@ -59,7 +59,7 @@ if ( process.env.NODE_ENV === 'production' ) {
 // Add headers
 server.use(function (req, res, next) {
   // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   // Request headers you wish to allow
@@ -85,7 +85,7 @@ server.use(function (req, res, next) {
 /* ====================================================== */
 
 // Mount the API
-server.use('/', api);
+server.use('/v1', api);
 
 /* ====================================================== */
 
