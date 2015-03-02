@@ -22,7 +22,7 @@ exports.search = function(query, limit) {
 
     ytdl.getInfo(requestUrl, { downloadURL: true }, function(err, info) {
       if ( err ) {
-        deferred.reject({ status: 500, body: err.toString() });
+        deferred.resolve(null);
       } else {
         if ( info.formats ) {
           matches = _.filter(info.formats, function(format) {
@@ -61,7 +61,7 @@ exports.search = function(query, limit) {
       videos = _.reject(videos, function(video) { return _.isEmpty(video); });
       deferred.resolve(videos);
     }, function(err) {
-      deferred.reject(err);
+      deferred.reject(err.body || err);
     });
 
     return deferred.promise;
@@ -83,7 +83,7 @@ exports.search = function(query, limit) {
 
     request(searchUrl, function(err, response, body) {
       if ( err ) {
-        deferred.reject(err);
+        deferred.reject(err.body || err);
       } else {
         body = JSON.parse(body);
 
