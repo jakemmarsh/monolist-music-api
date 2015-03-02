@@ -74,13 +74,13 @@ server.use(function (req, res, next) {
 /* ====================================================== */
 
 // Force all request to use https instad of http
-server.use(function (req, res, next) {
-  if ( req.headers['x-forwarded-proto'] !== 'https' && process.env.NODE_ENV === 'production' ) {
-    res.redirect('https://' + req.get('host') + req.url);
-  } else {
-    next();
-  }
-});
+// server.use(function (req, res, next) {
+//   if ( req.headers['x-forwarded-proto'] !== 'https' && process.env.NODE_ENV === 'production' ) {
+//     res.redirect('https://' + req.get('host') + req.url);
+//   } else {
+//     next();
+//   }
+// });
 
 /* ====================================================== */
 
