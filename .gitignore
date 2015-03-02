@@ -27,5 +27,6 @@ build
 
 # Environment variables
 .env
+*.key
 
 .elasticbeanstalk/
