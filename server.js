@@ -15,11 +15,6 @@ var populateDb     = require('./populateDb');
 var mailer         = require('./api/mailer');
 var api            = require('./api');
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
-var dotenv         = require('dotenv');
-
-/* ====================================================== */
-
-dotenv.load();
 
 /* ====================================================== */
 
