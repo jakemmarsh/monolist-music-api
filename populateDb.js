@@ -11,12 +11,12 @@ module.exports = function(models, mailer) {
     var user = {
       username: 'jakemmarsh',
       email: 'jakemmarsh@gmail.com',
-      hash: 'kenneth',
+      hash: 'pass',
       role: 'admin'
     };
 
     models.User.create(user).then(function(createdUser) {
-      mailer.sendWelcome(createdUser);
+      // mailer.sendWelcome(createdUser);
       deferred.resolve(createdUser);
     }).catch(function(err) {
       console.log('error creating user:', err);
@@ -165,13 +165,14 @@ module.exports = function(models, mailer) {
   var addTrackToPlaylist = function() {
     var deferred = when.defer();
     var track = {
-      imageUrl: "https://i1.sndcdn.com/artworks-000086001473-mw7dye-large.jpg",
+      imageUrl: 'https://i1.sndcdn.com/artworks-000086001473-mw7dye-large.jpg',
       PlaylistId: 1,
       UserId: 1,
-      source: "soundcloud",
-      sourceParam: "159945668",
-      sourceUrl: "http://soundcloud.com/rustie/attak-feat-danny-brown",
-      title: "Attak (feat. Danny Brown)",
+      source: 'soundcloud',
+      extension: 'mp3',
+      sourceParam: '159945668',
+      sourceUrl: 'http://soundcloud.com/rustie/attak-feat-danny-brown',
+      title: 'Attak (feat. Danny Brown)',
       duration: 181
     };
 
