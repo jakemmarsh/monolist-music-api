@@ -169,7 +169,6 @@ module.exports = function(models, mailer) {
       PlaylistId: 1,
       UserId: 1,
       source: 'soundcloud',
-      extension: 'mp3',
       sourceParam: '159945668',
       sourceUrl: 'http://soundcloud.com/rustie/attak-feat-danny-brown',
       title: 'Attak (feat. Danny Brown)',

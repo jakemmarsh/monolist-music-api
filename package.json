@@ -30,8 +30,8 @@
     "mime-types": "^2.0.3",
     "moment": "^2.8.3",
     "morgan": "^1.2.2",
-    "node-bandcamp": "^0.0.x",
-    "node-soundcloud": "^0.0.x",
+    "node-bandcamp": "^0.0.4",
+    "node-soundcloud": "^0.0.3",
     "nodemailer": "^1.3.0",
     "nodemailer-ses-transport": "^1.2.0",
     "passport": "^0.2.1",
@@ -46,7 +46,7 @@
     "superagent": "^0.18.2",
     "swig": "^1.4.2",
     "when": "^3.6.4",
-    "ytdl-core": "^0.4.x"
+    "ytdl-core": "^0.5.1"
   },
   "devDependencies": {
     "supervisor": "^0.6.0"
