@@ -80,7 +80,7 @@ api.get('/sc_redirect', routes.soundcloudRedirect);
 /* ====================================================== */
 
 // mp3 streaming endpoints
-api.get('/stream/youtube/:videoId', routes.streaming.youtube);
+// api.get('/stream/youtube/:videoId', routes.streaming.youtube);
 api.get('/stream/soundcloud/:trackId', routes.streaming.soundcloud);
 api.get('/stream/spotify/:trackId', routes.streaming.spotify);
 api.get('/stream/bandcamp/:trackUrl', routes.streaming.bandcamp);

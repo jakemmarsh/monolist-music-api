@@ -127,19 +127,21 @@ exports.stream = function(req, res) {
     })
     .on('response', function(resp) {
       cb(null, resp);
-    })
-    .pipe(res);
+    });
   };
 
-  var handleRequestError = function(err) {
+  var handleResult = function(err, result, item, array) {
     if ( err ) {
       res.status(500).json({ status: 500, message: err });
+    } else {
+      result.pipe(res);
     }
   };
 
   var streamTrack = function(videoId) {
     var requestUrl = 'http://youtube.com/watch?v=' + videoId;
     var webmRegex = new RegExp('audio/webm', 'i');
+    var mp4Regex = new RegExp('audio/mp4', 'i');
     var matches = null;
 
     ytdl.getInfo(requestUrl, { downloadURL: true }, function(err, info) {
@@ -148,11 +150,11 @@ exports.stream = function(req, res) {
       } else {
         if ( info.formats ) {
           matches = _.filter(info.formats, function(format) {
-            return webmRegex.test(format.type);
+            return webmRegex.test(format.type) || mp4Regex.test(format.type);
           });
 
           if ( matches && matches.length ) {
-            fallback(matches, attemptRequest, handleRequestError);
+            fallback(matches, attemptRequest, handleResult);
           } else {
             res.status(500).json({ status: 500, message: 'No suitable audio file could be found for that video.' });
           }
