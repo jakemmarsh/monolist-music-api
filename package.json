@@ -49,9 +49,15 @@
     "ytdl-core": "^0.5.1"
   },
   "devDependencies": {
+    "istanbul": "^0.3.17",
+    "mocha": "^2.2.5",
+    "should": "^7.0.2",
+    "sinon": "^1.15.4",
+    "supertest": "^1.0.1",
     "supervisor": "^0.6.0"
   },
   "scripts": {
-    "start": "supervisor server.js"
+    "start": "supervisor server.js",
+    "test": "istanbul cover --report html --dir \"__coverage__/\" --x \"__tests__/**/*\" --x \"populateDb.js\" --x \"server.js\" --x \"api/routes/aws.js\" node_modules/.bin/_mocha -- -i \"__tests__/**/*.js\""
   }
 }

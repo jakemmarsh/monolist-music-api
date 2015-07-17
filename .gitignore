@@ -30,3 +30,4 @@ build
 *.key
 
 .elasticbeanstalk/
+__coverage__/
