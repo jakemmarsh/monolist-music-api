@@ -14,6 +14,7 @@ module.exports = function(req, res) {
 
   var searchResults = [];
   var limit = req.query.limit || 20;
+  var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
   /*
    * If user has specified `sources` in the query string,
@@ -36,7 +37,7 @@ module.exports = function(req, res) {
       sources = req.query.sources.split(',');
       _.each(sources, function(searchSource) {
         if ( searchSource.toLowerCase() in sourcePromisesMap ) {
-          searchPromises.push(sourcePromisesMap[searchSource.toLowerCase()](req.params.query, limit));
+          searchPromises.push(sourcePromisesMap[searchSource.toLowerCase()](req.params.query, limit, ip));
         }
       });
     } else {

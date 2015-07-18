@@ -42,7 +42,7 @@ function parseYouTubeDuration(duration) {
 
 /* ====================================================== */
 
-exports.search = function(query, limit) {
+exports.search = function(query, limit, ip) {
 
   var mainDeferred = when.defer();
 
@@ -74,13 +74,14 @@ exports.search = function(query, limit) {
     return deferred.promise;
   };
 
-  var getSearchResults = function(searchQuery) {
+  var getSearchResults = function(searchQuery, userIP) {
     var deferred = when.defer();
     var searchUrl = 'https://www.googleapis.com/youtube/v3/search?';
     var searchParameters = {
       type: 'video',
       part: 'snippet',
       q: searchQuery.replace(/(%20)|( )/gi, '+'),
+      restriction: userIP,
       maxResults: limit,
       key: process.env.YOUTUBE_KEY
     };
@@ -111,7 +112,7 @@ exports.search = function(query, limit) {
     return deferred.promise;
   };
 
-  getSearchResults(query)
+  getSearchResults(query, ip)
   .then(addVideoDurations)
   .then(function(results) {
     mainDeferred.resolve(results);
