@@ -1,10 +1,11 @@
 'use strict';
 
-var when      = require('when');
-var Sequelize = require('sequelize');
-var _         = require('lodash');
-var models    = require('../models');
-var awsRoutes = require('./aws');
+var when          = require('when');
+var Sequelize     = require('sequelize');
+var _             = require('lodash');
+var models        = require('../models');
+var awsRoutes     = require('./aws');
+var notifications = require('../utils/notifications');
 
 /* ====================================================== */
 
