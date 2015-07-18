@@ -11,6 +11,7 @@ module.exports = function(models, mailer) {
     var user = {
       username: 'jakemmarsh',
       email: 'jakemmarsh@gmail.com',
+      facebookId: '621883172',
       hash: 'pass',
       role: 'admin'
     };

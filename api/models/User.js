@@ -31,7 +31,7 @@ module.exports = function(sequelize, DataTypes) {
             cb(null, user);
           });
         } else {
-          cb('Unable to hash user\'s password.');
+          cb(null, user);
         }
       }
     },
