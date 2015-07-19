@@ -42,7 +42,7 @@ api.get('/user/:id/stars', routes.user.getStars);
 /* ====================================================== */
 
 // Playlist endpoints
-api.get('/playlist/:identifier', routes.playlist.get);
+api.get('/playlist/:creatorName/:slug', routes.playlist.get);
 api.get('/playlist/search/:query', routes.playlist.search);
 api.get('/playlists/trending', routes.playlist.getTrending);
 api.get('/playlists/newest', routes.playlist.getNewest);

@@ -64,9 +64,11 @@ module.exports = function(models, mailer) {
     var deferred = when.defer();
     var playlist = {
       UserId: 1,
+      creatorName: 'jakemmarsh',
       title: 'Test Playlist',
       privacy: 'public',
-      tags: ['test', 'hip hop', 'rap']
+      tags: ['test', 'hip hop', 'rap'],
+      imageUrl: 'http://franthony.com/wp-content/uploads/2015/04/record-player.jpg'
     };
 
     models.Playlist.create(playlist).then(function(createdPlaylist) {
@@ -82,6 +84,7 @@ module.exports = function(models, mailer) {
     var deferred = when.defer();
     var playlist = {
       UserId: 1,
+      creatorName: 'jakemmarsh',
       title: 'Second Playlist That Is Private',
       privacy: 'private'
     };

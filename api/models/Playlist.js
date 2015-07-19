@@ -5,11 +5,12 @@ var slug = require('slug');
 module.exports = function(sequelize, DataTypes) {
 
   var Playlist = sequelize.define('Playlist', {
-    title:    { type: DataTypes.STRING, allowNull: false },
-    slug:     { type: DataTypes.STRING, allowNull: false, unique: true },
-    imageUrl: { type: DataTypes.STRING },
-    tags:     { type: DataTypes.STRING },
-    privacy:  { type: DataTypes.ENUM('public', 'private'), defaultValue: 'public' }
+    title:       { type: DataTypes.STRING, allowNull: false },
+    creatorName: { type: DataTypes.STRING, allowNull: false },
+    slug:        { type: DataTypes.STRING, allowNull: false, unique: true },
+    imageUrl:    { type: DataTypes.STRING },
+    tags:        { type: DataTypes.STRING },
+    privacy:     { type: DataTypes.ENUM('public', 'private'), defaultValue: 'public' }
   },
   {
     setterMethods: {
@@ -27,7 +28,10 @@ module.exports = function(sequelize, DataTypes) {
         var titleSlug = slug(playlist.title).toLowerCase();
 
         Playlist.count({
-          where: { title: { ilike: playlist.title } }
+          where: {
+            creatorName: playlist.creatorName,
+            title: { ilike: playlist.title }
+          }
         }).then(function(c) {
           if ( c > 0 ) {
             titleSlug += '-' + c;

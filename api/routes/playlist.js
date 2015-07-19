@@ -71,20 +71,18 @@ function ensureCurrentUserCanEdit(req, playlistId) {
 
 exports.get = function(req, res) {
 
-  var getPlaylist = function(identifier, currentUser) {
+  var getPlaylist = function(slug, creatorName, currentUser) {
     var deferred = when.defer();
-    var query = { id: identifier };
     var currentUserIsCreator;
     var currentUserIsCollaborator;
 
     currentUser = currentUser || {};
 
-    if ( isNaN(parseInt(identifier)) ) {
-      query = { slug: identifier };
-    }
-
     models.Playlist.find({
-      where: query,
+      where: {
+        slug: slug,
+        creatorName: creatorName
+      },
       include: [
         {
           model: models.User,
@@ -136,7 +134,7 @@ exports.get = function(req, res) {
       ]
     }).then(function(playlist) {
       if ( _.isEmpty(playlist) ) {
-        deferred.reject({ status: 404, body: 'Playlist could not be found at identifier: ' + identifier });
+        deferred.reject({ status: 404, body: 'Playlist could not be found at: ' + creatorName + '/' + slug });
       } else {
         currentUserIsCreator = currentUser.id === playlist.UserId;
         currentUserIsCollaborator = !!_.where(playlist.Collaborations, { UserId: currentUser.id }).length;
@@ -146,7 +144,7 @@ exports.get = function(req, res) {
         } else {
           deferred.reject({
             status: 401,
-            body: 'Current user does not have permission to view the playlist at identifier: ' + identifier
+            body: 'Current user does not have permission to view the playlist at: ' + creatorName + '/' + slug
           });
         }
       }
@@ -158,7 +156,7 @@ exports.get = function(req, res) {
     return deferred.promise;
   };
 
-  getPlaylist(req.params.identifier, req.user).then(function(playlist) {
+  getPlaylist(req.params.slug, req.params.creatorName, req.user).then(function(playlist) {
     res.status(200).json(playlist);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
@@ -348,11 +346,12 @@ exports.getNewest = function(req, res) {
 
 exports.create = function(req, res) {
 
-  var createPlaylist = function(playlist, currentUserId) {
+  var createPlaylist = function(playlist, currentUser) {
     var deferred = when.defer();
 
     playlist = {
-      UserId: currentUserId,
+      UserId: currentUser.id,
+      creatorName: currentUser.username,
       title: playlist.title || playlist.Title,
       tags: playlist.tags || playlist.Tags,
       privacy: playlist.privacy || playlist.Privacy
@@ -369,7 +368,7 @@ exports.create = function(req, res) {
     return deferred.promise;
   };
 
-  createPlaylist(req.body, req.user.id).then(function(resp) {
+  createPlaylist(req.body, req.user).then(function(resp) {
     res.status(200).json(resp);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
