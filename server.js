@@ -42,7 +42,8 @@ server.use(passport.session());
 
 // Connect to database and initialize models
 if ( process.env.NODE_ENV === 'production' ) {
-  models.sequelize.sync();
+  // TODO: remove this force
+  models.sequelize.sync({ force: true });
 } else {
   models.sequelize.sync({ force: true }).done(function() {
     populateDb(models, mailer);
