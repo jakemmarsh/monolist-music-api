@@ -5,12 +5,12 @@ var slug = require('slug');
 module.exports = function(sequelize, DataTypes) {
 
   var Playlist = sequelize.define('Playlist', {
-    title:       { type: DataTypes.STRING, allowNull: false },
-    creatorName: { type: DataTypes.STRING, allowNull: false },
-    slug:        { type: DataTypes.STRING, allowNull: false, unique: true },
-    imageUrl:    { type: DataTypes.STRING },
-    tags:        { type: DataTypes.STRING },
-    privacy:     { type: DataTypes.ENUM('public', 'private'), defaultValue: 'public' }
+    title:    { type: DataTypes.STRING, allowNull: false },
+    owner:    { type: DataTypes.STRING, allowNull: false },
+    slug:     { type: DataTypes.STRING, allowNull: false, unique: true },
+    imageUrl: { type: DataTypes.STRING },
+    tags:     { type: DataTypes.STRING },
+    privacy:  { type: DataTypes.ENUM('public', 'private'), defaultValue: 'public' }
   },
   {
     setterMethods: {
@@ -29,7 +29,7 @@ module.exports = function(sequelize, DataTypes) {
 
         Playlist.count({
           where: {
-            creatorName: playlist.creatorName,
+            owner: playlist.owner,
             title: { ilike: playlist.title }
           }
         }).then(function(c) {

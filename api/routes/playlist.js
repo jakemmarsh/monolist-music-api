@@ -71,7 +71,7 @@ function ensureCurrentUserCanEdit(req, playlistId) {
 
 exports.get = function(req, res) {
 
-  var getPlaylist = function(slug, creatorName, currentUser) {
+  var getPlaylist = function(slug, owner, currentUser) {
     var deferred = when.defer();
     var currentUserIsCreator;
     var currentUserIsCollaborator;
@@ -81,7 +81,7 @@ exports.get = function(req, res) {
     models.Playlist.find({
       where: {
         slug: slug,
-        creatorName: creatorName
+        owner: owner
       },
       include: [
         {
@@ -134,7 +134,7 @@ exports.get = function(req, res) {
       ]
     }).then(function(playlist) {
       if ( _.isEmpty(playlist) ) {
-        deferred.reject({ status: 404, body: 'Playlist could not be found at: ' + creatorName + '/' + slug });
+        deferred.reject({ status: 404, body: 'Playlist could not be found at: ' + owner + '/' + slug });
       } else {
         currentUserIsCreator = currentUser.id === playlist.UserId;
         currentUserIsCollaborator = !!_.where(playlist.Collaborations, { UserId: currentUser.id }).length;
@@ -144,7 +144,7 @@ exports.get = function(req, res) {
         } else {
           deferred.reject({
             status: 401,
-            body: 'Current user does not have permission to view the playlist at: ' + creatorName + '/' + slug
+            body: 'Current user does not have permission to view the playlist at: ' + owner + '/' + slug
           });
         }
       }
@@ -156,7 +156,7 @@ exports.get = function(req, res) {
     return deferred.promise;
   };
 
-  getPlaylist(req.params.slug, req.params.creatorName, req.user).then(function(playlist) {
+  getPlaylist(req.params.slug, req.params.owner, req.user).then(function(playlist) {
     res.status(200).json(playlist);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
@@ -351,7 +351,7 @@ exports.create = function(req, res) {
 
     playlist = {
       UserId: currentUser.id,
-      creatorName: currentUser.username,
+      owner: currentUser.username,
       title: playlist.title || playlist.Title,
       tags: playlist.tags || playlist.Tags,
       privacy: playlist.privacy || playlist.Privacy

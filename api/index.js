@@ -54,7 +54,7 @@ api.delete('/group/:groupId', routes.auth.isAuthenticated, routes.group.delete);
 /* ====================================================== */
 
 // Playlist endpoints
-api.get('/playlist/:creatorName/:slug', routes.playlist.get);
+api.get('/playlist/:owner/:slug', routes.playlist.get);
 api.get('/playlist/search/:query', routes.playlist.search);
 api.get('/playlists/trending', routes.playlist.getTrending);
 api.get('/playlists/newest', routes.playlist.getNewest);

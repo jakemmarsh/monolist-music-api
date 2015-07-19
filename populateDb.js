@@ -64,7 +64,7 @@ module.exports = function(models, mailer) {
     var deferred = when.defer();
     var playlist = {
       UserId: 1,
-      creatorName: 'jakemmarsh',
+      owner: 'jakemmarsh',
       title: 'Test Playlist',
       privacy: 'public',
       tags: ['test', 'hip hop', 'rap'],
@@ -84,7 +84,7 @@ module.exports = function(models, mailer) {
     var deferred = when.defer();
     var playlist = {
       UserId: 1,
-      creatorName: 'jakemmarsh',
+      owner: 'jakemmarsh',
       title: 'Second Playlist That Is Private',
       privacy: 'private'
     };
