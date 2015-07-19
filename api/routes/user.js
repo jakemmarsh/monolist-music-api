@@ -481,6 +481,50 @@ exports.getStars = function(req, res) {
 
 /* ====================================================== */
 
+exports.getGroups = function(req, res) {
+
+  var fetchMemberships = function(userId) {
+    var deferred = when.defer();
+
+    models.GroupMembership.findAll({
+      where: { UserId: userId }
+    }).then(function(memberships) {
+      deferred.resolve(_.pluck(memberships, 'id'));
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var fetchGroups = function(groupIds) {
+    var deferred = when.defer();
+
+    models.Group.findAll({
+      where: { id: groupIds }
+    }).then(function(groups) {
+      deferred.resolve(groups);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+
+
+  fetchMemberships(req.params.id)
+  .then(fetchGroups)
+  .then(function(groups) {
+    res.status(200).json(groups);
+  }).catch(function(err) {
+    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+  });
+
+};
+
+/* ====================================================== */
+
 exports.delete = function(req, res) {
 
   var originalImageUrl;

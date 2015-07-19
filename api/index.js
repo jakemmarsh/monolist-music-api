@@ -36,8 +36,20 @@ api.post('/user/:id/follow', routes.auth.isAuthenticated, routes.user.follow);
 api.get('/user/:id/playlists', routes.user.getPlaylists);
 api.get('/user/:id/editable', routes.auth.isAuthenticated, routes.user.getEditablePlaylists);
 api.get('/user/:id/collaborations', routes.user.getCollaborations);
+api.get('/user/:id/groups', routes.user.getGroups);
 api.get('/user/:id/likes', routes.user.getLikes);
 api.get('/user/:id/stars', routes.user.getStars);
+
+/* ====================================================== */
+
+// Group endpoints
+api.get('/group/:identifier', routes.group.get);
+api.get('/groups/popular', routes.group.getPopular);
+api.get('/group/search/:query', routes.group.search);
+api.patch('/group/:identifier', routes.auth.isAuthenticated, routes.group.update);
+api.post('/group/:groupId/add/:memberId', routes.auth.isAuthenticated, routes.group.addMember);
+api.delete('/group/:groupId/remove/:memberId', routes.auth.isAuthenticated, routes.group.removeMember);
+api.delete('/group/:groupId', routes.auth.isAuthenticated, routes.group.delete);
 
 /* ====================================================== */
 

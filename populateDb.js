@@ -186,6 +186,40 @@ module.exports = function(models, mailer) {
     });
   };
 
+  var createGroup = function() {
+    var deferred = when.defer();
+    var group = {
+      title: 'Test Group',
+      description: 'This is a group for anyone since it is just for testing.',
+      imageUrl: 'https://scontent-sjc2-1.xx.fbcdn.net/hphotos-xap1/v/t1.0-9/10375152_10153451820467673_5915045047010730686_n.jpg?oh=3eec477b3d0925b8f39802bbb68c3789&oe=565AA6AE'
+    };
+
+    models.Group.create(group).then(function(createdGroup) {
+      deferred.resolve(createdGroup);
+    }).catch(function(err) {
+      console.log(err);
+      deferred.reject('error creating group:', err);
+    });
+
+    return deferred.promise;
+  };
+
+  var addUserToGroup = function(group) {
+    var deferred = when.defer();
+    var membership = {
+      GroupId: group.id,
+      UserId: 1
+    };
+
+    models.GroupMembership.create(membership).then(function(createdMembership) {
+      deferred.resolve(createdMembership);
+    }).catch(function(err) {
+      deferred.reject('error creating membership:', err);
+    });
+
+    return deferred.promise;
+  };
+
   createUser()
   .then(createSecondUser)
   .then(createThirdUser)
@@ -194,6 +228,8 @@ module.exports = function(models, mailer) {
   .then(createCollaboration)
   .then(createPlaylistLikes)
   .then(createPlaylistPlays)
-  .then(addTrackToPlaylist);
+  .then(addTrackToPlaylist)
+  .then(createGroup)
+  .then(addUserToGroup);
 
 };
