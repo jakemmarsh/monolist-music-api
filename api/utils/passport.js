@@ -4,7 +4,7 @@ var passport              = require('passport');
 var _                     = require('lodash');
 var LocalStrategy         = require('passport-local').Strategy;
 var FacebookTokenStrategy = require('passport-facebook-token').Strategy;
-var models                = require('./models');
+var models                = require('../models');
 
 /* ====================================================== */
 

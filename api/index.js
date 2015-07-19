@@ -27,7 +27,7 @@ api.post('/auth/logout', routes.auth.isAuthenticated, routes.auth.logout);
 
 // User endpoints
 api.get('/user/:identifier', routes.user.get);
-api.get('/user/search/:query', routes.auth.isAuthenticated, routes.user.search);
+api.get('/user/search/:query', routes.user.search);
 api.patch('/user/:id', routes.auth.isAuthenticated, routes.user.update);
 api.delete('/user/:id', routes.auth.isAuthenticated, routes.user.delete);
 api.get('/user/:id/notifications', routes.auth.isAuthenticated, routes.user.getNotifications);
