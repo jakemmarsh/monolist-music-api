@@ -42,7 +42,7 @@
     "pg-hstore": "^2.3.x",
     "pg-native": "^1.8.x",
     "request": "^2.40.0",
-    "sequelize": "^2.0.x",
+    "sequelize": "^3.4.1",
     "slug": "^0.8.0",
     "superagent": "^0.18.2",
     "swig": "^1.4.2",
