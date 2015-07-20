@@ -1,13 +1,16 @@
 'use strict';
 
-var request = require('supertest');
+var request  = require('supertest');
+var slug     = require('slug');
+var fixtures = require('../../utils/fixtures');
 
 require('../../utils/createAuthenticatedSuite')('playlist routes', function() {
 
   var url = 'http://localhost:3000/v1/';
 
   it('should return a single playlist by ID', function(done) {
-    var req = request(url).get('playlist/1');
+    var titleSlug = slug(fixtures.playlists[0].title).toLowerCase();
+    var req = request(url).get('playlist/' + fixtures.playlists[0].owner + '/' + titleSlug);
 
     req.cookies = global.cookies;
 
@@ -23,7 +26,7 @@ require('../../utils/createAuthenticatedSuite')('playlist routes', function() {
   });
 
   it('should return playlists matching a search query', function(done) {
-    var req = request(url).get('playlist/search/test');
+    var req = request(url).get('playlists/search/test');
 
     req.cookies = global.cookies;
 
@@ -142,7 +145,7 @@ require('../../utils/createAuthenticatedSuite')('playlist routes', function() {
   });
 
   it('should successfully remove a collaborator', function(done) {
-    var req = request(url).del('playlist/1/collaborator/2');
+    var req = request(url).delete('playlist/1/collaborator/2');
 
     req.cookies = global.cookies;
 
@@ -175,7 +178,7 @@ require('../../utils/createAuthenticatedSuite')('playlist routes', function() {
   });
 
   it('should successfully remove a track', function(done) {
-    var req = request(url).del('playlist/1/track/2');
+    var req = request(url).delete('playlist/1/track/2');
 
     req.cookies = global.cookies;
 
@@ -186,7 +189,7 @@ require('../../utils/createAuthenticatedSuite')('playlist routes', function() {
   });
 
   it('should successfully delete a playlist', function(done) {
-    var req = request(url).del('playlist/1');
+    var req = request(url).delete('playlist/2');
 
     req.cookies = global.cookies;
 

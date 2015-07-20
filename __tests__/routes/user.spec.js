@@ -21,7 +21,7 @@ require('../../utils/createAuthenticatedSuite')('user routes', function() {
   });
 
   it('should return users matching a search query', function(done) {
-    var req = request(url).get('user/search/jake');
+    var req = request(url).get('users/search/test');
 
     req.cookies = global.cookies;
 
@@ -42,7 +42,7 @@ require('../../utils/createAuthenticatedSuite')('user routes', function() {
 
     req.cookies = global.cookies;
 
-    req.end(function(err, res) {
+    req.send(updates).end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
       res.body.should.have.property('username');
@@ -120,10 +120,12 @@ require('../../utils/createAuthenticatedSuite')('user routes', function() {
     req.end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Array);
-      res.body[0].should.have.property('title');
-      res.body[0].should.have.property('slug');
-      res.body[0].should.have.property('tags');
-      res.body[0].should.have.property('privacy');
+      if ( res.body[0] ) {
+        res.body[0].should.have.property('title');
+        res.body[0].should.have.property('slug');
+        res.body[0].should.have.property('tags');
+        res.body[0].should.have.property('privacy');
+      }
       done();
     });
   });
@@ -136,10 +138,12 @@ require('../../utils/createAuthenticatedSuite')('user routes', function() {
     req.end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Array);
-      res.body[0].should.have.property('title');
-      res.body[0].should.have.property('slug');
-      res.body[0].should.have.property('tags');
-      res.body[0].should.have.property('privacy');
+      if ( res.body[0] ) {
+        res.body[0].should.have.property('title');
+        res.body[0].should.have.property('slug');
+        res.body[0].should.have.property('tags');
+        res.body[0].should.have.property('privacy');
+      }
       done();
     });
   });
@@ -152,9 +156,26 @@ require('../../utils/createAuthenticatedSuite')('user routes', function() {
     req.end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Array);
+      if ( res.body[0] ) {
+        res.body[0].should.have.property('title');
+        res.body[0].should.have.property('source');
+        res.body[0].should.have.property('sourceParam');
+      }
+      done();
+    });
+  });
+
+  it('should return a list of user\'s groups', function(done) {
+    var req = request(url).get('user/1/groups');
+
+    req.cookies = global.cookies;
+
+    req.end(function(err, res) {
+      res.status.should.be.equal(200);
+      res.body.should.be.instanceof(Array);
       res.body[0].should.have.property('title');
-      res.body[0].should.have.property('source');
-      res.body[0].should.have.property('sourceParam');
+      res.body[0].should.have.property('slug');
+      res.body[0].should.have.property('privacy');
       done();
     });
   });

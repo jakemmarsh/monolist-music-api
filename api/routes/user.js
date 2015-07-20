@@ -60,6 +60,8 @@ exports.get = function(req, res) {
 
 exports.search = function(req, res) {
 
+  var currentUserId = req.user ? req.user.id : null;
+
   var searchUsers = function(query, currentUserId) {
     var deferred = when.defer();
 
@@ -76,7 +78,7 @@ exports.search = function(req, res) {
     return deferred.promise;
   };
 
-  searchUsers(req.params.query, req.user.id).then(function(playlists) {
+  searchUsers(req.params.query, currentUserId).then(function(playlists) {
     res.status(200).json(playlists);
   }).catch(function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });

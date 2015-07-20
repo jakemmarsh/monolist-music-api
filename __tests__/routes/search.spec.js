@@ -10,7 +10,7 @@ describe('search route', function() {
     this.timeout(10000);
 
     request(url)
-    .get('track/search/test')
+    .get('tracks/search/test')
     .end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Array);
