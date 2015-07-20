@@ -27,7 +27,7 @@ api.post('/auth/logout', routes.auth.isAuthenticated, routes.auth.logout);
 
 // User endpoints
 api.get('/user/:identifier', routes.user.get);
-api.get('/user/search/:query', routes.user.search);
+api.get('/users/search/:query', routes.user.search);
 api.patch('/user/:id', routes.auth.isAuthenticated, routes.user.update);
 api.delete('/user/:id', routes.auth.isAuthenticated, routes.user.delete);
 api.get('/user/:id/notifications', routes.auth.isAuthenticated, routes.user.getNotifications);
@@ -45,17 +45,17 @@ api.get('/user/:id/stars', routes.user.getStars);
 // Group endpoints
 api.get('/group/:identifier', routes.group.get);
 api.get('/groups/popular', routes.group.getPopular);
-api.get('/group/search/:query', routes.group.search);
-api.patch('/group/:identifier', routes.auth.isAuthenticated, routes.group.update);
-api.post('/group/:groupId/add/:memberId', routes.auth.isAuthenticated, routes.group.addMember);
-api.delete('/group/:groupId/remove/:memberId', routes.auth.isAuthenticated, routes.group.removeMember);
-api.delete('/group/:groupId', routes.auth.isAuthenticated, routes.group.delete);
+api.get('/groups/search/:query', routes.group.search);
+api.patch('/group/:id', routes.auth.isAuthenticated, routes.group.update);
+api.post('/group/:groupId/member/:memberId', routes.auth.isAuthenticated, routes.group.addMember);
+api.delete('/group/:groupId/member/:memberId', routes.auth.isAuthenticated, routes.group.removeMember);
+api.delete('/group/:id', routes.auth.isAuthenticated, routes.group.delete);
 
 /* ====================================================== */
 
 // Playlist endpoints
 api.get('/playlist/:owner/:slug', routes.playlist.get);
-api.get('/playlist/search/:query', routes.playlist.search);
+api.get('/playlists/search/:query', routes.playlist.search);
 api.get('/playlists/trending', routes.playlist.getTrending);
 api.get('/playlists/newest', routes.playlist.getNewest);
 api.post('/playlist', routes.auth.isAuthenticated, routes.playlist.create);
@@ -72,7 +72,7 @@ api.delete('/playlist/:playlistId/track/:trackId', routes.auth.isAuthenticated, 
 
 // Track endpoints
 api.get('/track/:id', routes.track.get);
-api.get('/track/search/:query', routes.search);
+api.get('/tracks/search/:query', routes.search);
 api.post('/track/star', routes.auth.isAuthenticated, routes.track.star);
 api.post('/track/:id/upvote', routes.auth.isAuthenticated, routes.track.upvote);
 api.post('/track/:id/downvote', routes.auth.isAuthenticated, routes.track.downvote);
