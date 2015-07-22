@@ -23,8 +23,7 @@ exports.get = function(req, res) {
       include: [
         {
           model: models.User,
-          as: 'Owner',
-          attributes: ['id', 'username']
+          as: 'Owner'
         },
         {
           model: models.GroupMembership,
@@ -132,11 +131,12 @@ exports.search = function(req, res) {
       include: [
         {
           model: models.User,
-          attributes: ['id', 'username']
+          as: 'Owner'
         },
         {
           model: models.GroupMembership,
-          as: 'Members'
+          as: 'Memberships',
+          attributes: ['id']
         }
       ]
     }).then(function(retrievedGroups) {
@@ -151,6 +151,7 @@ exports.search = function(req, res) {
   searchGroups(req.params.query).then(function(groups) {
     res.status(200).json(groups);
   }).catch(function(err) {
+    console.log('error searching groups:', err);
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
   });
 

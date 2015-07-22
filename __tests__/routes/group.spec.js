@@ -29,9 +29,11 @@ require('../../utils/createAuthenticatedSuite')('group routes', function() {
     req.end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Array);
-      res.body[0].should.have.property('title');
-      res.body[0].should.have.property('slug');
-      res.body[0].should.have.property('privacy');
+      if ( res.body[0] ) {
+        res.body[0].should.have.property('title');
+        res.body[0].should.have.property('slug');
+        res.body[0].should.have.property('privacy');
+      }
       done();
     });
   });
@@ -71,7 +73,7 @@ require('../../utils/createAuthenticatedSuite')('group routes', function() {
   });
 
   it('should add a new member to a group', function(done) {
-    var req = request(url).post('group/1/member/2');
+    var req = request(url).post('group/1/member/3');
 
     req.cookies = global.cookies;
 
@@ -85,7 +87,7 @@ require('../../utils/createAuthenticatedSuite')('group routes', function() {
   });
 
   it('should remove a member from a group', function(done) {
-    var req = request(url).delete('group/1/member/2');
+    var req = request(url).delete('group/1/member/3');
 
     req.cookies = global.cookies;
 

@@ -35,6 +35,11 @@ module.exports = function(sequelize, DataTypes) {
         }
       }
     },
+    getterMethods: {
+      facebookId: function () { null; },
+      hash: function () { null; },
+      passwordResetKey: function () { null; }
+    },
     classMethods: {
       associate: function(models) {
         User.hasMany(models.Playlist, { onDelete: 'cascade' });

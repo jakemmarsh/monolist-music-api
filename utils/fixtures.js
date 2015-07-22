@@ -93,7 +93,7 @@ module.exports = {
 
   groups: [
     {
-      OwnerId: 2,
+      OwnerId: 1,
       title: 'Test Group',
       description: 'This is a group for anyone since it is just for testing.',
       imageUrl: 'https://scontent-sjc2-1.xx.fbcdn.net/hphotos-xap1/v/t1.0-9/10375152_10153451820467673_5915045047010730686_n.jpg?oh=3eec477b3d0925b8f39802bbb68c3789&oe=565AA6AE'
@@ -103,7 +103,7 @@ module.exports = {
   groupMemberships: [
     {
       GroupId: 1,
-      UserId: 1,
+      UserId: 2,
       type: 'member'
     }
   ]
