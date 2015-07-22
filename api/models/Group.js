@@ -9,7 +9,8 @@ module.exports = function(sequelize, DataTypes) {
     slug:        { type: DataTypes.STRING, allowNull: false, unique: true },
     description: { type: DataTypes.TEXT },
     imageUrl:    { type: DataTypes.STRING },
-    privacy:     { type: DataTypes.ENUM('public', 'private'), defaultValue: 'public' }
+    privacy:     { type: DataTypes.ENUM('public', 'private'), defaultValue: 'public' },
+    inviteLevel: { type: DataTypes.ENUM('member', 'admin', 'owner'), defaultValue: 'member' }
   },
   {
     hooks: {
@@ -20,10 +21,11 @@ module.exports = function(sequelize, DataTypes) {
         cb(null, group);
       }
     },
-    methods: {
+    classMethods: {
       associate: function(models) {
         Group.belongsTo(models.User, { as: 'Owner' });
-        Group.hasMany(models.GroupMembership, { as: 'Members', onDelete: 'cascade' });
+        Group.hasMany(models.GroupMembership, { as: 'Memberships', onDelete: 'cascade' });
+        Group.hasMany(models.GroupFollow, { as: 'Followers', foreignKey: 'GroupId', onDelete: 'cascade' });
       }
     }
   });

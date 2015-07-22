@@ -1,13 +1,15 @@
 'use strict';
 
-module.exports = function(sequelize) {
+module.exports = function(sequelize, DataTypes) {
 
-  var GroupMembership = sequelize.define('GroupMembership', {},
+  var GroupMembership = sequelize.define('GroupMembership', {
+    level: { type: DataTypes.ENUM('member', 'admin'), defaultValue: 'member' }
+  },
   {
-    methods: {
+    classMethods: {
       associate: function(models) {
-        GroupMembership.belongsTo(models.Group, { as: 'Group' });
-        GroupMembership.belongsTo(models.User, { as: 'User' });
+        GroupMembership.belongsTo(models.Group);
+        GroupMembership.belongsTo(models.User);
       }
     }
   });

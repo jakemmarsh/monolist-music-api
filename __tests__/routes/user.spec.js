@@ -47,7 +47,7 @@ require('../../utils/createAuthenticatedSuite')('user routes', function() {
       res.body.should.be.instanceof(Object);
       res.body.should.have.property('username');
       res.body.should.have.property('email');
-      res.body.email.should.be.equal('newemail@new.com');
+      res.body.email.should.be.equal(updates.email);
       done();
     });
   });

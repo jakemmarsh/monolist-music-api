@@ -44,7 +44,7 @@ api.get('/user/:id/stars', routes.user.getStars);
 
 // Group endpoints
 api.get('/group/:identifier', routes.group.get);
-api.get('/groups/popular', routes.group.getPopular);
+api.get('/groups/trending', routes.group.getTrending);
 api.get('/groups/search/:query', routes.group.search);
 api.patch('/group/:id', routes.auth.isAuthenticated, routes.group.update);
 api.post('/group/:groupId/member/:memberId', routes.auth.isAuthenticated, routes.group.addMember);

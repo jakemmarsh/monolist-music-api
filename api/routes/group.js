@@ -23,18 +23,20 @@ exports.get = function(req, res) {
       include: [
         {
           model: models.User,
+          as: 'Owner',
           attributes: ['id', 'username']
         },
         {
           model: models.GroupMembership,
-          as: 'Members'
+          as: 'Memberships',
+          include: [models.User]
         }
       ]
-    }).then(function(user) {
-      if ( _.isEmpty(user) ) {
+    }).then(function(group) {
+      if ( _.isEmpty(group) ) {
         deferred.reject({ status: 404, body: 'Group could not be found at identifier: ' + identifier });
       } else {
-        deferred.resolve(user);
+        deferred.resolve(group);
       }
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
@@ -43,8 +45,8 @@ exports.get = function(req, res) {
     return deferred.promise;
   };
 
-  fetchGroup(req.params.identifier).then(function(user) {
-    res.status(200).json(user);
+  fetchGroup(req.params.identifier).then(function(group) {
+    res.status(200).json(group);
   }).catch(function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
   });
@@ -53,9 +55,9 @@ exports.get = function(req, res) {
 
 /* ====================================================== */
 
-exports.getPopular = function(req, res) {
+exports.getTrending = function(req, res) {
 
-
+  res.status(200).json([]);
 
 };
 
@@ -126,7 +128,17 @@ exports.search = function(req, res) {
           { slug: { ilike: '%' + query + '%' } },
           { description: { ilike: '%' + query + '%' } }
         )
-      )
+      ),
+      include: [
+        {
+          model: models.User,
+          attributes: ['id', 'username']
+        },
+        {
+          model: models.GroupMembership,
+          as: 'Members'
+        }
+      ]
     }).then(function(retrievedGroups) {
       deferred.resolve(retrievedGroups);
     }).catch(function(err) {
@@ -182,6 +194,9 @@ exports.addMember = function(req, res) {
       where: membership,
       defaults: membership
     }).then(function(createdMembership) {
+      if ( createdMembership.constructor === Array ) {
+        createdMembership = createdMembership[0];
+      }
       deferred.resolve(createdMembership);
     }).catch(function(err) {
       console.log('error creating membership:', err);
@@ -259,6 +274,42 @@ exports.removeMember = function(req, res) {
 
 exports.delete = function(req, res) {
 
+  var findAndEnsureUserCanDelete = function(currentUser, groupId) {
+    var deferred = when.defer();
 
+    models.Group.find({
+      where: { id: groupId }
+    }).then(function(group) {
+      if ( currentUser.role !== 'admin' || group.OwnerId === currentUser.id ) {
+        deferred.resolve(group);
+      } else {
+        deferred.reject({ status: 401, body: 'You do not have permission to delete that group.'});
+      }
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var deleteGroup = function(group) {
+    var deferred = when.defer();
+
+    group.destroy().then(function() {
+      deferred.resolve();
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  findAndEnsureUserCanDelete(req.user, req.params.id)
+  .then(deleteGroup)
+  .then(function() {
+    res.status(200).json({ status: 200, message: 'Group successfully deleted.' });
+  }).catch(function(err) {
+    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+  });
 
 };

@@ -4,7 +4,7 @@ module.exports = function(sequelize) {
 
   var PlaylistFollow = sequelize.define('PlaylistFollow', {},
   {
-    methods: {
+    classMethods: {
       associate: function(models) {
         PlaylistFollow.belongsTo(models.Playlist, { as: 'Playlist' });
         PlaylistFollow.belongsTo(models.User, { as: 'User' });

@@ -4,7 +4,7 @@ module.exports = function(sequelize) {
 
   var UserFollow = sequelize.define('UserFollow', {},
   {
-    methods: {
+    classMethods: {
       associate: function(models) {
         UserFollow.belongsTo(models.User, { as: 'Follower' });
         UserFollow.belongsTo(models.User, { as: 'User' });

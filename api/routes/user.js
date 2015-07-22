@@ -485,38 +485,44 @@ exports.getStars = function(req, res) {
 
 exports.getGroups = function(req, res) {
 
-  var fetchMemberships = function(userId) {
+  var fetchGroups = function(userId) {
     var deferred = when.defer();
 
     models.GroupMembership.findAll({
-      where: { UserId: userId }
+      where: { UserId: userId },
+      include: [
+        {
+          model: models.Group,
+          as: 'Group'
+        }
+      ]
     }).then(function(memberships) {
-      deferred.resolve(_.pluck(memberships, 'id'));
+      deferred.resolve(_.pluck(memberships, 'Group'));
     }).catch(function(err) {
+      console.log('error:', err);
       deferred.reject({ status: 500, body: err });
     });
 
     return deferred.promise;
   };
 
-  var fetchGroups = function(groupIds) {
-    var deferred = when.defer();
+  // var fetchGroups = function(groupIds) {
+  //   var deferred = when.defer();
 
-    models.Group.findAll({
-      where: { id: groupIds }
-    }).then(function(groups) {
-      deferred.resolve(groups);
-    }).catch(function(err) {
-      deferred.reject({ status: 500, body: err });
-    });
+  //   models.Group.findAll({
+  //     where: { id: groupIds }
+  //   }).then(function(groups) {
+  //     deferred.resolve(groups);
+  //   }).catch(function(err) {
+  //     deferred.reject({ status: 500, body: err });
+  //   });
 
-    return deferred.promise;
-  };
+  //   return deferred.promise;
+  // };
 
 
 
-  fetchMemberships(req.params.id)
-  .then(fetchGroups)
+  fetchGroups(req.params.id)
   .then(function(groups) {
     res.status(200).json(groups);
   }).catch(function(err) {

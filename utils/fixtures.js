@@ -26,6 +26,7 @@ module.exports = {
     {
       UserId: 1,
       owner: 'jakemmarsh',
+      ownerType: 'user',
       title: 'Test Playlist',
       privacy: 'public',
       tags: ['test', 'hip hop', 'rap'],
@@ -34,6 +35,7 @@ module.exports = {
     {
       UserId: 1,
       owner: 'jakemmarsh',
+      ownerType: 'user',
       title: 'Second Playlist That Is Private',
       privacy: 'private'
     }
@@ -101,7 +103,8 @@ module.exports = {
   groupMemberships: [
     {
       GroupId: 1,
-      UserId: 1
+      UserId: 1,
+      type: 'member'
     }
   ]
 

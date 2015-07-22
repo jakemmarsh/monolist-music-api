@@ -16,7 +16,7 @@ module.exports = function(sequelize, DataTypes) {
     imageUrl:    { type: DataTypes.STRING }
   },
   {
-    methods: {
+    classMethods: {
       associate: function(models) {
         StarredTrack.belongsTo(models.User);
       }

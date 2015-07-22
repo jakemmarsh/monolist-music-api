@@ -4,15 +4,15 @@ module.exports = function(sequelize, DataTypes) {
 
   var Notification = sequelize.define('Notification', {
     activity:   { type: DataTypes.ENUM('addTrack', 'addCollaborator', 'addComment') },
-    entityType: { type: DataTypes.ENUM('playlist', 'track') },
+    entityType: { type: DataTypes.ENUM('playlist', 'track', 'group') },
     entityId:   { type: DataTypes.INTEGER },
     read:       { type: DataTypes.BOOLEAN, defaultValue: false }
   },
   {
-    methods: {
+    classMethods: {
       associate: function(models) {
-        Notification.belongsTo(models.User, { as: 'Notifications' });
-        Notification.hasOne(models.User, { as: 'Actor' });
+        Notification.belongsTo(models.User, { as: 'Recipient' });
+        Notification.belongsTo(models.User, { as: 'Actor' });
       }
     }
   });
