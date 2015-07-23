@@ -4,7 +4,7 @@ var when     = require('when');
 var qs       = require('querystring');
 var request  = require('request');
 var _        = require('lodash');
-var ytdl     = require('ytdl-core');
+// var ytdl     = require('ytdl-core');
 var fallback = require('fallback');
 
 /* ====================================================== */

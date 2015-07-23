@@ -27,8 +27,7 @@ exports.get = function(req, res) {
         },
         {
           model: models.GroupMembership,
-          as: 'Memberships',
-          include: [models.User]
+          as: 'Memberships'
         }
       ]
     }).then(function(group) {
@@ -54,9 +53,60 @@ exports.get = function(req, res) {
 
 /* ====================================================== */
 
+exports.getPlaylists = function(req, res) {
+
+  var fetchPlaylists = function(groupId) {
+    var deferred = when.defer();
+
+    models.Playlist.findAll({
+      where: {
+        GroupId: groupId,
+        ownerType: 'group'
+      },
+      include: [
+        {
+          model: models.Group
+        }
+      ]
+    }).then(function(retrievedPlaylists) {
+      deferred.resolve(retrievedPlaylists);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  fetchPlaylists(req.params.id).then(function(playlists) {
+    res.status(200).json(playlists);
+  }).catch(function(err) {
+    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+  });
+
+};
+
+/* ====================================================== */
+
 exports.getTrending = function(req, res) {
 
-  res.status(200).json([]);
+  var fetchGroups = function() {
+    var deferred = when.defer();
+
+    // TODO: real logic here to determine trending
+    models.Group.findAll().then(function(groups) {
+      deferred.resolve(groups);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  fetchGroups().then(function(groups) {
+    res.status(200).json(groups);
+  }).catch(function(err) {
+    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+  });
 
 };
 

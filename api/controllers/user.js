@@ -244,18 +244,23 @@ exports.follow = function(req, res) {
 
 exports.getPlaylists = function(req, res) {
 
-  var fetchPlaylists = function(id) {
+  var fetchPlaylists = function(userId) {
     var deferred = when.defer();
 
     models.Playlist.findAll({
-      where: Sequelize.and(
-        { UserId: id },
-        Sequelize.or(
-          { privacy: 'public' },
-          { UserId: req.user ? req.user.id : null }
-        )
+      where: Sequelize.or(
+        {
+          ownerType: 'user',
+          UserId: userId
+        },
+        { privacy: 'public',
+          UserId: req.user ? req.user.id : null
+        }
       ),
       include: [
+        {
+          model: models.User
+        },
         {
           model: models.PlaylistLike,
           as: 'Likes'
@@ -308,7 +313,10 @@ exports.getEditablePlaylists = function(req, res) {
     models.Playlist.findAll({
       where: Sequelize.or(
         { id: _.pluck(collaborations, 'PlaylistId') },
-        { UserId: userId }
+        Sequelize.and(
+          { UserId: userId },
+          { ownerType: 'user' }
+        )
       ),
       include: [
         {

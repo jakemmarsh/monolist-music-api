@@ -71,22 +71,27 @@ function ensureCurrentUserCanEdit(req, playlistId) {
 
 exports.get = function(req, res) {
 
-  var getPlaylist = function(slug, owner, currentUser) {
+  var getPlaylist = function(slug, ownerName, currentUser) {
     var deferred = when.defer();
     var currentUserIsCreator;
     var currentUserIsCollaborator;
+    var query;
 
     currentUser = currentUser || {};
 
+    // if only passed an ID
+    if ( isFinite(ownerName) ) {
+      query = { id: ownerName };
+    } else {
+      query = { slug: slug };
+    }
+
     models.Playlist.find({
-      where: {
-        slug: slug,
-        owner: owner
-      },
+      where: query,
       include: [
         {
-          model: models.User,
-          attributes: ['id', 'username']
+          model: models.Group,
+          where: { slug: ownerName }
         },
         {
           model: models.Collaboration,
@@ -134,7 +139,7 @@ exports.get = function(req, res) {
       ]
     }).then(function(playlist) {
       if ( _.isEmpty(playlist) ) {
-        deferred.reject({ status: 404, body: 'Playlist could not be found at: ' + owner + '/' + slug });
+        deferred.reject({ status: 404, body: 'Playlist could not be found.' });
       } else {
         currentUserIsCreator = currentUser.id === playlist.UserId;
         currentUserIsCollaborator = !!_.where(playlist.Collaborations, { UserId: currentUser.id }).length;
@@ -144,7 +149,7 @@ exports.get = function(req, res) {
         } else {
           deferred.reject({
             status: 401,
-            body: 'Current user does not have permission to view the playlist at: ' + owner + '/' + slug
+            body: 'Current user does not have permission to view that playlist.'
           });
         }
       }
@@ -156,7 +161,7 @@ exports.get = function(req, res) {
     return deferred.promise;
   };
 
-  getPlaylist(req.params.slug, req.params.owner, req.user).then(function(playlist) {
+  getPlaylist(req.params.slug, req.params.ownerName, req.user).then(function(playlist) {
     res.status(200).json(playlist);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
@@ -350,8 +355,7 @@ exports.create = function(req, res) {
     var deferred = when.defer();
 
     playlist = {
-      UserId: currentUser.id,
-      owner: currentUser.username,
+      ownerName: currentUser.username,
       title: playlist.title || playlist.Title,
       tags: playlist.tags || playlist.Tags,
       privacy: playlist.privacy || playlist.Privacy
@@ -649,7 +653,7 @@ exports.delete = function(req, res) {
     models.Playlist.find({
       where: { id: playlistIdToDelete }
     }).then(function(playlist) {
-      if ( currentUser.role !== 'admin' || playlist.UserId === currentUser.id ) {
+      if ( currentUser.role !== 'admin' || playlist.ownerId === currentUser.id ) {
         deferred.resolve(playlist);
       } else {
         deferred.reject({ status: 401, body: 'You do not have permission to delete another user\'s playlist.'});
