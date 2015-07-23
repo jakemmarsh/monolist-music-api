@@ -24,10 +24,13 @@ bower_components
 
 # Build files
 build
+__coverage__
 
 # Environment variables
 .env
 *.key
 
-.elasticbeanstalk/
-__coverage__/
+# Elastic Beanstalk files
+.elasticbeanstalk
+ebs.config
+*.zip
