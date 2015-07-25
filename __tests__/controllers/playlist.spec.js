@@ -4,7 +4,7 @@ var request  = require('supertest');
 var slug     = require('slug');
 var fixtures = require('../../utils/fixtures');
 
-require('../../utils/createAuthenticatedSuite')('playlist routes', function() {
+require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function() {
 
   var url = 'http://localhost:3000/v1/';
 

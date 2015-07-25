@@ -2,7 +2,7 @@
 
 var request = require('supertest');
 
-describe('auth routes', function() {
+describe('Controller: Auth', function() {
 
   var url = 'http://localhost:3000/v1/';
 

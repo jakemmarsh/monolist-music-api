@@ -2,7 +2,7 @@
 
 var request = require('supertest');
 
-describe('search route', function() {
+describe('Controller: Search', function() {
 
   var url = 'http://localhost:3000/v1/';
 

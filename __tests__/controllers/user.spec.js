@@ -2,7 +2,7 @@
 
 var request = require('supertest');
 
-require('../../utils/createAuthenticatedSuite')('user routes', function() {
+require('../../utils/createAuthenticatedSuite')('Controller: User', function() {
 
   var url = 'http://localhost:3000/v1/';
 
