@@ -1,9 +1,9 @@
 'use strict';
 
-var when          = require('when');
-var _             = require('lodash');
-var models        = require('../models');
 var notifications = require('../utils/notifications');
+var when            = require('when');
+var _               = require('lodash');
+var models          = require('../models');
 
 /* ====================================================== */
 

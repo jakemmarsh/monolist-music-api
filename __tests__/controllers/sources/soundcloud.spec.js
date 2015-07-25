@@ -7,7 +7,7 @@ describe('soundcloud routes', function() {
   var url = 'http://localhost:3000/v1/';
 
   it('should return an audio stream provided a track ID', function(done) {
-    this.timeout(5000);
+    this.timeout(10000);
 
     request(url)
     .get('stream/soundcloud/193393571')

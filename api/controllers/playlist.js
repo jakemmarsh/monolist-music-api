@@ -1,11 +1,11 @@
 'use strict';
 
-var when          = require('when');
-var _             = require('lodash');
-var Sequelize     = require('sequelize');
-var models        = require('../models');
-var awsRoutes     = require('./aws');
 var notifications = require('../utils/notifications');
+var when            = require('when');
+var _               = require('lodash');
+var Sequelize       = require('sequelize');
+var models          = require('../models');
+var awsRoutes       = require('./aws');
 
 /* ====================================================== */
 
@@ -13,11 +13,43 @@ function ensureCurrentUserCanEdit(req, playlistId) {
 
   var mainDeferred = when.defer();
 
-  var checkUserPlaylists = function() {
+  var getUserGroups = function(userId) {
+    var deferred = when.defer();
+
+    models.Group.findAll({
+      include: [
+        {
+          model: models.User,
+          where: { id: userId }
+        }
+      ]
+    }).then(function(groups) {
+      deferred.resolve(_.pluck(groups, 'id'));
+    }).catch(function(err) {
+      // Resolve to still pass
+      deferred.resolve([]);
+    });
+
+    return deferred.promise;
+  };
+
+  var checkUserPlaylists = function(groupIds) {
     var deferred = when.defer();
 
     models.Playlist.find({
-      where: { id: playlistId, UserId: req.user.id }
+      where: Sequelize.and(
+        { id: playlistId },
+        Sequelize.or(
+          Sequelize.and(
+            { ownerId: req.user.id },
+            { ownerType: 'user' }
+          ),
+          Sequelize.and(
+            { ownerId: groupIds },
+            { ownerType: 'group' }
+          )
+        )
+      )
     }).then(function(playlist) {
       if ( !_.isEmpty(playlist) ) {
         deferred.resolve(true);
@@ -55,7 +87,8 @@ function ensureCurrentUserCanEdit(req, playlistId) {
     return deferred.promise;
   };
 
-  checkUserPlaylists()
+  getUserGroups(req.user.id)
+  .then(checkUserPlaylists)
   .then(checkCollaborations)
   .then(function() {
     mainDeferred.resolve();
@@ -71,17 +104,19 @@ function ensureCurrentUserCanEdit(req, playlistId) {
 
 exports.get = function(req, res) {
 
-  var getPlaylist = function(slug, ownerName, currentUser) {
+  var getPlaylist = function(slug, currentUser) {
     var deferred = when.defer();
     var currentUserIsCreator;
     var currentUserIsCollaborator;
     var query;
+    var ownerModel;
 
     currentUser = currentUser || {};
 
     // if only passed an ID
-    if ( isFinite(ownerName) ) {
-      query = { id: ownerName };
+    // TODO: this would break if a playlist title is just an integer
+    if ( isFinite(slug) ) {
+      query = { id: slug };
     } else {
       query = { slug: slug };
     }
@@ -89,10 +124,6 @@ exports.get = function(req, res) {
     models.Playlist.find({
       where: query,
       include: [
-        {
-          model: models.Group,
-          where: { slug: ownerName }
-        },
         {
           model: models.Collaboration,
           attributes: ['UserId']
@@ -141,11 +172,18 @@ exports.get = function(req, res) {
       if ( _.isEmpty(playlist) ) {
         deferred.reject({ status: 404, body: 'Playlist could not be found.' });
       } else {
-        currentUserIsCreator = currentUser.id === playlist.UserId;
+        currentUserIsCreator = currentUser.id === playlist.ownerId && playlist.ownerType === 'user';
         currentUserIsCollaborator = !!_.where(playlist.Collaborations, { UserId: currentUser.id }).length;
+        ownerModel = playlist.ownerType === 'user' ? models.User : models.Group;
 
         if ( currentUserIsCreator || currentUserIsCollaborator || playlist.privacy === 'public' ) {
-          deferred.resolve(playlist);
+          ownerModel.find({
+            where: { id: playlist.ownerId }
+          }).then(function(owner) {
+            playlist = playlist.toJSON();
+            playlist.owner = owner;
+            deferred.resolve(playlist);
+          });
         } else {
           deferred.reject({
             status: 401,
@@ -161,7 +199,7 @@ exports.get = function(req, res) {
     return deferred.promise;
   };
 
-  getPlaylist(req.params.slug, req.params.ownerName, req.user).then(function(playlist) {
+  getPlaylist(req.params.slug, req.user).then(function(playlist) {
     res.status(200).json(playlist);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
@@ -355,7 +393,8 @@ exports.create = function(req, res) {
     var deferred = when.defer();
 
     playlist = {
-      ownerName: currentUser.username,
+      ownerId: playlist.ownerId || playlist.OwnerId,
+      ownerType: playlist.ownerType || playlist.OwnerType,
       title: playlist.title || playlist.Title,
       tags: playlist.tags || playlist.Tags,
       privacy: playlist.privacy || playlist.Privacy

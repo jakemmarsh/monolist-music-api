@@ -1,11 +1,11 @@
 'use strict';
 
-var when          = require('when');
-var Sequelize     = require('sequelize');
-var _             = require('lodash');
-var models        = require('../models');
-var awsRoutes     = require('./aws');
 var notifications = require('../utils/notifications');
+var when            = require('when');
+var Sequelize       = require('sequelize');
+var _               = require('lodash');
+var models          = require('../models');
+var awsRoutes       = require('./aws');
 
 /* ====================================================== */
 
@@ -248,19 +248,11 @@ exports.getPlaylists = function(req, res) {
     var deferred = when.defer();
 
     models.Playlist.findAll({
-      where: Sequelize.or(
-        {
-          ownerType: 'user',
-          UserId: userId
-        },
-        { privacy: 'public',
-          UserId: req.user ? req.user.id : null
-        }
-      ),
+      where: {
+        ownerType: 'user',
+        ownerId: userId
+      },
       include: [
-        {
-          model: models.User
-        },
         {
           model: models.PlaylistLike,
           as: 'Likes'
@@ -314,7 +306,7 @@ exports.getEditablePlaylists = function(req, res) {
       where: Sequelize.or(
         { id: _.pluck(collaborations, 'PlaylistId') },
         Sequelize.and(
-          { UserId: userId },
+          { ownerId: userId },
           { ownerType: 'user' }
         )
       ),
@@ -373,7 +365,10 @@ exports.getCollaborations = function(req, res) {
         { id: _.pluck(collaborations, 'PlaylistId') },
         Sequelize.or(
           { privacy: 'public' },
-          { UserId: req.user ? req.user.id : null }
+          Sequelize.and(
+            { ownerId: req.user ? req.user.id : null },
+            { ownerType: 'user' }
+          )
         )
       ),
       include: [
@@ -431,7 +426,10 @@ exports.getLikes = function(req, res) {
         { id: _.pluck(likes, 'PlaylistId') },
         Sequelize.or(
           { privacy: 'public' },
-          { UserId: req.user ? req.user.id : null }
+          Sequelize.and(
+            { ownerId: req.user ? req.user.id : null },
+            { ownerType: 'user' }
+          )
         )
       ),
       include: [
@@ -513,22 +511,6 @@ exports.getGroups = function(req, res) {
 
     return deferred.promise;
   };
-
-  // var fetchGroups = function(groupIds) {
-  //   var deferred = when.defer();
-
-  //   models.Group.findAll({
-  //     where: { id: groupIds }
-  //   }).then(function(groups) {
-  //     deferred.resolve(groups);
-  //   }).catch(function(err) {
-  //     deferred.reject({ status: 500, body: err });
-  //   });
-
-  //   return deferred.promise;
-  // };
-
-
 
   fetchGroups(req.params.id)
   .then(function(groups) {

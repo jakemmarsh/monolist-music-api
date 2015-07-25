@@ -6,8 +6,8 @@ module.exports = function(sequelize, DataTypes) {
 
   var Playlist = sequelize.define('Playlist', {
     title:     { type: DataTypes.STRING, allowNull: false },
-    owner:     { type: DataTypes.STRING, allowNull: false },
     ownerType: { type: DataTypes.ENUM('user', 'group'), defaultValue: 'user' },
+    ownerId:   { type: DataTypes.INTEGER, allowNull: false },
     slug:      { type: DataTypes.STRING, allowNull: false, unique: true },
     imageUrl:  { type: DataTypes.STRING },
     tags:      { type: DataTypes.STRING },
@@ -27,13 +27,23 @@ module.exports = function(sequelize, DataTypes) {
     hooks: {
       beforeValidate: function(playlist, model, cb) {
         var titleSlug = slug(playlist.title).toLowerCase();
+        var query = {
+          ownerType: playlist.ownerType,
+          title: { ilike: playlist.title }
+        };
+
+        // Ensure we only have one 'owner' instance associated
+        if ( playlist.ownerType === 'user' ) {
+          playlist.setDataValue('GroupId', null);
+          query['UserId'] = playlist.UserId;
+        } else {
+          playlist.setDataValue('UserId', null);
+          query['GroupId'] = playlist.GroupId;
+        }
 
         // TODO: do we also need to somehow query based on ownerType if group names/usernames aren't combined unique?
         Playlist.count({
-          where: {
-            owner: playlist.owner,
-            title: { ilike: playlist.title }
-          }
+          where: query
         }).then(function(c) {
           if ( c > 0 ) {
             titleSlug += '-' + c;
@@ -45,7 +55,6 @@ module.exports = function(sequelize, DataTypes) {
     },
     classMethods: {
       associate: function(models) {
-        Playlist.belongsTo(models.User);
         Playlist.hasMany(models.Collaboration, { onDelete: 'cascade' });
         Playlist.hasMany(models.Track, { onDelete: 'cascade' });
         Playlist.hasMany(models.PlaylistLike, { as: 'Likes', onDelete: 'cascade' });

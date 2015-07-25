@@ -5,7 +5,14 @@ var bcrypt = require('bcrypt');
 module.exports = function(sequelize, DataTypes) {
 
   var User = sequelize.define('User', {
-    username:         { type: DataTypes.STRING, unique: true, allowNull: false },
+    username:         {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+      validate: {
+        notContains: ' ' // don't allow spaces in username
+      }
+    },
     firstName:        { type: DataTypes.STRING },
     lastName:         { type: DataTypes.STRING },
     role:             { type: DataTypes.ENUM('user', 'admin'), defaultValue: 'user' },
@@ -35,19 +42,14 @@ module.exports = function(sequelize, DataTypes) {
         }
       }
     },
-    getterMethods: {
-      facebookId: function () { null; },
-      hash: function () { null; },
-      passwordResetKey: function () { null; }
-    },
     classMethods: {
       associate: function(models) {
-        User.hasMany(models.Playlist, { onDelete: 'cascade' });
         User.hasMany(models.Collaboration, { onDelete: 'cascade' });
         User.hasMany(models.PlaylistLike, { onDelete: 'cascade' });
         User.hasMany(models.PlaylistPlay);
         User.hasMany(models.StarredTrack, { onDelete: 'cascade' });
         User.hasMany(models.TrackPlay);
+        User.hasMany(models.Playlist);
         User.hasMany(models.UserFollow, { as: 'UsersFollowing', foreignKey: 'FollowerId', onDelete: 'cascade' });
         User.hasMany(models.UserFollow, { as: 'Followers', foreignKey: 'UserId', onDelete: 'cascade' });
         User.hasMany(models.PlaylistFollow, { as: 'PlaylistsFollowing', foreignKey: 'UserId', onDelete: 'cascade' });
@@ -58,6 +60,7 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     instanceMethods: {
+      // TODO: is this working?
       toJSON: function() {
         // Delete private values from object before sending to client
         var res = this.get();

@@ -1,10 +1,10 @@
 'use strict';
 
-var when          = require('when');
-var _             = require('lodash');
-var models        = require('../models');
-var Sequelize     = require('sequelize');
 var notifications = require('../utils/notifications');
+var when            = require('when');
+var _               = require('lodash');
+var models          = require('../models');
+var Sequelize       = require('sequelize');
 
 /* ====================================================== */
 
@@ -12,9 +12,11 @@ exports.get = function(req, res) {
 
   var fetchGroup = function(identifier) {
     var deferred = when.defer();
-    var query = { id: identifier };
+    var query;
 
-    if ( isNaN(parseInt(identifier)) ) {
+    if ( isFinite(identifier) ) {
+      query = { id: identifier };
+    } else {
       query = { slug: identifier };
     }
 
@@ -60,14 +62,9 @@ exports.getPlaylists = function(req, res) {
 
     models.Playlist.findAll({
       where: {
-        GroupId: groupId,
+        ownerId: groupId,
         ownerType: 'group'
-      },
-      include: [
-        {
-          model: models.Group
-        }
-      ]
+      }
     }).then(function(retrievedPlaylists) {
       deferred.resolve(retrievedPlaylists);
     }).catch(function(err) {
@@ -279,7 +276,7 @@ exports.removeMember = function(req, res) {
     }).then(function(group) {
       if ( _.isEmpty(group) ) {
         deferred.reject({ status: 404, body: 'Group could not be found at ID: ' + groupId });
-      } else if ( group.CreatorId !== actorId && actorId !== memberId ) {
+      } else if ( group.OwnerId !== actorId && actorId !== memberId ) {
         deferred.reject({ status: 401, body: 'User does not have permission to remove that member from the group.' });
       } else {
         deferred.resolve([groupId, actorId, memberId]);

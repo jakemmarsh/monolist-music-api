@@ -8,9 +8,9 @@ require('../../utils/createAuthenticatedSuite')('playlist routes', function() {
 
   var url = 'http://localhost:3000/v1/';
 
-  it('should return a single playlist by ID', function(done) {
+  it('should return a single playlist', function(done) {
     var titleSlug = slug(fixtures.playlists[0].title).toLowerCase();
-    var req = request(url).get('playlist/' + fixtures.playlists[0].owner + '/' + titleSlug);
+    var req = request(url).get('playlist/' + titleSlug);
 
     req.cookies = global.cookies;
 
@@ -76,6 +76,8 @@ require('../../utils/createAuthenticatedSuite')('playlist routes', function() {
   it('should successfully create a new playlist', function(done) {
     var req = request(url).post('playlist');
     var playlist = {
+      ownerId: 1,
+      ownerType: 'group',
       title: 'Playlist for Tests',
       tags: ['test', 'automated', 'new'],
       privacy: 'public'

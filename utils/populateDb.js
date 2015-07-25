@@ -114,26 +114,43 @@ module.exports = function(models, mailer) {
     });
   };
 
-  var createGroup = function() {
+  var createGroups = function() {
     var deferred = when.defer();
 
-    models.Group.create(fixtures.groups[0]).then(function(createdGroup) {
-      deferred.resolve(createdGroup);
+    models.Group.bulkCreate(fixtures.groups, {
+      validate: true,
+      individualHooks: true
+    }).then(function(createdGroups) {
+      deferred.resolve(createdGroups);
     }).catch(function(err) {
-      console.log(err);
-      deferred.reject('error creating group:', err);
+      console.log('error creating groups:', err);
     });
 
     return deferred.promise;
   };
 
-  var addUserToGroup = function(group) {
+  var createMemberships = function(group) {
     var deferred = when.defer();
 
-    models.GroupMembership.create(fixtures.groupMemberships[0]).then(function(createdMembership) {
-      deferred.resolve(createdMembership);
+    models.GroupMembership.bulkCreate(fixtures.groupMemberships, {
+      validate: true,
+      individualHooks: true
+    }).then(function(createdMemberships) {
+      deferred.resolve(createdMemberships);
     }).catch(function(err) {
-      deferred.reject('error creating membership:', err);
+      console.log('error creating group memberships:', err);
+    });
+
+    return deferred.promise;
+  };
+
+  var createGroupPlaylists = function() {
+    var deferred = when.defer();
+
+    models.Playlist.bulkCreate(fixtures.groupPlaylists, { validate: true, individualHooks: true }).then(function(createdPlaylists) {
+      deferred.resolve(createdPlaylists);
+    }).catch(function(err) {
+      console.log('error creating group playlists:', err);
     });
 
     return deferred.promise;
@@ -148,7 +165,8 @@ module.exports = function(models, mailer) {
   .then(createPlaylistLikes)
   .then(createPlaylistPlays)
   .then(addTrackToPlaylist)
-  .then(createGroup)
-  .then(addUserToGroup);
+  .then(createGroups)
+  .then(createMemberships)
+  .then(createGroupPlaylists);
 
 };

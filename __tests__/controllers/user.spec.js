@@ -166,7 +166,7 @@ require('../../utils/createAuthenticatedSuite')('user routes', function() {
   });
 
   it('should return a list of user\'s groups', function(done) {
-    var req = request(url).get('user/1/groups');
+    var req = request(url).get('user/3/groups');
 
     req.cookies = global.cookies;
 
