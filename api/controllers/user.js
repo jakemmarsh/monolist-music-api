@@ -1,11 +1,11 @@
 'use strict';
 
-var notifications = require('../utils/notifications');
 var when            = require('when');
 var Sequelize       = require('sequelize');
 var _               = require('lodash');
 var models          = require('../models');
 var awsRoutes       = require('./aws');
+var ActivityManager = require('../utils/ActivityManager');
 
 /* ====================================================== */
 
@@ -283,45 +283,84 @@ exports.getPlaylists = function(req, res) {
 
 exports.getEditablePlaylists = function(req, res) {
 
-  var fetchCollaborations = function(userId) {
+  var mainDeferred = when.defer();
+  var userId = req.params.id;
+
+  var getUserGroups = function() {
+    var deferred = when.defer();
+
+    models.Group.findAll({
+      where: {
+        OwnerId: userId
+      }
+    }).then(function(groups) {
+      deferred.resolve(_.pluck(groups, 'id'));
+    }).catch(function(err) {
+      // Resolve to still pass
+      deferred.resolve([]);
+    });
+
+    return deferred.promise;
+  };
+
+  var getUserMemberships = function(groupIds) {
+    var deferred = when.defer();
+
+    models.GroupMembership.findAll({
+      where: { UserId: userId },
+      include: [
+        {
+          model: models.Group,
+          attributes: ['id']
+        }
+      ]
+    }).then(function(memberships) {
+      deferred.resolve(_.union(groupIds, _.pluck(memberships, 'Group.id')));
+    }).catch(function(err) {
+      // Resolve to still pass
+      deferred.resolve([]);
+    });
+
+    return deferred.promise;
+  };
+
+  var getUserCollaborations = function(groupIds) {
     var deferred = when.defer();
 
     models.Collaboration.findAll({
-      where: { UserId: userId }
+      where: { UserId: userId },
+      include: [models.Playlist]
     }).then(function(collaborations) {
-      deferred.resolve({ userId: userId, collaborations: collaborations });
-    }).catch(function(err) {
-      deferred.reject({ status: 500, body: err });
+      deferred.resolve([_.pluck(collaborations, 'Playlist.id'), groupIds]);
+    }).catch(function() {
+      // still resolve
+      deferred.resolve([[], groupIds]);
     });
 
     return deferred.promise;
   };
 
-  var fetchEditablePlaylists = function(data) {
+  var getPlaylists = function(data) {
     var deferred = when.defer();
-    var userId = data.userId;
-    var collaborations = data.collaborations;
+    var playlistIds = data[0];
+    var groupIds = data[1];
 
     models.Playlist.findAll({
       where: Sequelize.or(
-        { id: _.pluck(collaborations, 'PlaylistId') },
-        Sequelize.and(
-          { ownerId: userId },
-          { ownerType: 'user' }
+        { id: playlistIds },
+        Sequelize.or(
+          Sequelize.and(
+            { ownerId: userId },
+            { ownerType: 'user' }
+          ),
+          Sequelize.and(
+            { ownerId: groupIds },
+            { ownerType: 'group' }
+          )
         )
-      ),
-      include: [
-        {
-          model: models.PlaylistLike,
-          as: 'Likes'
-        },
-        {
-          model: models.PlaylistPlay,
-          as: 'Plays'
-        }
-      ]
-    }).then(function(editablePlaylists) {
-      deferred.resolve(editablePlaylists);
+      )
+    }).then(function(playlists) {
+      deferred.resolve(playlists);
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
     });
@@ -329,13 +368,18 @@ exports.getEditablePlaylists = function(req, res) {
     return deferred.promise;
   };
 
-  fetchCollaborations(req.params.id)
-  .then(fetchEditablePlaylists)
+  getUserGroups()
+  .then(getUserMemberships)
+  .then(getUserCollaborations)
+  .then(getPlaylists)
   .then(function(playlists) {
     res.status(200).json(playlists);
   }).catch(function(err) {
+    console.log('error:', err);
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
   });
+
+  return mainDeferred.promise;
 
 };
 
