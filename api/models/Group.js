@@ -26,7 +26,6 @@ module.exports = function(sequelize, DataTypes) {
         Group.belongsTo(models.User, { as: 'Owner' });
         Group.hasMany(models.GroupMembership, { as: 'Memberships', onDelete: 'cascade' });
         Group.hasMany(models.GroupFollow, { as: 'Followers', foreignKey: 'GroupId', onDelete: 'cascade' });
-        Group.hasMany(models.Playlist);
       }
     }
   });

@@ -32,15 +32,6 @@ module.exports = function(sequelize, DataTypes) {
           title: { ilike: playlist.title }
         };
 
-        // Ensure we only have one 'owner' instance associated
-        if ( playlist.ownerType === 'user' ) {
-          playlist.setDataValue('GroupId', null);
-          query['UserId'] = playlist.UserId;
-        } else {
-          playlist.setDataValue('UserId', null);
-          query['GroupId'] = playlist.GroupId;
-        }
-
         // TODO: do we also need to somehow query based on ownerType if group names/usernames aren't combined unique?
         Playlist.count({
           where: query

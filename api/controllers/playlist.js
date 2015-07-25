@@ -1,11 +1,11 @@
 'use strict';
 
-var notifications = require('../utils/notifications');
 var when            = require('when');
 var _               = require('lodash');
 var Sequelize       = require('sequelize');
 var models          = require('../models');
 var awsRoutes       = require('./aws');
+var ActivityManager = require('../utils/ActivityManager');
 
 /* ====================================================== */
 
@@ -17,14 +17,34 @@ function ensureCurrentUserCanEdit(req, playlistId) {
     var deferred = when.defer();
 
     models.Group.findAll({
+      where: {
+        OwnerId: userId
+      }
+    }).then(function(groups) {
+      deferred.resolve([userId, _.pluck(groups, 'id')]);
+    }).catch(function(err) {
+      // Resolve to still pass
+      deferred.resolve([userId, []]);
+    });
+
+    return deferred.promise;
+  };
+
+  var getUserMemberships = function(data) {
+    var deferred = when.defer();
+    var userId = data[0];
+    var groupIds = data[1];
+
+    models.GroupMembership.findAll({
+      where: { UserId: userId },
       include: [
         {
-          model: models.User,
-          where: { id: userId }
+          model: models.Group,
+          attributes: ['id']
         }
       ]
-    }).then(function(groups) {
-      deferred.resolve(_.pluck(groups, 'id'));
+    }).then(function(memberships) {
+      deferred.resolve(_.union(groupIds, _.pluck(memberships, 'Group.id')));
     }).catch(function(err) {
       // Resolve to still pass
       deferred.resolve([]);
@@ -88,6 +108,7 @@ function ensureCurrentUserCanEdit(req, playlistId) {
   };
 
   getUserGroups(req.user.id)
+  .then(getUserMemberships)
   .then(checkUserPlaylists)
   .then(checkCollaborations)
   .then(function() {
@@ -108,6 +129,7 @@ exports.get = function(req, res) {
     var deferred = when.defer();
     var currentUserIsCreator;
     var currentUserIsCollaborator;
+    var includes;
     var query;
     var ownerModel;
 
@@ -175,10 +197,21 @@ exports.get = function(req, res) {
         currentUserIsCreator = currentUser.id === playlist.ownerId && playlist.ownerType === 'user';
         currentUserIsCollaborator = !!_.where(playlist.Collaborations, { UserId: currentUser.id }).length;
         ownerModel = playlist.ownerType === 'user' ? models.User : models.Group;
+        includes = [];
+
+        if ( playlist.ownerType === 'group' ) {
+          includes = [
+            {
+              model: models.GroupMembership,
+              as: 'Memberships'
+            }
+          ];
+        }
 
         if ( currentUserIsCreator || currentUserIsCollaborator || playlist.privacy === 'public' ) {
           ownerModel.find({
-            where: { id: playlist.ownerId }
+            where: { id: playlist.ownerId },
+            include: includes
           }).then(function(owner) {
             playlist = playlist.toJSON();
             playlist.owner = owner;
@@ -222,7 +255,11 @@ exports.search = function(req, res) {
         ),
         Sequelize.or(
           { privacy: 'public' },
-          { UserId: req.user ? req.user.id : null }
+          // TODO: additional logic to check user's groups
+          Sequelize.and(
+            { ownerType: 'user' },
+            { ownerId: req.user ? req.user.id : null }
+          )
         )
       )
     }).then(function(retrievedPlaylists) {
@@ -307,7 +344,11 @@ exports.getTrending = function(req, res) {
         { id: playlistIds },
         Sequelize.or(
           { privacy: 'public' },
-          { UserId: req.user ? req.user.id : null }
+          // TODO: additional logic to check user's groups
+          Sequelize.and(
+            { ownerType: 'user' },
+            { ownerId: req.user ? req.user.id : null }
+          )
         )
       ),
       include: [
@@ -352,7 +393,11 @@ exports.getNewest = function(req, res) {
     models.Playlist.findAll({
       where: Sequelize.or(
         { privacy: 'public' },
-        { UserId: req.user ? req.user.id : null }
+        // TODO: additional logic to check user's groups
+        Sequelize.and(
+          { ownerType: 'user' },
+          { ownerId: req.user ? req.user.id : null }
+        )
       ),
       limit: limit,
       order: ['createdAt'],
@@ -455,13 +500,12 @@ exports.follow = function(req, res) {
 
   var followPlaylist = function(playlistId, currentUserId) {
     var deferred = when.defer();
-    var attributes = {
-      UserId: currentUserId,
-      PlaylistId: playlistId
-    };
 
     models.PlaylistFollow.find({
-      where: attributes
+      where: {
+        UserId: currentUserId,
+        PlaylistId: playlistId
+      }
     }).then(function(retrievedFollowing) {
       if ( _.isEmpty(retrievedFollowing) ) {
         models.PlaylistFollow.create(attributes).then(function(savedFollow) {
