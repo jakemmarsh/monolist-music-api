@@ -500,12 +500,13 @@ exports.follow = function(req, res) {
 
   var followPlaylist = function(playlistId, currentUserId) {
     var deferred = when.defer();
+    var attributes = {
+      UserId: currentUserId,
+      PlaylistId: playlistId
+    };
 
     models.PlaylistFollow.find({
-      where: {
-        UserId: currentUserId,
-        PlaylistId: playlistId
-      }
+      where: attributes
     }).then(function(retrievedFollowing) {
       if ( _.isEmpty(retrievedFollowing) ) {
         models.PlaylistFollow.create(attributes).then(function(savedFollow) {
