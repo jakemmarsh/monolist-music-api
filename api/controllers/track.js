@@ -65,7 +65,11 @@ exports.star = function(req, res) {
     };
 
     models.StarredTrack.find({
-      where: attributes
+      where: {
+        UserId: attributes.UserId,
+        source: attributes.source,
+        sourceParam: attributes.sourceParam
+      }
     }).then(function(retrievedStar) {
       if ( _.isEmpty(retrievedStar) ) {
         models.StarredTrack.create(attributes).then(function(savedTrack) {
