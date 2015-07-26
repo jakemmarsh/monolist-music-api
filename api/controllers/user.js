@@ -5,7 +5,7 @@ var Sequelize       = require('sequelize');
 var _               = require('lodash');
 var models          = require('../models');
 var awsRoutes       = require('./aws');
-var ActivityManager = require('../utils/ActivityManager');
+// var ActivityManager = require('../utils/ActivityManager');
 
 /* ====================================================== */
 

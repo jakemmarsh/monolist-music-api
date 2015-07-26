@@ -4,7 +4,7 @@ var when            = require('when');
 var _               = require('lodash');
 var models          = require('../models');
 var Sequelize       = require('sequelize');
-var ActivityManager = require('../utils/ActivityManager');
+// var ActivityManager = require('../utils/ActivityManager');
 
 /* ====================================================== */
 

@@ -6,7 +6,7 @@ var Sequelize       = require('sequelize');
 var changeCase      = require('change-case');
 var models          = require('../models');
 var awsRoutes       = require('./aws');
-var ActivityManager = require('../utils/ActivityManager');
+// var ActivityManager = require('../utils/ActivityManager');
 
 /* ====================================================== */
 
