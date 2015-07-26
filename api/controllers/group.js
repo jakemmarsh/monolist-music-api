@@ -55,6 +55,61 @@ exports.get = function(req, res) {
 
 /* ====================================================== */
 
+exports.create = function(req, res) {
+
+  var checkTitle = function(group, currentUser) {
+    var deferred = when.defer();
+    var title = group.title || group.Title;
+
+    models.Group.find({
+      where: { title: title }
+    }).then(function(retrievedGroup) {
+      if ( !_.isEmpty(retrievedGroup) ) {
+        deferred.reject({ status: 400, body: 'That name is already taken.' });
+      } else {
+        deferred.resolve([group, currentUser]);
+      }
+    });
+
+    return deferred.promise;
+  };
+
+  var createGroup = function(data) {
+    var deferred = when.defer();
+    var group = data[0];
+    var currentUser = data[1];
+
+    group = {
+      OwnerId: currentUser.id,
+      title: group.title || group.Title,
+      description: group.description || group.Description,
+      privacy: group.privacy || group.Privacy,
+      inviteLevel: group.inviteLevel || group.InviteLevel,
+    };
+
+    models.Group.create(group).then(function(savedGroup) {
+      savedGroup = savedGroup.toJSON();
+      savedGroup.owner = currentUser;
+      deferred.resolve(savedGroup);
+    }).catch(function(err) {
+      console.log('error creating group:', err);
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  checkTitle(req.body, req.user).then(createGroup).then(function(resp) {
+    res.status(200).json(resp);
+  }).catch(function(err) {
+    console.log('finally caught error:', err);
+    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+  });
+
+};
+
+/* ====================================================== */
+
 exports.getPlaylists = function(req, res) {
 
   var fetchPlaylists = function(groupId) {

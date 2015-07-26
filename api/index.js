@@ -43,6 +43,7 @@ api.get('/user/:id/stars', controllers.user.getStars);
 /* ====================================================== */
 
 // Group endpoints
+api.post('/group', controllers.group.create);
 api.get('/group/:identifier', controllers.group.get);
 api.get('/group/:id/playlists', controllers.group.getPlaylists);
 api.get('/groups/trending', controllers.group.getTrending);

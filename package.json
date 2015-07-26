@@ -14,6 +14,7 @@
   "dependencies": {
     "bcrypt": "^0.8.0",
     "body-parser": "^1.6.4",
+    "change-case": "^2.3.0",
     "cheerio": "^0.17.0",
     "compression": "^1.0.11",
     "connect-busboy": "0.0.2",

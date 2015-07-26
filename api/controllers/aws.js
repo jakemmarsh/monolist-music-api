@@ -1,12 +1,13 @@
 'use strict';
 
-var when   = require('when');
-var _      = require('lodash');
-var Knox   = require('knox');
-var crypto = require('crypto');
-var moment = require('moment');
-var mime   = require('mime-types');
-var models = require('../models');
+var when       = require('when');
+var _          = require('lodash');
+var Knox       = require('knox');
+var crypto     = require('crypto');
+var moment     = require('moment');
+var mime       = require('mime-types');
+var changeCase = require('change-case');
+var models     = require('../models');
 
 /* ====================================================== */
 
@@ -76,7 +77,7 @@ function updateEntity(data) {
   var type = data[0];
   var id = data[1];
   var imagePath = data[2];
-  var model = (type === 'playlist') ? models.Playlist : models.User;
+  var model = models[changeCase.pascal(type)];
   var originalImageUrl;
 
   var fetchItem = function(id) {
@@ -119,7 +120,7 @@ function updateEntity(data) {
        deleteFile(originalImageUrl).then(function(res) {
         deferred.resolve(res);
        }).catch(function() {
-        // Still resolve since user was successfully updated
+        // Still resolve since entity was successfully updated
         deferred.resolve();
       });
     } else {
