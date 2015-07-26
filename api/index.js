@@ -51,6 +51,7 @@ api.get('/groups/search/:query', controllers.group.search);
 api.patch('/group/:id', controllers.auth.isAuthenticated, controllers.group.update);
 api.post('/group/:groupId/member/:memberId', controllers.auth.isAuthenticated, controllers.group.addMember);
 api.delete('/group/:groupId/member/:memberId', controllers.auth.isAuthenticated, controllers.group.removeMember);
+api.post('/group/:groupId/member/:memberId/level/:newLevel', controllers.auth.isAuthenticated, controllers.group.updateMemberLevel);
 api.delete('/group/:id', controllers.auth.isAuthenticated, controllers.group.delete);
 
 /* ====================================================== */

@@ -263,6 +263,8 @@ exports.search = function(req, res) {
 
 exports.addMember = function(req, res) {
 
+  // TODO: better checking to only let users > inviteLevel add members
+
   var fetchGroup = function(groupId, actorId, memberId) {
     var deferred = when.defer();
 
@@ -323,6 +325,8 @@ exports.addMember = function(req, res) {
 
 exports.removeMember = function(req, res) {
 
+  // TODO: better checking to let admins remove members
+
   var fetchGroup = function(groupId, actorId, memberId) {
     var deferred = when.defer();
 
@@ -370,6 +374,56 @@ exports.removeMember = function(req, res) {
   .then(destroyMembership)
   .then(function() {
     res.status(200).json({ status: 200, message: 'Member successfully removed from group.' });
+  }).catch(function(err) {
+    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+  });
+
+};
+
+/* ====================================================== */
+
+exports.updateMemberLevel = function(req, res) {
+
+  // TODO: logic to ensure only owner (and maybe admins?) can change member levels
+
+  var fetchMembership = function(groupId, memberId, newLevel) {
+    var deferred = when.defer();
+
+    models.GroupMembership.find({
+      where: {
+        GroupId: groupId,
+        UserId: memberId
+      }
+    }).then(function(retrievedMembership) {
+      if ( !_.isEmpty(retrievedMembership) ) {
+        deferred.resolve([retrievedMembership, newLevel]);
+      } else {
+        deferred.reject({ status: 404, body: 'Membership could not be found at the IDs: ' + groupId + ', ' + memberId });
+      }
+    });
+
+    return deferred.promise;
+  };
+
+  var updateMembership = function(data) {
+    var deferred = when.defer();
+    var membership = data[0];
+    var newLevel = data[1];
+    var updates = { level: newLevel };
+
+    membership.updateAttributes(updates).then(function(updatedMembership) {
+      deferred.resolve(updatedMembership);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  fetchMembership(req.params.groupId, req.params.memberId, req.params.newLevel)
+  .then(updateMembership)
+  .then(function(updatedMembership) {
+    res.status(200).json(updatedMembership);
   }).catch(function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
   });
