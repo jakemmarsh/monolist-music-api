@@ -326,12 +326,15 @@ exports.removeMember = function(req, res) {
   var fetchGroup = function(groupId, actorId, memberId) {
     var deferred = when.defer();
 
+    actorId = parseInt(actorId);
+    memberId = parseInt(memberId);
+
     models.Group.find({
       where: { id: groupId }
     }).then(function(group) {
       if ( _.isEmpty(group) ) {
         deferred.reject({ status: 404, body: 'Group could not be found at ID: ' + groupId });
-      } else if ( group.OwnerId !== actorId && actorId !== memberId ) {
+      } else if ( parseInt(group.OwnerId) !== actorId && actorId !== memberId ) {
         deferred.reject({ status: 401, body: 'User does not have permission to remove that member from the group.' });
       } else {
         deferred.resolve([groupId, actorId, memberId]);
