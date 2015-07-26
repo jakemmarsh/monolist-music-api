@@ -94,13 +94,15 @@ module.exports = {
       OwnerId: 1,
       title: 'Test Group',
       description: 'This is a group for anyone since it is just for testing.',
-      imageUrl: 'https://scontent-sjc2-1.xx.fbcdn.net/hphotos-xap1/v/t1.0-9/10375152_10153451820467673_5915045047010730686_n.jpg?oh=3eec477b3d0925b8f39802bbb68c3789&oe=565AA6AE'
+      imageUrl: 'https://scontent-sjc2-1.xx.fbcdn.net/hphotos-xap1/v/t1.0-9/10375152_10153451820467673_5915045047010730686_n.jpg?oh=3eec477b3d0925b8f39802bbb68c3789&oe=565AA6AE',
+      inviteLevel: 1
     },
     {
       OwnerId: 2,
       title: 'Test Group Two',
       description: 'This is another group for anyone since it is just for testing.',
-      imageUrl: 'https://scontent-sjc2-1.xx.fbcdn.net/hphotos-xap1/v/t1.0-9/10375152_10153451820467673_5915045047010730686_n.jpg?oh=3eec477b3d0925b8f39802bbb68c3789&oe=565AA6AE'
+      imageUrl: 'https://scontent-sjc2-1.xx.fbcdn.net/hphotos-xap1/v/t1.0-9/10375152_10153451820467673_5915045047010730686_n.jpg?oh=3eec477b3d0925b8f39802bbb68c3789&oe=565AA6AE',
+      inviteLevel: 2
     }
   ],
 
@@ -108,12 +110,12 @@ module.exports = {
     {
       GroupId: 1,
       UserId: 2,
-      type: 'member'
+      level: 1
     },
     {
       GroupId: 2,
       UserId: 3,
-      type: 'admin'
+      level: 2
     }
   ],
 

@@ -10,7 +10,14 @@ module.exports = function(sequelize, DataTypes) {
     description: { type: DataTypes.TEXT },
     imageUrl:    { type: DataTypes.STRING },
     privacy:     { type: DataTypes.ENUM('public', 'private'), defaultValue: 'public' },
-    inviteLevel: { type: DataTypes.ENUM('member', 'admin', 'owner'), defaultValue: 'member' }
+    inviteLevel: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+      validate: {
+        min: 1,
+        max: 3
+      }
+    }
   },
   {
     hooks: {

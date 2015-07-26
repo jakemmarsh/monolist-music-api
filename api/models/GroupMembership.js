@@ -3,7 +3,14 @@
 module.exports = function(sequelize, DataTypes) {
 
   var GroupMembership = sequelize.define('GroupMembership', {
-    level: { type: DataTypes.ENUM('member', 'admin'), defaultValue: 'member' }
+    level: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+      validate: {
+        min: 1,
+        max: 3
+      }
+    }
   },
   {
     classMethods: {
