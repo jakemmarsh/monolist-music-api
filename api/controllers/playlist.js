@@ -3,6 +3,7 @@
 var when            = require('when');
 var _               = require('lodash');
 var Sequelize       = require('sequelize');
+var changeCase      = require('change-case');
 var models          = require('../models');
 var awsRoutes       = require('./aws');
 var ActivityManager = require('../utils/ActivityManager');
@@ -436,6 +437,7 @@ exports.create = function(req, res) {
 
   var createPlaylist = function(playlist, currentUser) {
     var deferred = when.defer();
+    var model;
 
     playlist = {
       ownerId: playlist.ownerId || playlist.OwnerId,
@@ -448,7 +450,18 @@ exports.create = function(req, res) {
     playlist.tags = _.map(playlist.tags, function(tag) { return tag.toLowerCase(); });
 
     models.Playlist.create(playlist).then(function(savedPlaylist) {
-      deferred.resolve(savedPlaylist);
+      var model = models[changeCase.pascal(savedPlaylist.ownerType)];
+
+      model.find({
+        where: { id: savedPlaylist.ownerId }
+      }).then(function(retrievedEntity) {
+        savedPlaylist = savedPlaylist.toJSON();
+        savedPlaylist.owner = retrievedEntity;
+        deferred.resolve(savedPlaylist);
+      }).catch(function(err) {
+        // Still resolve
+        deferred.resolve(savedPlaylist);
+      });
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
     });
