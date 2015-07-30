@@ -8,8 +8,7 @@ var NotificationManager = require('./NotificationManager');
 var jobQueue            = kue.createQueue({
                             redis: {
                               port: process.env.REDIS_PORT,
-                              host: process.env.REDIS_HOST,
-                              auth: process.env.REDIS_AUTH
+                              host: process.env.REDIS_HOST
                             }
                           });
 
@@ -76,7 +75,7 @@ exports.notifications = function(notifications) {
 
   console.log('create notification jobs for:', notifications);
 
-  var job = jobQueuejobs.create('notification', notifications)
+  var job = jobQueue.create('notification', notifications)
   .removeOnComplete(true)
   .save(function(err){
     if( err ) {
