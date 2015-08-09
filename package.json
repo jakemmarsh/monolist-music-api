@@ -59,8 +59,9 @@
     "supervisor": "^0.6.0"
   },
   "scripts": {
-    "start": "supervisor server.js",
-    "test": "istanbul cover --report html --dir \"__coverage__/\" --x \"__tests__/**/*\" --x \"populateDb.js\" --x \"server.js\" --x \"api/routes/aws.js\" node_modules/.bin/_mocha -- -i \"__tests__/**/*.js\"",
+    "start": "node server.js",
+    "dev": "redis-server & supervisor server.js",
+    "test": "redis-server & istanbul cover --report html --dir \"__coverage__/\" --x \"__tests__/**/*\" --x \"populateDb.js\" --x \"server.js\" --x \"api/routes/aws.js\" node_modules/.bin/_mocha -- -i \"__tests__/**/*.js\"",
     "deploy": "ebs-deploy deploy --environment monolist-api-staging",
     "deploy-prod": "ebs-deploy deploy --environment monolist-api-prod"
   }

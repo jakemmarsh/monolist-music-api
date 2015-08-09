@@ -6,10 +6,7 @@ var _                   = require('lodash');
 var ActivityManager     = require('./ActivityManager');
 var NotificationManager = require('./NotificationManager');
 var jobQueue            = kue.createQueue({
-                            redis: {
-                              port: process.env.REDIS_PORT,
-                              host: process.env.REDIS_HOST
-                            }
+                            redis: process.env.REDIS_URL
                           });
 
 /* ====================================================== */

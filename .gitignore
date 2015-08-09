@@ -4,6 +4,9 @@
 logs
 *.log
 
+# Dumps
+*.rdb
+
 # Runtime data
 pids
 *.pid
