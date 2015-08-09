@@ -25,16 +25,20 @@ function queueNotifications(activity) {
 
 /* ====================================================== */
 
-exports.queue = function(entityType, entityId, actionType, actorId) {
+exports.queue = function(entityType, entityId, actionType, actorId, passThrough) {
 
   var deferred = when.defer();
   // TODO: sanitize/build
   var activity = {};
 
-  console.log(Queue);
+  entityId = entityId ? parseInt(entityId) : passThrough.id;
+
+  console.log('queue activity for:', arguments);
 
   Queue.activity(activity)
-  .then(deferred.resolve)
+  .then(function() {
+    deferred.resolve(passThrough);
+  })
   .catch(deferred.reject);
 
   return deferred.promise;

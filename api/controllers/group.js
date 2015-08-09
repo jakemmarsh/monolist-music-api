@@ -4,7 +4,7 @@ var when            = require('when');
 var _               = require('lodash');
 var models          = require('../models');
 var Sequelize       = require('sequelize');
-// var ActivityManager = require('../utils/ActivityManager');
+var ActivityManager = require('../utils/ActivityManager');
 
 /* ====================================================== */
 
@@ -313,6 +313,7 @@ exports.addMember = function(req, res) {
 
   fetchGroup(req.params.groupId, req.user.id, req.params.memberId)
   .then(createMembership)
+  .then(ActivityManager.queue.bind(null, 'group', req.params.groupId, 'addMember', req.user.id))
   .then(function(createdMembership) {
     res.status(200).json(createdMembership);
   }).catch(function(err) {
@@ -372,6 +373,7 @@ exports.removeMember = function(req, res) {
 
   fetchGroup(req.params.groupId, req.user.id, req.params.memberId)
   .then(destroyMembership)
+  .then(ActivityManager.queue.bind(null, 'group', req.params.groupId, 'removeMember', req.user.id))
   .then(function() {
     res.status(200).json({ status: 200, message: 'Member successfully removed from group.' });
   }).catch(function(err) {
@@ -422,6 +424,7 @@ exports.updateMemberLevel = function(req, res) {
 
   fetchMembership(req.params.groupId, req.params.memberId, req.params.newLevel)
   .then(updateMembership)
+  .then(ActivityManager.queue.bind(null, 'group', req.params.groupId, 'updateMemberLevel', req.user.id))
   .then(function(updatedMembership) {
     res.status(200).json(updatedMembership);
   }).catch(function(err) {

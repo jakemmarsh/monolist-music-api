@@ -6,7 +6,7 @@ var Sequelize       = require('sequelize');
 var changeCase      = require('change-case');
 var models          = require('../models');
 var awsRoutes       = require('./aws');
-// var ActivityManager = require('../utils/ActivityManager');
+var ActivityManager = require('../utils/ActivityManager');
 
 /* ====================================================== */
 
@@ -469,8 +469,10 @@ exports.create = function(req, res) {
     return deferred.promise;
   };
 
-  createPlaylist(req.body, req.user).then(function(resp) {
-    res.status(200).json(resp);
+  createPlaylist(req.body, req.user)
+  .then(ActivityManager.queue.bind(null, 'playlist', null, 'follow', req.user.id))
+  .then(function(createdPlaylist) {
+    res.status(200).json(createdPlaylist);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
   });
@@ -539,7 +541,9 @@ exports.follow = function(req, res) {
     return deferred.promise;
   };
 
-  followPlaylist(req.params.id, req.user.id).then(function(playlistFollow) {
+  followPlaylist(req.params.id, req.user.id)
+  .then(ActivityManager.queue.bind(null, 'playlist', req.params.id, 'follow', req.user.id))
+  .then(function(playlistFollow) {
     res.status(200).json(playlistFollow);
   }).catch(function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
@@ -579,7 +583,9 @@ exports.like = function(req, res) {
     return deferred.promise;
   };
 
-  likePlaylist(req.params.id, req.user.id).then(function(like) {
+  likePlaylist(req.params.id, req.user.id)
+  .then(ActivityManager.queue.bind(null, 'playlist', req.params.id, 'like', req.user.id))
+  .then(function(like) {
     res.status(200).json(like);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
@@ -609,6 +615,8 @@ exports.addCollaborator = function(req, res) {
 
   ensureCurrentUserCanEdit(req, req.params.playlistId)
   .then(addCollaboration)
+  // TODO: figure out how to also include the user ID of the user being added as a member
+  .then(ActivityManager.queue.bind(null, 'playlist', req.params.playlistId, 'addCollaborator', req.user.id))
   .then(function(collaboration) {
     res.status(200).json(collaboration);
   }).catch(function(err) {
@@ -640,6 +648,8 @@ exports.removeCollaborator = function(req, res) {
 
   ensureCurrentUserCanEdit(req, req.params.playlistId)
   .then(removeCollaboration)
+  // TODO: figure out how to also include the user ID of the user being removed as a member
+  .then(ActivityManager.queue.bind(null, 'playlist', req.params.playlistId, 'removeCollaborator', req.user.id))
   .then(function() {
     res.status(200).json({ status: 200, message: 'Collaborator successfully removed.' });
   }).catch(function(err) {
@@ -702,6 +712,7 @@ exports.addTrack = function(req, res) {
   ensureCurrentUserCanEdit(req, req.params.id)
   .then(createTrack)
   .then(fetchPlaylist)
+  .then(ActivityManager.queue.bind(null, 'playlist', req.params.id, 'addTrack', req.user.id))
   .then(function(modifiedPlaylist) {
     res.status(200).json(modifiedPlaylist);
   }).catch(function(err) {

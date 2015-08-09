@@ -3,7 +3,7 @@
 var when            = require('when');
 var _               = require('lodash');
 var models          = require('../models');
-// var ActivityManager = require('../utils/ActivityManager');
+var ActivityManager = require('../utils/ActivityManager');
 
 /* ====================================================== */
 
@@ -131,7 +131,9 @@ exports.upvote = function(req, res) {
     return deferred.promise;
   };
 
-  createOrDeleteUpvote(req.params.id, req.user.id).then(function(resp) {
+  createOrDeleteUpvote(req.params.id, req.user.id)
+  .then(ActivityManager.queue.bind(null, 'track', req.params.id, 'upvote', req.user.id))
+  .then(function(resp) {
     res.status(200).json(resp);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
@@ -173,7 +175,9 @@ exports.downvote = function(req, res) {
     return deferred.promise;
   };
 
-  createOrDeleteDownvote(req.params.id, req.user.id).then(function(resp) {
+  createOrDeleteDownvote(req.params.id, req.user.id)
+  .then(ActivityManager.queue.bind(null, 'track', req.params.id, 'downvote', req.user.id))
+  .then(function(resp) {
     res.status(200).json(resp);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
@@ -203,7 +207,9 @@ exports.addComment = function(req, res) {
     return deferred.promise;
   };
 
-  createComment(req.params.id, req.body, req.user.id).then(function(comment) {
+  createComment(req.params.id, req.body, req.user.id)
+  .then(ActivityManager.queue.bind(null, 'track', req.params.id, 'addComment', req.user.id))
+  .then(function(comment) {
     res.status(200).json(comment);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });

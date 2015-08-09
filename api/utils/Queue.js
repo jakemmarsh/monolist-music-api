@@ -71,22 +71,32 @@ exports.activity = function(activity) {
 
 exports.notifications = function(notifications) {
 
-  var deferred = when.defer();
-
   console.log('create notification jobs for:', notifications);
 
-  var job = jobQueue.create('notification', notifications)
-  .removeOnComplete(true)
-  .save(function(err){
-    if( err ) {
-      console.log('Error saving notification jobs:', err);
-      deferred.reject(err);
-    } else {
-      console.log('jobs saved:', job.id);
-      deferred.resolve(notifications);
-    }
-  });
+  var mainDeferred = when.defer();
+  var queueNotification = function(notification) {
+    var deferred = when.defer();
 
-  return deferred.promise;
+    var job = jobQueue.create('notification', notification)
+    .removeOnComplete(true)
+    .save(function(err){
+      if( err ) {
+        console.log('Error saving notification job:', err);
+        deferred.reject(err);
+      } else {
+        console.log('notification job saved');
+        deferred.resolve(notification);
+      }
+    });
+
+    return deferred.promise;
+  };
+  var promises = _.map(notifications, queueNotification);
+
+  when.join(promises)
+  .then(mainDeferred.resolve.bind(null, notifications))
+  .catch(mainDeferred.reject);
+
+  return mainDeferred.promise;
 
 };

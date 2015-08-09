@@ -5,7 +5,7 @@ var Sequelize       = require('sequelize');
 var _               = require('lodash');
 var models          = require('../models');
 var awsRoutes       = require('./aws');
-// var ActivityManager = require('../utils/ActivityManager');
+var ActivityManager = require('../utils/ActivityManager');
 
 /* ====================================================== */
 
@@ -232,7 +232,9 @@ exports.follow = function(req, res) {
     return deferred.promise;
   };
 
-  followUser(req.user.id, req.params.id).then(function(following) {
+  followUser(req.user.id, req.params.id)
+  .then(ActivityManager.queue.bind(null, 'user', req.params.id, 'follow', req.user.id))
+  .then(function(following) {
     res.status(200).json(following);
   }).catch(function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
