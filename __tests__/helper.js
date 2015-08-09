@@ -12,7 +12,7 @@ before(function(done) {
   // Start and configure the server
   require('../server');
 
-  // Wait 3 seconds before calling "done" to ensure
+  // Wait 5 seconds before calling "done" to ensure
   // that DB is connected and populated
   setTimeout(done, 2000);
 

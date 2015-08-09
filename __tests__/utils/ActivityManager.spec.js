@@ -8,16 +8,22 @@ var sinon           = global.sinon || require('sinon');
 
 describe('Util: ActivityManager', function() {
 
-  var mock;
-  // TODO: flesh this out
+  var entityType = 'user';
+  var entityId = 1;
+  var actionType = 'follow';
+  var actorId = 2;
+  var passThrough = {};
   var activity = {};
+  var mock;
 
   it('should queue a new activity to be created', function(done) {
     mock = sinon.mock(Queue);
 
     mock.expects('activity').once().withArgs(activity).returns(when());
 
-    ActivityManager.queue(activity).then(done);
+    ActivityManager.queue(entityType, entityId, actionType, actorId, passThrough).then(function() {
+      done();
+    });
   });
 
   it('should save a new activity in the database', function(done) {
@@ -39,7 +45,7 @@ describe('Util: ActivityManager', function() {
   });
 
   afterEach(function() {
-    mock.restore();
+    if ( mock ) { mock.restore(); }
   })
 
 });
