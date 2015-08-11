@@ -59,7 +59,8 @@ exports.get = function(req, res) {
       include: [
         {
           model: models.Group,
-          as: 'Group'
+          as: 'Group',
+          attributes: ['id']
         }
       ]
     }).then(function(memberships) {

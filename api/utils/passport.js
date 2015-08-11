@@ -53,11 +53,12 @@ module.exports = function() {
       include: [
         {
           model: models.Group,
-          as: 'Group'
+          as: 'Group',
+          attributes: ['id']
         }
       ]
     }).then(function(memberships) {
-      groupIds = _.pluck(memberships, 'Group');
+      groupIds = _.pluck(memberships, 'Group.id');
       groupIds = _.pluck(groupIds, 'id');
       user.groups = groupIds;
       deferred.resolve(user);
