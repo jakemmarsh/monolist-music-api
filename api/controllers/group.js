@@ -90,7 +90,7 @@ exports.create = function(req, res) {
     models.Group.create(group).then(function(savedGroup) {
       savedGroup = savedGroup.toJSON();
       savedGroup.owner = currentUser;
-      deferred.resolve(savedGroup);
+      deferred.resolve([savedGroup, currentUser]);
     }).catch(function(err) {
       console.log('error creating group:', err);
       deferred.reject({ status: 500, body: err });
@@ -99,7 +99,30 @@ exports.create = function(req, res) {
     return deferred.promise;
   };
 
-  checkTitle(req.body, req.user).then(createGroup).then(function(resp) {
+  var createMembership = function(data) {
+    var deferred = when.defer();
+    var group = data[0];
+    var currentUser = data[1];
+    var membership = {
+      GroupId: group.id,
+      UserId: currentUser.id,
+      level: 3 // Owner level
+    };
+
+    models.GroupMembership.create(membership).then(function() {
+      deferred.resolve(group);
+    }).catch(function(err) {
+      // Still resolve since group was already created
+      deferred.resolve(group);
+    });
+
+    return deferred.promise;
+  };
+
+  checkTitle(req.body, req.user)
+  .then(createGroup)
+  .then(createMembership)
+  .then(function(resp) {
     res.status(200).json(resp);
   }).catch(function(err) {
     console.log('finally caught error:', err);
