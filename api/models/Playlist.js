@@ -32,7 +32,6 @@ module.exports = function(sequelize, DataTypes) {
           title: { ilike: playlist.title }
         };
 
-        // TODO: do we also need to somehow query based on ownerType if group names/usernames aren't combined unique?
         Playlist.count({
           where: query
         }).then(function(c) {

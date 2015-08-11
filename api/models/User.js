@@ -59,7 +59,6 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     instanceMethods: {
-      // TODO: is this working?
       toJSON: function() {
         // Delete private values from object before sending to client
         var res = this.get();
