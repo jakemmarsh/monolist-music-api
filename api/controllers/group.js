@@ -419,9 +419,9 @@ exports.updateMemberLevel = function(req, res) {
       }
     }).then(function(retrievedMembership) {
       if ( !_.isEmpty(retrievedMembership) ) {
-        deferred.resolve([retrievedMembership, newLevel, retrievedMembership.level]);
+        deferred.resolve([groupId, memberId, newLevel, retrievedMembership.level]);
       } else {
-        deferred.reject({ status: 403, body: 'Current user is not a member of that group.' });
+        deferred.reject({ status: 401, body: 'Current user is not a member of that group.' });
       }
     });
 
