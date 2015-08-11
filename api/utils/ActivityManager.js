@@ -9,93 +9,6 @@ var ActionTypes         = require('./ActionTypes');
 
 /* ====================================================== */
 
-function getGroupUserIds(groupId) {
-
-  var deferred = when.defer();
-
-  // fetch all members/followers of group
-  deferred.resolve([]);
-
-  return deferred.promise;
-
-}
-
-/* ====================================================== */
-
-function getPlaylistUserIds(playlistId) {
-
-  var deferred = when.defer();
-
-  // fetch owner/all collaborators of playlist
-  deferred.resolve([]);
-
-  return deferred.promise;
-
-};
-
-/* ====================================================== */
-
-function getTrackUserIds(trackId) {
-
-  var deferred = when.defer();
-
-  // fetch adder of track. fetch all collaborators???
-  deferred.resolve([]);
-
-  return deferred.promise;
-
-};
-
-/* ====================================================== */
-
-function getUserIdsForEntity(entityType, entityId) {
-
-  if ( entityType === 'group' ) {
-    return getGroupUserIds(entityId);
-  } else if ( entityType === 'playlist' ) {
-    return getPlaylistUserIds(entityId);
-  } else if ( entityType === 'track' ) {
-    return getTrackUserIds(entityId)
-  }
-
-};
-
-/* ====================================================== */
-
-function queueNotifications(activity) {
-
-  var deferred = when.defer();
-  var notifications = [];
-
-  var buildNotifications = function(activity) {
-    var deferred = when.defer();
-
-    getUserIdsForEntity(activity.entityType, activity.entityId).then(function(userIds) {
-      deferred.resolve(_.map(userIds, function(userId) {
-        return {
-          ActorId: activity.actorId || activity.ActorId,
-          RecipientId: userId,
-          entityType: activity.entityType,
-          entityId: activity.entityId,
-          action: activity.action
-        }
-      }));
-    });
-
-    return deferred.promise;
-  };
-
-  buildNotifications(activity)
-  .then(NotificationManager.queue)
-  .then(deferred.resolve)
-  .catch(deferred.reject);
-
-  return deferred.promise;
-
-}
-
-/* ====================================================== */
-
 exports.queue = function(entityType, entityId, action, actorId, passThrough) {
 
   var deferred = when.defer();
@@ -126,8 +39,10 @@ exports.create = function(activity) {
   var deferred = when.defer();
 
   // Can be assumed activity is sanitized since coming from queue
-  models.Activity.create(activity).then(function(createdActivity) {
-    queueNotifications(createdActivity).then(deferred.resolve);
+  models.Activity.create(activity).then(function() {
+    NotificationManager.buildNotifications(activity)
+    .then(NotificationManager.queue)
+    .then(deferred.resolve);
   }).catch(deferred.reject);
 
   return deferred.promise;
