@@ -386,23 +386,48 @@ exports.removeMember = function(req, res) {
 
 exports.updateMemberLevel = function(req, res) {
 
-  // TODO: logic to ensure only owner (and maybe admins?) can change member levels
-
-  var fetchMembership = function(groupId, memberId, newLevel) {
+  var getCurrentUserLevel = function(groupId, memberId, newLevel) {
     var deferred = when.defer();
 
     models.GroupMembership.find({
       where: {
         GroupId: groupId,
-        UserId: memberId
+        UserId: req.user.id
       }
     }).then(function(retrievedMembership) {
       if ( !_.isEmpty(retrievedMembership) ) {
-        deferred.resolve([retrievedMembership, newLevel]);
+        deferred.resolve([retrievedMembership, newLevel, retrievedMembership.level]);
       } else {
-        deferred.reject({ status: 404, body: 'Membership could not be found at the IDs: ' + groupId + ', ' + memberId });
+        deferred.reject({ status: 403, body: 'Current user is not a member of that group.' });
       }
     });
+
+    return deferred.promise;
+  };
+
+  var fetchMembership = function(data) {
+    var deferred = when.defer();
+    var groupId = data[0];
+    var memberId = data[1];
+    var newLevel = data[2];
+    var currentUserLevel = data[3];
+
+    if ( newLevel > currentUserLevel ) {
+      deferred.reject({ status: 403, body: 'User cannot upgrade members above themselves.' });
+    } else {
+      models.GroupMembership.find({
+        where: {
+          GroupId: groupId,
+          UserId: memberId
+        }
+      }).then(function(retrievedMembership) {
+        if ( !_.isEmpty(retrievedMembership) ) {
+          deferred.resolve([retrievedMembership, newLevel, currentUserLevel]);
+        } else {
+          deferred.reject({ status: 404, body: 'Membership could not be found at the IDs: ' + groupId + ', ' + memberId });
+        }
+      });
+    }
 
     return deferred.promise;
   };
@@ -411,18 +436,24 @@ exports.updateMemberLevel = function(req, res) {
     var deferred = when.defer();
     var membership = data[0];
     var newLevel = data[1];
+    var currentUserLevel = data[2];
     var updates = { level: newLevel };
 
-    membership.updateAttributes(updates).then(function(updatedMembership) {
-      deferred.resolve(updatedMembership);
-    }).catch(function(err) {
-      deferred.reject({ status: 500, body: err });
-    });
+    if ( newLevel < membership.level && currentUserLevel <= membership.level ) {
+      deferred.reject({ status: 403, body: 'Users cannot demote members above themselves.' });
+    } else {
+      membership.updateAttributes(updates).then(function(updatedMembership) {
+        deferred.resolve(updatedMembership);
+      }).catch(function(err) {
+        deferred.reject({ status: 500, body: err });
+      });
+    }
 
     return deferred.promise;
   };
 
-  fetchMembership(req.params.groupId, req.params.memberId, req.params.newLevel)
+  getCurrentUserLevel(req.params.groupId, req.params.memberId, req.params.newLevel)
+  .then(fetchMembership)
   .then(updateMembership)
   .then(ActivityManager.queue.bind(null, 'group', req.params.groupId, 'updateMemberLevel', req.user.id))
   .then(function(updatedMembership) {
