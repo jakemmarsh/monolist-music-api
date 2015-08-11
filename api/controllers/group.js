@@ -286,17 +286,38 @@ exports.search = function(req, res) {
 
 exports.addMember = function(req, res) {
 
-  // TODO: better checking to only let users > inviteLevel add members
-
-  var fetchGroup = function(groupId, actorId, memberId) {
+  var getCurrentUserLevel = function(groupId, actorId, memberId) {
     var deferred = when.defer();
+
+    models.GroupMembership.find({
+      where: {
+        GroupId: groupId,
+        UserId: req.user.id
+      }
+    }).then(function(retrievedMembership) {
+      if ( !_.isEmpty(retrievedMembership) ) {
+        deferred.resolve([groupId, actorId, memberId, retrievedMembership.level]);
+      } else {
+        deferred.reject({ status: 401, body: 'Current user is not a member of that group.' });
+      }
+    });
+
+    return deferred.promise;
+  };
+
+  var fetchGroup = function(data) {
+    var deferred = when.defer();
+    var groupId = data[0];
+    var actorId = data[1];
+    var memberId = data[2];
+    var currentUserLevel = data[3];
 
     models.Group.find({
       where: { id: groupId }
     }).then(function(group) {
       if ( _.isEmpty(group) ) {
         deferred.reject({ status: 404, body: 'Group could not be found at ID: ' + groupId });
-      } else if ( group.privacy !== 'public' && group.CreatorId !== actorId ) {
+      } else if ( group.inviteLevel > currentUserLevel ) {
         deferred.reject({ status: 401, body: 'User does not have permission to add members to that group.' });
       } else {
         deferred.resolve([groupId, actorId, memberId]);
@@ -334,7 +355,8 @@ exports.addMember = function(req, res) {
     return deferred.promise;
   };
 
-  fetchGroup(req.params.groupId, req.user.id, req.params.memberId)
+  getCurrentUserLevel(req.params.groupId, req.user.id, req.params.memberId)
+  .then(fetchGroup)
   .then(createMembership)
   .then(ActivityManager.queue.bind(null, 'group', req.params.groupId, 'addMember', req.user.id))
   .then(function(createdMembership) {
