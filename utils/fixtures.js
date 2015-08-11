@@ -116,6 +116,11 @@ module.exports = {
       GroupId: 2,
       UserId: 3,
       level: 2
+    },
+    {
+      GroupId: 1,
+      UserId: 1,
+      level: 3
     }
   ],
 

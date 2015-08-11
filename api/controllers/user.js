@@ -48,7 +48,35 @@ exports.get = function(req, res) {
     return deferred.promise;
   };
 
-  getUser(req.params.identifier).then(function(user) {
+  var addGroupsToUser = function(user) {
+    var deferred = when.defer();
+    var groupIds;
+
+    user = user.toJSON();
+
+    models.GroupMembership.findAll({
+      where: { UserId: user.id },
+      include: [
+        {
+          model: models.Group,
+          as: 'Group'
+        }
+      ]
+    }).then(function(memberships) {
+      groupIds = _.pluck(memberships, 'Group');
+      groupIds = _.pluck(groupIds, 'id');
+      user.groups = groupIds;
+      deferred.resolve(user);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  getUser(req.params.identifier)
+  .then(addGroupsToUser)
+  .then(function(user) {
     res.status(200).json(user);
   }).catch(function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });

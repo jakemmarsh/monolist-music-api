@@ -256,10 +256,15 @@ exports.search = function(req, res) {
         ),
         Sequelize.or(
           { privacy: 'public' },
-          // TODO: additional logic to check user's groups
-          Sequelize.and(
-            { ownerType: 'user' },
-            { ownerId: req.user ? req.user.id : null }
+          Sequelize.or(
+            Sequelize.and(
+              { ownerType: 'user' },
+              { ownerId: req.user ? req.user.id : null }
+            ),
+            Sequelize.and(
+              { ownerType: 'group' },
+              { ownerId: req.user ? req.user.groups : null }
+            )
           )
         )
       )
@@ -345,10 +350,15 @@ exports.getTrending = function(req, res) {
         { id: playlistIds },
         Sequelize.or(
           { privacy: 'public' },
-          // TODO: additional logic to check user's groups
-          Sequelize.and(
-            { ownerType: 'user' },
-            { ownerId: req.user ? req.user.id : null }
+          Sequelize.or(
+            Sequelize.and(
+              { ownerType: 'user' },
+              { ownerId: req.user ? req.user.id : null }
+            ),
+            Sequelize.and(
+              { ownerType: 'group' },
+              { ownerId: req.user ? req.user.groups : null }
+            )
           )
         )
       ),
@@ -394,10 +404,15 @@ exports.getNewest = function(req, res) {
     models.Playlist.findAll({
       where: Sequelize.or(
         { privacy: 'public' },
-        // TODO: additional logic to check user's groups
-        Sequelize.and(
-          { ownerType: 'user' },
-          { ownerId: req.user ? req.user.id : null }
+        Sequelize.or(
+          Sequelize.and(
+            { ownerType: 'user' },
+            { ownerId: req.user ? req.user.id : null }
+          ),
+          Sequelize.and(
+            { ownerType: 'group' },
+            { ownerId: req.user ? req.user.groups : null }
+          )
         )
       ),
       limit: limit,
