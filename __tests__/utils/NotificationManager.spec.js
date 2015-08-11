@@ -10,6 +10,22 @@ describe('Util: NotificationManager', function() {
 
   var mock;
 
+  it('should retrieve the appropriate user IDs to notify for a group action', function(done) {
+    done();
+  });
+
+  it('should retrieve the appropriate user IDs to notify for a playlist action', function(done) {
+    done();
+  });
+
+  it('should retrieve the appropriate user IDs to notify for a track action', function(done) {
+    done();
+  });
+
+  it('should retrieve the appropriate user IDs to notify for a user action', function(done) {
+    done();
+  });
+
   it('should queue new notifications to be created', function(done) {
     var notifications = [];
 
@@ -30,7 +46,7 @@ describe('Util: NotificationManager', function() {
   });
 
   afterEach(function() {
-    mock.restore();
+    if ( mock ) { mock.restore(); }
   });
 
 });

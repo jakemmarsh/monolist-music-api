@@ -1,19 +1,25 @@
 'use strict';
 
-var when            = require('when');
-var ActivityManager = require('../../api/utils/ActivityManager');
-var Queue           = require('../../api/utils/Queue');
-var models          = require('../../api/models');
-var sinon           = global.sinon || require('sinon');
+var when                = require('when');
+var ActivityManager     = require('../../api/utils/ActivityManager');
+var NotificationManager = require('../../api/utils/NotificationManager');
+var Queue               = require('../../api/utils/Queue');
+var models              = require('../../api/models');
+var sinon               = global.sinon || require('sinon');
 
 describe('Util: ActivityManager', function() {
 
   var entityType = 'user';
   var entityId = 1;
-  var actionType = 'follow';
+  var action = 'follow';
   var actorId = 2;
   var passThrough = {};
-  var activity = {};
+  var activity = {
+    entityType: entityType,
+    entityId: entityId,
+    actorId: actorId,
+    action: action
+  };
   var mock;
 
   it('should queue a new activity to be created', function(done) {
@@ -21,7 +27,7 @@ describe('Util: ActivityManager', function() {
 
     mock.expects('activity').once().withArgs(activity).returns(when());
 
-    ActivityManager.queue(entityType, entityId, actionType, actorId, passThrough).then(function() {
+    ActivityManager.queue(entityType, entityId, action, actorId, passThrough).then(function() {
       done();
     });
   });
@@ -35,11 +41,12 @@ describe('Util: ActivityManager', function() {
     ActivityManager.create(activity).then(done);
   });
 
-  it('should queue notifications when an activity is saved', function(done) {
-    mock = sinon.mock(Queue);
+  it('should build and queue notifications when an activity is saved', function(done) {
+    mock = sinon.mock(NotificationManager);
 
     sinon.stub(models.Activity, 'create').returns(when());
-    mock.expects('notifications').once().returns(when());
+    mock.expects('buildNotifications').once().returns(when());
+    mock.expects('queue').once().returns(when());
 
     ActivityManager.create(activity).then(done);
   });

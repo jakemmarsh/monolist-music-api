@@ -71,6 +71,7 @@ exports.notifications = function(notifications) {
   console.log('create notification jobs for:', notifications);
 
   var mainDeferred = when.defer();
+
   var queueNotification = function(notification) {
     var deferred = when.defer();
 

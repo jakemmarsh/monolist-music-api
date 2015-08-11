@@ -55,7 +55,7 @@ describe('Util: Queue', function() {
 
   it('should prompt NotificationManager to save a notification on job process', function(done) {
     mock = sinon.mock(NotificationManager);
-    mock.expects('create').once().withArgs(notification).returns(when());
+    mock.expects('create').exactly(notifications.length).returns(when());
 
     Queue.notifications(notifications);
 
