@@ -1,12 +1,23 @@
 'use strict';
 
+var _           = require('lodash');
+var ActionTypes = require('../utils/ActionTypes');
+
 module.exports = function(sequelize, DataTypes) {
 
   var Notification = sequelize.define('Notification', {
-    activity:   { type: DataTypes.ENUM('addTrack', 'addCollaborator', 'addComment') },
     entityType: { type: DataTypes.ENUM('playlist', 'track', 'group') },
     entityId:   { type: DataTypes.INTEGER },
-    read:       { type: DataTypes.BOOLEAN, defaultValue: false }
+    read:       { type: DataTypes.BOOLEAN, defaultValue: false },
+    action:     {
+      type: DataTypes.ENUM,
+      values: _([]).concat(
+        ActionTypes.USER_ACTION_TYPES,
+        ActionTypes.PLAYLIST_ACTION_TYPES,
+        ActionTypes.TRACK_ACTION_TYPES,
+        ActionTypes.GROUP_ACTION_TYPES
+      ).uniq().value()
+    }
   },
   {
     classMethods: {
