@@ -2,6 +2,7 @@
 
 var passport              = require('passport');
 var _                     = require('lodash');
+var when                  = require('when');
 var LocalStrategy         = require('passport-local').Strategy;
 var FacebookTokenStrategy = require('passport-facebook-token').Strategy;
 var models                = require('../models');
@@ -17,7 +18,7 @@ module.exports = function() {
       where: { username: username },
       include: [
         {
-          models: models.StarredTrack,
+          model: models.StarredTrack,
           as: 'StarredTracks'
         },
         {
@@ -58,7 +59,7 @@ module.exports = function() {
         }
       ]
     }).then(function(memberships) {
-      groupIds = _.pluck(memberships, 'Group.id');
+      groupIds = _.pluck(memberships, 'Group');
       groupIds = _.pluck(groupIds, 'id');
       user.groups = groupIds;
       deferred.resolve(user);
