@@ -6,7 +6,7 @@ var ActionTypes = require('../utils/ActionTypes');
 module.exports = function(sequelize, DataTypes) {
 
   var Notification = sequelize.define('Notification', {
-    entityType: { type: DataTypes.ENUM('playlist', 'track', 'group') },
+    entityType: { type: DataTypes.ENUM('playlist', 'track', 'group', 'user') },
     entityId:   { type: DataTypes.INTEGER },
     read:       { type: DataTypes.BOOLEAN, defaultValue: false },
     action:     {

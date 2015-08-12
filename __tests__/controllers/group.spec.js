@@ -87,7 +87,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
   });
 
   it('should make an existing member an admin of a group', function(done) {
-    var req = request(url).post('group/2/member/3/level/2');
+    var req = request(url).post('group/1/member/3/level/2');
 
     req.cookies = global.cookies;
 
@@ -99,7 +99,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
   });
 
   it('should make an existing admin of a group not an admin', function(done) {
-    var req = request(url).post('group/2/member/3/level/1');
+    var req = request(url).post('group/1/member/3/level/1');
 
     req.cookies = global.cookies;
 

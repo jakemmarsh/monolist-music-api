@@ -42,7 +42,7 @@ exports.create = function(activity) {
   models.Activity.create(activity).then(function() {
     NotificationManager.buildNotifications(activity)
     .then(NotificationManager.queue)
-    .then(deferred.resolve);
+    .then(deferred.resolve.bind(null, null, activity));
   }).catch(deferred.reject);
 
   return deferred.promise;

@@ -1,6 +1,7 @@
 'use strict';
 
 var request = require('supertest');
+var fixtures = require('./fixtures');
 var url     = 'http://localhost:3000/v1/';
 var agent   = request.agent(url);
 
@@ -12,8 +13,8 @@ module.exports = function(name, tests) {
 
     beforeEach(function(done) {
       var user = {
-        username: 'jakemmarsh',
-        password: 'pass'
+        username: fixtures.users[0].username,
+        password: fixtures.users[0].hash
       };
 
       agent.post('auth/login')
