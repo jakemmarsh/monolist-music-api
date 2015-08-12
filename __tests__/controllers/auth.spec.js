@@ -1,6 +1,8 @@
 'use strict';
 
 var request = require('supertest');
+var when    = require('when');
+var mailer  = require('../../api/mailer');
 
 describe('Controller: Auth', function() {
 
@@ -15,12 +17,13 @@ describe('Controller: Auth', function() {
     });
   });
 
-  it('should register a new user', function(done) {
+  it('should register a new user and send the welcome email', function(done) {
     var profile = {
       username: 'jane.doe',
       email: 'jane.doe@gmail.com',
       password: 'janedoe1'
     };
+    var spy = sinon.spy(mailer, 'sendWelcome');
 
     request(url)
     .post('auth/register')
@@ -29,6 +32,7 @@ describe('Controller: Auth', function() {
       res.status.should.be.equal(200);
       res.body.should.have.property('username');
       res.body.should.have.property('email');
+      spy.calledOnce.should.be.true;
       done();
     });
   });
@@ -75,7 +79,7 @@ describe('Controller: Auth', function() {
     });
   });
 
-  it('should start the password reset flow', function(done) {
+  it('should start the password reset flow and send the reset email', function(done) {
     // TODO
     done();
   });
