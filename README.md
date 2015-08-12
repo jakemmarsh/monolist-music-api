@@ -21,7 +21,7 @@ The API is served at `localhost:3000` by default, with all endpoints behind `loc
 
 1. Clone repo, install dependencies (Steps 1-3 above) **Note:** redis-server is necessary for running tests locally.
 2. Run `npm test` to run all tests. Coverage files are output to `__coverage__/` directory.
-3. Individual tests can be run with `node_modules/.bin/_mocha
+3. Individual tests can be run with `node_modules/.bin/_mocha <path_to_file`.
 
 ---
 
