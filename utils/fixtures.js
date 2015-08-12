@@ -22,6 +22,13 @@ module.exports = {
     },
   ],
 
+  userFollows: [
+    {
+      UserId: 1,
+      FollowerId: 2
+    }
+  ],
+
   playlists: [
     {
       ownerId: 1,
@@ -45,6 +52,8 @@ module.exports = {
       UserId: 2
     }
   ],
+
+  playlistFollows: [],
 
   playlistLikes: [
     {
@@ -123,6 +132,8 @@ module.exports = {
       level: 3
     }
   ],
+
+  groupFollows: [],
 
   groupPlaylists: [
       {

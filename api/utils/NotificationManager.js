@@ -7,12 +7,88 @@ var Queue  = require('./Queue');
 
 /* ====================================================== */
 
-function getGroupUserIds(groupId) {
+exports.getGroupUserIds = function(groupId) {
 
   var deferred = when.defer();
 
-  // fetch all members/followers of group
-  deferred.resolve([]);
+  models.Group.find({
+    where: { id: groupId },
+    include: [
+      {
+        model: models.GroupMembership,
+        as: 'Memberships'
+      },
+      {
+        model: models.GroupFollow,
+        as: 'Followers'
+      }
+    ]
+  }).then(function(group) {
+    var memberIds = _.pluck(group.Memberships, 'UserId');
+    var followerIds = _.pluck(group.Followers, 'UserId');
+    var ids = _([group.OwnerId]).concat(memberIds, followerIds).uniq().value();
+
+    deferred.resolve(ids);
+  }).catch(function(err) {
+    deferred.reject(err);
+  });
+
+  return deferred.promise;
+
+};
+
+/* ====================================================== */
+
+exports.getPlaylistUserIds = function(playlistId) {
+
+  var deferred = when.defer();
+
+  // TODO: also get members of group if playlist owner is group
+
+  models.Playlist.find({
+    where: { id: playlistId },
+    include: [
+      {
+        model: models.Collaboration,
+        attributes: ['UserId']
+      },
+      {
+        model: models.PlaylistFollow,
+        as: 'Followers',
+        attributes: ['UserId']
+      }
+    ]
+  }).then(function(playlist) {
+    var collaboratorIds = _.pluck(playlist.Collaborations, 'UserId');
+    var followerIds = _.pluck(playlist.Followers, 'UserId');
+    var ids = _([]).concat(collaboratorIds, followerIds).uniq().value();
+
+    if ( playlist.ownerType === 'user' && !_.contains(ids, playlist.ownerId) ) {
+      ids.push(playlist.ownerId);
+    }
+
+    deferred.resolve(ids);
+  }).catch(function(err) {
+    deferred.reject(err);
+  })
+
+  return deferred.promise;
+
+};
+
+/* ====================================================== */
+
+exports.getTrackUserIds = function(trackId) {
+
+  var deferred = when.defer();
+
+  models.Track.find({
+    where: { id: trackId }
+  }).then(function(track) {
+    deferred.resolve([track.UserId]);
+  }).catch(function(err) {
+    deferred.reject(err);
+  });
 
   return deferred.promise;
 
@@ -20,40 +96,14 @@ function getGroupUserIds(groupId) {
 
 /* ====================================================== */
 
-function getPlaylistUserIds(playlistId) {
-
-  var deferred = when.defer();
-
-  // fetch owner/all collaborators of playlist
-  deferred.resolve([]);
-
-  return deferred.promise;
-
-}
-
-/* ====================================================== */
-
-function getTrackUserIds(trackId) {
-
-  var deferred = when.defer();
-
-  // fetch adder of track. fetch all collaborators???
-  deferred.resolve([]);
-
-  return deferred.promise;
-
-}
-
-/* ====================================================== */
-
-function getUserIdsForEntity(entityType, entityId) {
+exports.getUserIdsForEntity = function(entityType, entityId) {
 
   if ( entityType === 'group' ) {
-    return getGroupUserIds(entityId);
+    return exports.getGroupUserIds(entityId);
   } else if ( entityType === 'playlist' ) {
-    return getPlaylistUserIds(entityId);
+    return exports.getPlaylistUserIds(entityId);
   } else if ( entityType === 'track' ) {
-    return getTrackUserIds(entityId)
+    return exports.getTrackUserIds(entityId)
   } else if ( entityType === 'user' ) {
     return when([entityId]);
   }
@@ -65,7 +115,7 @@ function getUserIdsForEntity(entityType, entityId) {
 exports.buildNotifications = function(activity) {
   var deferred = when.defer();
 
-  getUserIdsForEntity(activity.entityType, activity.entityId).then(function(userIds) {
+  exports.getUserIdsForEntity(activity.entityType, activity.entityId).then(function(userIds) {
     deferred.resolve(_.map(userIds, function(userId) {
       return {
         ActorId: activity.actorId || activity.ActorId,
@@ -85,19 +135,11 @@ exports.buildNotifications = function(activity) {
 exports.queue = function(notifications) {
   var deferred = when.defer();
 
-  notifications = notifications.constructor === Array ? notifications : [notifications];
-  notifications = _.map(notifications, function(notification) {
-    // TODO: sanitize
-    return {
-
-    };
-  });
+  notifications = _.isArray(notifications) ? notifications : [notifications];
 
   Queue.notifications(notifications)
   .then(deferred.resolve)
   .catch(deferred.reject);
-
-  deferred.resolve();
 
   return deferred.promise;
 };
@@ -108,7 +150,6 @@ exports.create = function(notification) {
 
   var deferred = when.defer();
 
-  // Can be assumed notification is sanitized and singular since coming from queue
   models.Notification.create(notification)
   .then(deferred.resolve)
   .catch(deferred.reject);

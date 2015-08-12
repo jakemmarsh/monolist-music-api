@@ -137,7 +137,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
   });
 
   it('should successfully add a collaborator', function(done) {
-    var req = request(url).post('playlist/1/collaborator/2');
+    var req = request(url).post('playlist/1/collaborator/3');
 
     req.cookies = global.cookies;
 
@@ -151,7 +151,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
   });
 
   it('should successfully remove a collaborator', function(done) {
-    var req = request(url).delete('playlist/1/collaborator/2');
+    var req = request(url).delete('playlist/1/collaborator/3');
 
     req.cookies = global.cookies;
 

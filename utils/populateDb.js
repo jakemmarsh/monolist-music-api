@@ -44,6 +44,21 @@ module.exports = function(models, mailer) {
     return deferred.promise;
   };
 
+  var createUserFollows = function() {
+    var deferred = when.defer();
+
+    models.UserFollow.bulkCreate(fixtures.userFollows, {
+      validate: true,
+      individualHooks: true
+    }).then(function(createdFollows) {
+      deferred.resolve(createdFollows);
+    }).catch(function(err) {
+      console.log('error creating user follows:', err);
+    });
+
+    return deferred.promise;
+  };
+
   var createPlaylist = function() {
     var deferred = when.defer();
 
@@ -147,7 +162,10 @@ module.exports = function(models, mailer) {
   var createGroupPlaylists = function() {
     var deferred = when.defer();
 
-    models.Playlist.bulkCreate(fixtures.groupPlaylists, { validate: true, individualHooks: true }).then(function(createdPlaylists) {
+    models.Playlist.bulkCreate(fixtures.groupPlaylists, {
+      validate: true,
+      individualHooks: true
+    }).then(function(createdPlaylists) {
       deferred.resolve(createdPlaylists);
     }).catch(function(err) {
       console.log('error creating group playlists:', err);
@@ -159,6 +177,7 @@ module.exports = function(models, mailer) {
   createUser()
   .then(createSecondUser)
   .then(createThirdUser)
+  .then(createUserFollows)
   .then(createPlaylist)
   .then(createSecondPlaylist)
   .then(createCollaboration)
