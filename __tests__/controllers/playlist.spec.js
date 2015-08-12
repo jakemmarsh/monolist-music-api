@@ -2,7 +2,11 @@
 
 var request  = require('supertest');
 var slug     = require('slug');
+var when     = require('when');
+var models   = require('../../api/models');
 var fixtures = require('../../utils/fixtures');
+var sinon    = global.sinon || require('sinon');
+var should   = global.should || require('should');
 
 require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function() {
 
@@ -181,22 +185,30 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
 
   it('should successfully remove a track', function(done) {
     var req = request(url).delete('playlist/1/track/2');
+    var mock = sinon.mock(models.Track.Instance.prototype);
+
+    mock.expects('destroy').returns(when());
 
     req.cookies = global.cookies;
 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
+      mock.restore();
       done();
     });
   });
 
   it('should successfully delete a playlist', function(done) {
     var req = request(url).delete('playlist/2');
+    var mock = sinon.mock(models.Playlist.Instance.prototype);
+
+    mock.expects('destroy').once().returns(when());
 
     req.cookies = global.cookies;
 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
+      mock.restore();
       done();
     });
   });

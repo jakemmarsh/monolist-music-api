@@ -1,6 +1,8 @@
 'use strict';
 
 var request = require('supertest');
+var when    = require('when');
+var models  = require('../../api/models');
 
 require('../../utils/createAuthenticatedSuite')('Controller: Group', function() {
 
@@ -123,11 +125,15 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
 
   it('should delete a group', function(done) {
     var req = request(url).delete('group/1');
+    var mock = sinon.mock(models.Group.Instance.prototype);
+
+    mock.expects('destroy').once().returns(when());
 
     req.cookies = global.cookies;
 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
+      mock.restore();
       done();
     });
   });

@@ -1,6 +1,8 @@
 'use strict';
 
 var request = require('supertest');
+var when    = require('when');
+var models  = require('../../api/models');
 
 require('../../utils/createAuthenticatedSuite')('Controller: User', function() {
 
@@ -182,6 +184,9 @@ require('../../utils/createAuthenticatedSuite')('Controller: User', function() {
 
   it('should delete a user', function(done) {
     var req = request(url).del('user/2');
+    var mock = sinon.mock(models.User.Instance.prototype);
+
+    mock.expects('destroy').once().returns(when());
 
     req.cookies = global.cookies;
 
