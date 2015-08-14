@@ -51,6 +51,7 @@
     "when": "^3.6.4"
   },
   "devDependencies": {
+    "apidoc": "^0.13.1",
     "istanbul": "^0.3.17",
     "mocha": "^2.2.5",
     "should": "^7.0.2",
@@ -63,6 +64,7 @@
     "dev": "redis-server & supervisor server.js",
     "test": "redis-server & istanbul cover --report html --dir \"__coverage__/\" --x \"__tests__/**/*\" --x \"populateDb.js\" --x \"server.js\" --x \"api/routes/aws.js\" node_modules/.bin/_mocha -- -i \"__tests__/**/*.js\"",
     "deploy": "ebs-deploy deploy --environment monolist-api-staging",
-    "deploy-prod": "ebs-deploy deploy --environment monolist-api-prod"
+    "deploy-prod": "ebs-deploy deploy --environment monolist-api-prod",
+    "gen-docs": "apidoc -i api/controllers/ -o doc/"
   }
 }

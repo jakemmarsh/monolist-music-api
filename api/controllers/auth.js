@@ -129,6 +129,16 @@ exports.register = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {post} /auth/login Login
+ * @apiName Login
+ * @apiGroup Auth
+ *
+ * @apiParam {String} username User's username.
+ * @apiParam {String} password User's password.
+ *
+ * @apiSuccess {Object} User object
+ */
 exports.login = function(req, res, next) {
 
   passport.authenticate('local', function(err, user, info) {

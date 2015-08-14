@@ -1,0 +1,1 @@
+define({  "name": "Monolist-API",  "version": "1.0.0",  "description": "The node.js server & Express API for the Monolist application.",  "sampleUrl": false,  "apidoc": "0.2.0",  "generator": {    "name": "apidoc",    "time": "2015-08-14T22:04:18.246Z",    "url": "http://apidocjs.com",    "version": "0.13.1"  }});
