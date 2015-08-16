@@ -30,7 +30,7 @@ The API is served at `localhost:3000` by default, with all endpoints behind `loc
 Below is a `.env` file (with any actual keys/credentials removed). This same structure can be used to add any extra configuration information you may need, available at `process.env.*` while running on the server-side.
 
 ```
-NODE_ENV='development'
+NODE_ENV=''
 
 DB_USER=''
 DB_PASSWORD=''
