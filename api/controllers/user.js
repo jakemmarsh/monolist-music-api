@@ -279,10 +279,25 @@ exports.getPlaylists = function(req, res) {
     var deferred = when.defer();
 
     models.Playlist.findAll({
-      where: {
-        ownerType: 'user',
-        ownerId: userId
-      },
+      where: Sequelize.and(
+        { ownerType: 'user' },
+        Sequelize.and(
+          { ownerId: userId },
+          Sequelize.or(
+            { privacy: 'public' },
+            Sequelize.or(
+              Sequelize.and(
+                { ownerType: 'user' },
+                { ownerId: req.user ? req.user.id : null }
+              ),
+              Sequelize.and(
+                { ownerType: 'group' },
+                { ownerId: req.user ? req.user.groups : null }
+              )
+            )
+          )
+        )
+      ),
       include: [
         {
           model: models.PlaylistLike,

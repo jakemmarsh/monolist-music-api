@@ -29,13 +29,17 @@ exports.get = function(req, res) {
         },
         {
           model: models.GroupMembership,
-          as: 'Memberships'
+          as: 'Memberships',
+          include: [models.User]
         }
       ]
     }).then(function(group) {
       if ( _.isEmpty(group) ) {
         deferred.reject({ status: 404, body: 'Group could not be found at identifier: ' + identifier });
       } else {
+        group = group.toJSON();
+        group.members = _.pluck(group.Memberships, 'User');
+        delete group.Memberships;
         deferred.resolve(group);
       }
     }).catch(function(err) {

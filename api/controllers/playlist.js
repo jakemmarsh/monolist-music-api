@@ -149,7 +149,7 @@ exports.get = function(req, res) {
       include: [
         {
           model: models.Collaboration,
-          attributes: ['UserId']
+          include: [models.User]
         },
         {
           model: models.Track,
@@ -216,6 +216,8 @@ exports.get = function(req, res) {
           }).then(function(owner) {
             playlist = playlist.toJSON();
             playlist.owner = owner;
+            playlist.collaborators = _.pluck(playlist.Collaborations, 'User');
+            delete playlist.Collaborations;
             deferred.resolve(playlist);
           });
         } else {
