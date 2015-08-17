@@ -216,6 +216,7 @@ exports.get = function(req, res) {
           }).then(function(owner) {
             playlist = playlist.toJSON();
             playlist.owner = owner;
+            delete playlist.ownerId;
             playlist.collaborators = _.pluck(playlist.Collaborations, 'User');
             delete playlist.Collaborations;
             deferred.resolve(playlist);
