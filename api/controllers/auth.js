@@ -240,7 +240,7 @@ exports.forgotPassword = function(req, res) {
   .then(updateUser)
   .then(sendEmail)
   .then(function() {
-    res.status(200).json({ message: 'Password reset email successfully sent.' });
+    res.status(200).json({ status: 200, message: 'Password reset email successfully sent.' });
   }).catch(function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
   });
