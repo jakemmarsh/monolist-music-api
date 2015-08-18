@@ -301,6 +301,14 @@ exports.search = function(req, res) {
 
 /* ====================================================== */
 
+exports.getPosts = function(req, res) {
+
+
+
+};
+
+/* ====================================================== */
+
 exports.follow = function(req, res) {
 
   var followGroup = function(currentUserId, groupId) {
