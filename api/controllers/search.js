@@ -3,10 +3,11 @@
 var path       = require('path');
 var when       = require('when');
 var _          = require('lodash');
-var bandcamp   = require(path.join(__dirname, 'sources/bandcamp'));
-var soundcloud = require(path.join(__dirname, 'sources/soundcloud'));
-var spotify    = require(path.join(__dirname, 'sources/spotify'));
-var youtube    = require(path.join(__dirname, 'sources/youtube'));
+var models     = require('../models');
+var bandcamp   = require('./sources/bandcamp');
+var soundcloud = require('./sources/soundcloud');
+var spotify    = require('./sources/spotify');
+var youtube    = require('./sources/youtube');
 
 /* ====================================================== */
 
@@ -42,10 +43,10 @@ module.exports = function(req, res) {
       });
     } else {
       searchPromises = [
-        sourcePromisesMap.bandcamp(req.params.query, limit),
-        sourcePromisesMap.soundcloud(req.params.query, limit),
-        sourcePromisesMap.spotify(req.params.query, limit),
-        sourcePromisesMap.youtube(req.params.query, limit)
+        sourcePromisesMap.bandcamp(req.params.query, limit, ip),
+        sourcePromisesMap.soundcloud(req.params.query, limit, ip),
+        sourcePromisesMap.spotify(req.params.query, limit, ip),
+        sourcePromisesMap.youtube(req.params.query, limit, ip)
       ];
     }
 
