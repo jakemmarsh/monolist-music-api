@@ -176,8 +176,18 @@ exports.getNotifications = function(req, res) {
     var deferred = when.defer();
 
     models.Notification.findAll({
-      where: { RecipientId: userId }
+      where: { RecipientId: userId },
+      include: [
+        {
+          model: models.User,
+          as: 'Actor'
+        }
+      ]
     }).then(function(retrievedNotifications) {
+      retrievedNotifications = _.map(retrievedNotifications, function(notification) {
+        notification = notification.toJSON();
+        delete notification.ActorId;
+      });
       deferred.resolve(retrievedNotifications);
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
@@ -375,7 +385,12 @@ exports.getEditablePlaylists = function(req, res) {
 
     models.Collaboration.findAll({
       where: { UserId: userId },
-      include: [models.Playlist]
+      include: [
+        {
+          model: models.Playlist,
+          attributes: ['id']
+        }
+      ]
     }).then(function(collaborations) {
       deferred.resolve([_.pluck(collaborations, 'Playlist.id'), groupIds]);
     }).catch(function() {

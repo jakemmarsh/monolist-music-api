@@ -8,7 +8,8 @@ module.exports = {
       email: 'jakemmarsh@gmail.com',
       facebookId: '621883172',
       hash: 'pass',
-      role: 'admin'
+      role: 'admin',
+      passwordResetKey: 'abcdefg'
     },
     {
       username: 'test',

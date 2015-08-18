@@ -38,6 +38,7 @@ exports.get = function(req, res) {
         deferred.reject({ status: 404, body: 'Group could not be found at identifier: ' + identifier });
       } else {
         group = group.toJSON();
+        delete group.OwnerId;
         group.members = _.pluck(group.Memberships, 'User');
         delete group.Memberships;
         deferred.resolve(group);
@@ -265,10 +266,22 @@ exports.search = function(req, res) {
         {
           model: models.GroupMembership,
           as: 'Memberships',
-          attributes: ['id']
+          include: [
+            {
+              model: models.User,
+              attributes: ['id']
+            }
+          ]
         }
       ]
     }).then(function(retrievedGroups) {
+      retrievedGroups = _.map(retrievedGroups, function(group) {
+        group = group.toJSON();
+        delete group.OwnerId;
+        group.members = _.pluck(group.Memberships, 'User');
+        delete group.Memberships;
+        return group;
+      });
       deferred.resolve(retrievedGroups);
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });

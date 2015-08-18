@@ -1,8 +1,9 @@
 'use strict';
 
-var request = require('supertest');
-var when    = require('when');
-var mailer  = require('../../api/mailer');
+var request  = require('supertest');
+var when     = require('when');
+var mailer   = require('../../api/mailer');
+var fixtures = require('../../utils/fixtures');
 
 describe('Controller: Auth', function() {
 
@@ -80,13 +81,30 @@ describe('Controller: Auth', function() {
   });
 
   it('should start the password reset flow and send the reset email', function(done) {
-    // TODO
-    done();
+    var user = fixtures.users[0];
+    var spy = sinon.spy(mailer, 'sendReset');
+
+
+    request(url)
+    .post('auth/forgot/' + user.username)
+    .end(function(err, res) {
+      res.status.should.be.equal(200);
+      spy.calledOnce.should.be.true;
+      done();
+    });
   });
 
   it('should reset a password', function(done) {
-    // TODO
-    done();
+    var user = fixtures.users[0];
+    var fetchMock = sinon.mock(models.User).expects('find').once().returns(when(user));
+    var updateMock = sinon.mock(models.User.Instance.prototype).expects('updateAttributes').once().returns(when(user));
+
+    request(url)
+    .post('auth/reset/'+ user.id + '/' + user.passwordResetKey)
+    .end(function(err, res) {
+      res.status.should.be.equal(200);
+      done();
+    });
   });
 
 });
