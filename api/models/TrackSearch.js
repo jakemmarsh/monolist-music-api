@@ -3,7 +3,9 @@
 module.exports = function(sequelize) {
 
   var TrackSearch = sequelize.define('TrackSearch', {
-    query: { type: DataTypes.STRING, allowNull: false }
+    query:   { type: DataTypes.STRING, allowNull: false },
+    // TODO: should this be an array of IDs or actual results?
+    results: { type: DataTypes.ARRAY(DataTypes.INTEGER), defaultValue: [] }
   },
   {
     classMethods: {
