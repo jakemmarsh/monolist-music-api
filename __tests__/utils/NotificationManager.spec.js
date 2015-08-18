@@ -6,7 +6,6 @@ var NotificationManager = require('../../api/utils/NotificationManager');
 var Queue               = require('../../api/utils/Queue');
 var models              = require('../../api/models');
 var fixtures            = require('../../utils/fixtures');
-var sinon               = global.sinon || require('sinon');
 
 describe('Util: NotificationManager', function() {
 
@@ -96,7 +95,7 @@ describe('Util: NotificationManager', function() {
         action: 'create'
       }
     ];
-    var spy = sinon.spy(NotificationManager, 'getPlaylistUserIds');
+    var spy = sandbox.spy(NotificationManager, 'getPlaylistUserIds');
 
     NotificationManager.buildNotifications(activity).then(function(builtNotifications) {
       builtNotifications = _.sortBy(builtNotifications, 'RecipientId');
@@ -111,8 +110,8 @@ describe('Util: NotificationManager', function() {
   it('should queue new notifications to be created', function(done) {
     var notifications = [];
 
-    mock = sinon.mock(Queue);
-    mock.expects('notifications').once().withArgs(notifications).returns(when());
+    mock = sandbox.mock(Queue);
+    sandbox.mock(Queue).expects('notifications').once().withArgs(notifications).returns(when());
 
     NotificationManager.queue(notifications).then(done);
   });
@@ -120,9 +119,8 @@ describe('Util: NotificationManager', function() {
   it('should save a new notification in the database', function(done) {
     var notification = {};
 
-    mock = sinon.mock(models.Notification);
-    sinon.stub(Queue, 'notifications').returns(when());
-    mock.expects('create').once().withArgs(notification).returns(when());
+    sandbox.stub(Queue, 'notifications').returns(when());
+    sandbox.mock(models.Notification).expects('create').once().withArgs(notification).returns(when());
 
     NotificationManager.create(notification).then(done);
   });

@@ -24,7 +24,7 @@ describe('Controller: Auth', function() {
       email: 'jane.doe@gmail.com',
       password: 'janedoe1'
     };
-    var spy = sinon.spy(mailer, 'sendWelcome');
+    var spy = sandbox.spy(mailer, 'sendWelcome');
 
     request(url)
     .post('auth/register')
@@ -82,7 +82,7 @@ describe('Controller: Auth', function() {
 
   it('should start the password reset flow and send the reset email', function(done) {
     var user = fixtures.users[0];
-    var spy = sinon.spy(mailer, 'sendReset');
+    var spy = sandbox.spy(mailer, 'sendReset');
 
 
     request(url)
@@ -96,8 +96,9 @@ describe('Controller: Auth', function() {
 
   it('should reset a password', function(done) {
     var user = fixtures.users[0];
-    var fetchMock = sinon.mock(models.User).expects('find').once().returns(when(user));
-    var updateMock = sinon.mock(models.User.Instance.prototype).expects('updateAttributes').once().returns(when(user));
+
+    sandbox.mock(models.User).expects('find').once().returns(when(user));
+    sandbox.mock(models.User.Instance.prototype).expects('updateAttributes').once().returns(when(user));
 
     request(url)
     .post('auth/reset/'+ user.id + '/' + user.passwordResetKey)

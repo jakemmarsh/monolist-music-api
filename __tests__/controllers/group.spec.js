@@ -140,7 +140,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
 
   it('should delete a group', function(done) {
     var req = request(url).delete('group/1');
-    var mock = sinon.mock(models.Group.Instance.prototype);
+    var mock = sandbox.mock(models.Group.Instance.prototype);
 
     mock.expects('destroy').once().returns(when());
 
@@ -148,7 +148,6 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
-      mock.restore();
       done();
     });
   });
