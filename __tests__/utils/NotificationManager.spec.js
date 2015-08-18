@@ -26,7 +26,7 @@ describe('Util: NotificationManager', function() {
     // Followers
     if ( !_.isEmpty(fixtures.groupFollows) ) {
       _.each(_.where(fixtures.groupFollows, { GroupId: groupId }), function(follow) {
-        userIds.push(follow.UserId);
+        userIds.push(follow.FollowerId);
       });
     }
 

@@ -301,6 +301,46 @@ exports.search = function(req, res) {
 
 /* ====================================================== */
 
+exports.follow = function(req, res) {
+
+  var followGroup = function(currentUserId, groupId) {
+    var deferred = when.defer();
+    var attributes = {
+      FollowerId: currentUserId,
+      GroupId: groupId
+    };
+
+    models.GroupFollow.find({
+      where: attributes
+    }).then(function(retrievedFollowing) {
+      if ( _.isEmpty(retrievedFollowing) ) {
+        models.GroupFollow.create(attributes).then(function(savedFollow) {
+          deferred.resolve(savedFollow);
+        }).catch(function(err) {
+          deferred.reject({ status: 500, body: err });
+        });
+      } else {
+        retrievedFollowing.destroy().then(function() {
+          deferred.resolve('Following successfully removed.');
+        }).catch(function(err) {
+          deferred.reject({ status: 500, body: err });
+        });
+      }
+    });
+
+    return deferred.promise;
+  };
+
+  followGroup(req.user.id, req.params.id).then(function(resp) {
+    res.status(200).json({ status: 200, data: resp });
+  }).catch(function(err) {
+    res.status(err.status).json({ status: err.status, error: err.body.toString() });
+  });
+
+};
+
+/* ====================================================== */
+
 exports.addMember = function(req, res) {
 
   var getCurrentUserLevel = function(groupId, actorId, memberId) {
@@ -371,6 +411,8 @@ exports.addMember = function(req, res) {
 
     return deferred.promise;
   };
+
+  // TODO: delete any GroupFollows for this user/group since they'll now be subscribed anyways
 
   getCurrentUserLevel(req.params.groupId, req.user.id, req.params.memberId)
   .then(fetchGroup)

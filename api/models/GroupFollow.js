@@ -7,7 +7,7 @@ module.exports = function(sequelize) {
     classMethods: {
       associate: function(models) {
         GroupFollow.belongsTo(models.Group, { as: 'Group' });
-        GroupFollow.belongsTo(models.User, { as: 'User' });
+        GroupFollow.belongsTo(models.User, { as: 'Follower' });
       }
     }
   });

@@ -74,6 +74,21 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
     });
   });
 
+  it('should follow a group', function(done) {
+    var req = request(url).post('group/1/follow');
+
+    req.cookies = global.cookies;
+
+    req.end(function(err, res) {
+      res.status.should.be.equal(200);
+      res.body.should.be.instanceof(Object);
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('GroupId');
+      res.body.data.should.have.property('FollowerId');
+      done();
+    });
+  });
+
   it('should add a new member to a group', function(done) {
     var req = request(url).post('group/1/member/3');
 
