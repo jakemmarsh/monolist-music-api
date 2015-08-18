@@ -29,8 +29,10 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     });
   });
 
-  it('should return playlists matching a search query', function(done) {
+  it('should return playlists matching a search query and record the search', function(done) {
     var req = request(url).get('playlists/search/test');
+
+    sandbox.mock(models.PlaylistSearch).expects('create').once();
 
     req.cookies = global.cookies;
 
@@ -185,9 +187,8 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
 
   it('should successfully remove a track', function(done) {
     var req = request(url).delete('playlist/1/track/2');
-    var mock = sandbox.mock(models.Track.Instance.prototype);
 
-    mock.expects('destroy').returns(when());
+    sandbox.mock(models.Track.Instance.prototype).expects('destroy').returns(when());
 
     req.cookies = global.cookies;
 
@@ -199,9 +200,8 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
 
   it('should successfully delete a playlist', function(done) {
     var req = request(url).delete('playlist/2');
-    var mock = sandbox.mock(models.Playlist.Instance.prototype);
 
-    mock.expects('destroy').once().returns(when());
+    sandbox.mock(models.Playlist.Instance.prototype).expects('destroy').once().returns(when());
 
     req.cookies = global.cookies;
 

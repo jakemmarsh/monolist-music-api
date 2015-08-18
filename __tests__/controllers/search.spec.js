@@ -2,12 +2,16 @@
 
 var request = require('supertest');
 
+var models  = require('../../api/models');
+
 describe('Controller: Search', function() {
 
   var url = 'http://localhost:3000/v1/';
 
-  it('should return an array of matching tracks', function(done) {
+  it('should return an array of matching tracks and record the search', function(done) {
     this.timeout(10000);
+
+    sandbox.mock(models.TrackSearch).expects('create').once();
 
     request(url)
     .get('tracks/search/test')
