@@ -1,6 +1,5 @@
 'use strict';
 
-var path       = require('path');
 var when       = require('when');
 var _          = require('lodash');
 var models     = require('../models');
@@ -53,11 +52,21 @@ module.exports = function(req, res) {
     return searchPromises;
   };
 
+  var recordSearch = function(currentUser, query) {
+    var attributes = {
+      UserId: currentUser ? currentUser.id : null,
+      query: query
+    };
+
+    models.TrackSearch.create(attributes);
+  };
+
   // Search all specified resources
   when.all(getSearchPromises()).then(function(results) {
     _.each(results, function(result) {
       searchResults = _.sortBy(searchResults.concat(result), 'title');
     });
+    recordSearch(req.user, req.params.query);
     res.status(200).json(searchResults);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body });
