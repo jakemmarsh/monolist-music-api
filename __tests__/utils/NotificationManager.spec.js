@@ -15,6 +15,8 @@ describe('Util: NotificationManager', function() {
     var groupId = 1;
     var userIds = [];
 
+    this.timeout(5000);
+
     // Memberships (includes owner)
     if ( !_.isEmpty(fixtures.groupMemberships) ) {
       _.each(_.where(fixtures.groupMemberships, { GroupId: groupId }), function(membership) {
@@ -39,6 +41,8 @@ describe('Util: NotificationManager', function() {
     var playlistId = 1;
     var userIds = [];
     var playlist;
+
+    this.timeout(5000);
 
     // Owner
     if ( !_.isEmpty(fixtures.playlists) ) {
@@ -88,7 +92,7 @@ describe('Util: NotificationManager', function() {
     };
     var notifications = [
       {
-        ActorId: 1,
+        ActorId: fixtures.userFollows[0].UserId,
         RecipientId: fixtures.userFollows[0].FollowerId,
         entityType: 'playlist',
         entityId: 5,

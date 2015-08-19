@@ -209,14 +209,17 @@ exports.forgotPassword = function(req, res) {
 
   var updateUser = function(user) {
     var deferred = when.defer();
-    var key = crypto.randomBytes(16).toString('hex');
 
-    user.updateAttributes({
-      passwordResetKey: key
-    }).then(function(user) {
-      deferred.resolve({ user: user, key: key });
-    }).catch(function(err) {
-      deferred.reject({ status: 500, body: err });
+    crypto.randomBytes(16, function(ex, buf) {
+      var key = buf.toString('hex');
+
+      user.updateAttributes({
+        passwordResetKey: key
+      }).then(function(user) {
+        deferred.resolve({ user: user, key: key });
+      }).catch(function(err) {
+        deferred.reject({ status: 500, body: err });
+      });
     });
 
     return deferred.promise;
@@ -242,7 +245,7 @@ exports.forgotPassword = function(req, res) {
   .then(function() {
     res.status(200).json({ status: 200, message: 'Password reset email successfully sent.' });
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    res.status(err.status).json({ status: err.status, message: err.body });
   });
 
 };
@@ -295,7 +298,7 @@ exports.resetPassword = function(req, res) {
   .then(function(resp) {
     res.status(200).json(resp);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    res.status(err.status).json({ status: err.status, message: err.body });
   });
 
 };

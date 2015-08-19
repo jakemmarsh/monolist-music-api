@@ -130,6 +130,9 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
   it('should remove a member from a group', function(done) {
     var req = request(url).delete('group/1/member/3');
 
+    sandbox.mock(models.GroupMembership.Instance.prototype)
+    .expects('destroy').once().returns(when());
+
     req.cookies = global.cookies;
 
     req.end(function(err, res) {

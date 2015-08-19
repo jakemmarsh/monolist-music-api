@@ -5,8 +5,6 @@ var slug     = require('slug');
 var when     = require('when');
 var models   = require('../../api/models');
 var fixtures = require('../../utils/fixtures');
-var sinon    = global.sinon || require('sinon');
-var should   = global.should || require('should');
 
 require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function() {
 
@@ -155,6 +153,9 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
   it('should successfully remove a collaborator', function(done) {
     var req = request(url).delete('playlist/1/collaborator/3');
 
+    sandbox.mock(models.Collaboration.Instance.prototype)
+    .expects('destroy').once().returns(when());
+
     req.cookies = global.cookies;
 
     req.end(function(err, res) {
@@ -188,7 +189,8 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
   it('should successfully remove a track', function(done) {
     var req = request(url).delete('playlist/1/track/2');
 
-    sandbox.mock(models.Track.Instance.prototype).expects('destroy').returns(when());
+    sandbox.mock(models.Track.Instance.prototype)
+    .expects('destroy').returns(when());
 
     req.cookies = global.cookies;
 
@@ -201,7 +203,8 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
   it('should successfully delete a playlist', function(done) {
     var req = request(url).delete('playlist/2');
 
-    sandbox.mock(models.Playlist.Instance.prototype).expects('destroy').once().returns(when());
+    sandbox.mock(models.Playlist.Instance.prototype)
+    .expects('destroy').once().returns(when());
 
     req.cookies = global.cookies;
 

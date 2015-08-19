@@ -14,12 +14,14 @@ module.exports = {
     {
       username: 'test',
       email: 'test@gmail.com',
-      hash: 'test'
+      hash: 'test',
+      passwordResetKey: 'abcdefg'
     },
     {
       username: 'testTwo',
       email: 'testTwo@gmail.com',
-      hash: 'test'
+      hash: 'test',
+      passwordResetKey: 'abcdefg'
     },
   ],
 

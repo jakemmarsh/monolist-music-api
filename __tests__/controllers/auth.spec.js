@@ -3,6 +3,7 @@
 var request  = require('supertest');
 var when     = require('when');
 var mailer   = require('../../api/mailer');
+var models   = require('../../api/models');
 var fixtures = require('../../utils/fixtures');
 
 describe('Controller: Auth', function() {
@@ -24,7 +25,8 @@ describe('Controller: Auth', function() {
       email: 'jane.doe@gmail.com',
       password: 'janedoe1'
     };
-    var spy = sandbox.spy(mailer, 'sendWelcome');
+
+    sandbox.mock(mailer).expects('sendWelcome').once().returns(when(profile));
 
     request(url)
     .post('auth/register')
@@ -33,7 +35,6 @@ describe('Controller: Auth', function() {
       res.status.should.be.equal(200);
       res.body.should.have.property('username');
       res.body.should.have.property('email');
-      spy.calledOnce.should.be.true;
       done();
     });
   });
@@ -82,26 +83,31 @@ describe('Controller: Auth', function() {
 
   it('should start the password reset flow and send the reset email', function(done) {
     var user = fixtures.users[0];
-    var spy = sandbox.spy(mailer, 'sendReset');
 
+    sandbox.mock(mailer).expects('sendReset')
+    .once().returns(when('Response message'));
+
+    sandbox.mock(models.User.Instance.prototype)
+    .expects('updateAttributes').once().returns(when(user));
 
     request(url)
     .post('auth/forgot/' + user.username)
     .end(function(err, res) {
       res.status.should.be.equal(200);
-      spy.calledOnce.should.be.true;
       done();
     });
   });
 
   it('should reset a password', function(done) {
     var user = fixtures.users[0];
+    user.id = 1;
 
-    sandbox.mock(models.User).expects('find').once().returns(when(user));
-    sandbox.mock(models.User.Instance.prototype).expects('updateAttributes').once().returns(when(user));
+    sandbox.mock(models.User.Instance.prototype)
+    .expects('updateAttributes').once().returns(when(user));
 
     request(url)
     .post('auth/reset/'+ user.id + '/' + user.passwordResetKey)
+    .send({ password: 'test' })
     .end(function(err, res) {
       res.status.should.be.equal(200);
       done();

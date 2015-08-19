@@ -19,15 +19,24 @@ exports.jobQueue = jobQueue;
 
 /* ====================================================== */
 
+function shutdownQueue() {
+  jobQueue.shutdown(5000, function() {
+    process.exit(0);
+  });
+}
+
+process.once('exit', shutdownQueue);
+process.once('SIGINT', shutdownQueue);
+
+/* ====================================================== */
+
 function clearAllJobs() {
   kue.Job.rangeByState('complete', 0, -1, 'asc', function(err, selectedJobs) {
-    if ( !_.isEmpty(selectedJobs) ) {
-      _.each(selectedJobs, function(job) {
-        job.remove();
-      });
-    }
+    _.each(selectedJobs, function(job) {
+      job.remove();
+    });
   });
-};
+}
 
 /* ====================================================== */
 
@@ -59,8 +68,8 @@ exports.activity = function(activity) {
       console.log('Error saving activity job:', err);
       deferred.reject(err);
     } else {
-      console.log('job saved:', job.id);
-      deferred.resolve(activity);
+      console.log('activity job saved');
+      deferred.resolve(null, activity);
     }
   });
 
@@ -96,7 +105,7 @@ exports.notifications = function(notifications) {
   var promises = _.map(notifications, queueNotification);
 
   when.join(promises)
-  .then(mainDeferred.resolve.bind(null, notifications))
+  .then(mainDeferred.resolve.bind(null, null, notifications))
   .catch(mainDeferred.reject);
 
   return mainDeferred.promise;

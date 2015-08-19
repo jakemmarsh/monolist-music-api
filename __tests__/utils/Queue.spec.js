@@ -1,11 +1,9 @@
 'use strict';
 
 var when                = require('when');
-var kue                 = require('kue');
 var ActivityManager     = require('../../api/utils/ActivityManager');
 var NotificationManager = require('../../api/utils/NotificationManager');
 var Queue               = require('../../api/utils/Queue');
-var models              = require('../../api/models');
 
 describe('Util: Queue', function() {
 

@@ -1,5 +1,7 @@
 'use strict';
 
+var dotenv = require('dotenv');
+
 before(function(done) {
 
   this.timeout(12000);
@@ -8,6 +10,9 @@ before(function(done) {
   // available to all tests
   global.should = require('should');
   global.sinon = require('sinon');
+
+  // Load all process.env.* variables
+  //dotenv.load();
 
   // Start and configure the server
   require('../server');
