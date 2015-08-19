@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(sequelize) {
+module.exports = function(sequelize, DataTypes) {
 
   var PlaylistSearch = sequelize.define('PlaylistSearch', {
     query: { type: DataTypes.STRING, allowNull: false },

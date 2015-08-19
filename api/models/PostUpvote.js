@@ -6,7 +6,7 @@ module.exports = function(sequelize) {
   {
     classMethods: {
       associate: function(models) {
-        PostUpvote.hasOne(models.User);
+        PostUpvote.belongsTo(models.User);
         PostUpvote.belongsTo(models.Post, { as: 'Upvotes' });
       }
     }
