@@ -1,22 +1,28 @@
 'use strict';
 
 var when                = require('when');
+var _                   = require('lodash');
 var models              = require('../models');
 var Queue               = require('./Queue');
 var NotificationManager = require('./NotificationManager');
 
 /* ====================================================== */
 
-exports.queue = function(entityType, entityId, action, actorId, passThrough) {
+exports.queue = function(entityType, entityId, action, actorId, recipientId, passThrough) {
 
   var deferred = when.defer();
   var activity;
+
+  if ( !passThrough ) {
+    passThrough = recipientId;
+  }
 
   entityId = entityId ? parseInt(entityId) : passThrough.id;
   activity = {
     entityType: entityType,
     entityId: entityId,
     actorId: actorId,
+    recipientId: _.isNumber(recipientId) ? recipientId : null,
     action: action
   };
 

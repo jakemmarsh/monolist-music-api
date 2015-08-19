@@ -5,7 +5,16 @@ var slug = require('slug');
 module.exports = function(sequelize, DataTypes) {
 
   var Playlist = sequelize.define('Playlist', {
-    title:     { type: DataTypes.STRING, allowNull: false },
+    title:     {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        not: {
+          args: /^\d+$/i,
+          msg: 'Playlist title cannot be only numbers.'
+        }
+      }
+    },
     ownerType: { type: DataTypes.ENUM('user', 'group'), defaultValue: 'user' },
     ownerId:   { type: DataTypes.INTEGER, allowNull: false },
     slug:      { type: DataTypes.STRING, allowNull: false, unique: true },

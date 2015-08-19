@@ -17,7 +17,8 @@ describe('Util: ActivityManager', function() {
     entityType: entityType,
     entityId: entityId,
     actorId: actorId,
-    action: action
+    action: action,
+    recipientId: null
   };
 
   it('should queue a new activity to be created', function(done) {

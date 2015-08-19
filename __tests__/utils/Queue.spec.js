@@ -7,10 +7,8 @@ var Queue               = require('../../api/utils/Queue');
 
 describe('Util: Queue', function() {
 
-  // TODO: flesh these out?
   var activity = {};
   var notifications = [{}, {}];
-  var notification = notifications[0];
   var queueResponse = {
     removeOnComplete: function() {
       return {

@@ -1,15 +1,15 @@
 'use strict';
 
-var slug        = require('slug');
 var _           = require('lodash');
 var ActionTypes = require('../utils/ActionTypes');
 
 module.exports = function(sequelize, DataTypes) {
 
   var Activity = sequelize.define('Activity', {
-    entityType: { type: DataTypes.ENUM('user', 'playlist', 'group', 'track' ) },
-    entityId:   { type: DataTypes.INTEGER },
-    action:     {
+    entityType:  { type: DataTypes.ENUM('user', 'playlist', 'group', 'track' ) },
+    entityId:    { type: DataTypes.INTEGER },
+    recipientId: { type: DataTypes.INTEGER },
+    action:      {
       type: DataTypes.ENUM,
       values: _([]).concat(
         ActionTypes.USER_ACTION_TYPES,

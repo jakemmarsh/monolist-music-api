@@ -7,7 +7,7 @@ var Queue  = require('./Queue');
 
 /* ====================================================== */
 
-exports.getGroupUserIds = function(groupId) {
+exports.getGroupUserIds = function(groupId, action, actorId, recipientId) {
 
   var deferred = when.defer();
 
@@ -26,6 +26,10 @@ exports.getGroupUserIds = function(groupId) {
   }).then(function(group) {
     var ids = [];
 
+    if ( _.isNumber(recipientId) ) {
+        ids.push(recipientId);
+      }
+
     if ( !_.isEmpty(group) ) {
       var memberIds = _.pluck(group.Memberships, 'UserId');
       var followerIds = _.pluck(group.Followers, 'FollowerId');
@@ -43,11 +47,9 @@ exports.getGroupUserIds = function(groupId) {
 
 /* ====================================================== */
 
-exports.getPlaylistUserIds = function(playlistId, action, actorId) {
+exports.getPlaylistUserIds = function(playlistId, action, actorId, recipientId) {
 
   var mainDeferred = when.defer();
-
-  // TODO: also get members of group if playlist owner is group
 
   var getPlaylistUsers = function() {
     var deferred = when.defer();
@@ -67,6 +69,10 @@ exports.getPlaylistUserIds = function(playlistId, action, actorId) {
       ]
     }).then(function(playlist) {
       var ids = [];
+
+      if ( _.isNumber(recipientId) ) {
+        ids.push(recipientId);
+      }
 
       if ( !_.isEmpty(playlist) ) {
         var collaboratorIds = _.pluck(playlist.Collaborations, 'UserId');
@@ -102,7 +108,7 @@ exports.getPlaylistUserIds = function(playlistId, action, actorId) {
       ]
     }).then(function(group) {
       var userIds = _.pluck(group.Memberships, 'UserId');
-      deferred.resolve(_(ids).concat(userIds).value());
+      deferred.resolve(_(ids).concat(userIds).uniq().value());
     }).catch(function() {
       // Still resolve since we got playlist user IDs
       deferred.resolve(ids);
@@ -119,7 +125,7 @@ exports.getPlaylistUserIds = function(playlistId, action, actorId) {
         where: { UserId: actorId }
       }).then(function(follows) {
         var userIds = _.pluck(follows, 'FollowerId');
-        deferred.resolve(_(ids).concat(userIds).value());
+        deferred.resolve(_(ids).concat(userIds).uniq().value());
       })
     } else {
       deferred.resolve(ids);
@@ -156,16 +162,16 @@ exports.getTrackUserIds = function(trackId) {
 
 /* ====================================================== */
 
-exports.getUserIdsForEntity = function(entityType, entityId, action, actorId) {
+exports.getUserIdsForActivity = function(activity) {
 
-  if ( entityType === 'group' ) {
-    return exports.getGroupUserIds(entityId, action, actorId);
-  } else if ( entityType === 'playlist' ) {
-    return exports.getPlaylistUserIds(entityId, action, actorId);
-  } else if ( entityType === 'track' ) {
-    return exports.getTrackUserIds(entityId, action, actorId);
-  } else if ( entityType === 'user' ) {
-    return when([entityId]);
+  if ( activity.entityType === 'group' ) {
+    return exports.getGroupUserIds(activity.entityId, activity.action, activity.actorId, activity.recipientId);
+  } else if ( activity.entityType === 'playlist' ) {
+    return exports.getPlaylistUserIds(activity.entityId, activity.action, activity.actorId, activity.recipientId);
+  } else if ( activity.entityType === 'track' ) {
+    return exports.getTrackUserIds(activity.entityId, activity.action, activity.actorId, activity.recipientId);
+  } else if ( activity.entityType === 'user' ) {
+    return when([activity.entityId]);
   }
 
 }
@@ -175,7 +181,7 @@ exports.getUserIdsForEntity = function(entityType, entityId, action, actorId) {
 exports.buildNotifications = function(activity) {
   var deferred = when.defer();
 
-  exports.getUserIdsForEntity(activity.entityType, activity.entityId, activity.action, activity.actorId)
+  exports.getUserIdsForActivity(activity)
   .then(function(userIds) {
     deferred.resolve(_.map(userIds, function(userId) {
       return {

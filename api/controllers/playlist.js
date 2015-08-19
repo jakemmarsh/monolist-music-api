@@ -137,7 +137,6 @@ exports.get = function(req, res) {
     currentUser = currentUser || {};
 
     // if only passed an ID
-    // TODO: this would break if a playlist title is just an integer
     if ( isFinite(slug) ) {
       query = { id: slug };
     } else {
@@ -643,7 +642,6 @@ exports.addCollaborator = function(req, res) {
 
   ensureCurrentUserCanEdit(req, req.params.playlistId)
   .then(addCollaboration)
-  // TODO: figure out how to also include the user ID of the user being added as a member
   .then(ActivityManager.queue.bind(null, 'playlist', req.params.playlistId, 'addCollaborator', req.user.id))
   .then(function(collaboration) {
     res.status(200).json(collaboration);
@@ -676,8 +674,7 @@ exports.removeCollaborator = function(req, res) {
 
   ensureCurrentUserCanEdit(req, req.params.playlistId)
   .then(removeCollaboration)
-  // TODO: figure out how to also include the user ID of the user being removed as a member
-  .then(ActivityManager.queue.bind(null, 'playlist', req.params.playlistId, 'removeCollaborator', req.user.id))
+  .then(ActivityManager.queue.bind(null, 'playlist', req.params.playlistId, 'removeCollaborator', req.user.id, req.params.userId))
   .then(function() {
     res.status(200).json({ status: 200, message: 'Collaborator successfully removed.' });
   }).catch(function(err) {

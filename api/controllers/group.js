@@ -420,12 +420,35 @@ exports.addMember = function(req, res) {
     return deferred.promise;
   };
 
-  // TODO: delete any GroupFollows for this user/group since they'll now be subscribed anyways
+  var deleteFollow = function(membership) {
+    var deferred = when.defer();
+
+    models.GroupFollow.find({
+      where: {
+        FollowerId: membership.UserId,
+        GroupId: membership.GroupId
+      }
+    }).then(function(follow) {
+      if ( !_.isEmpty(follow) ) {
+        follow.destroy().then(function() {
+          deferred.resolve(membership);
+        });
+      } else {
+        deferred.resolve(membership);
+      }
+    }).catch(function() {
+      // Still resolve since member was added
+      deferred.resolve(membership);
+    });
+
+    return deferred.promise;
+  };
 
   getCurrentUserLevel(req.params.groupId, req.user.id, req.params.memberId)
   .then(fetchGroup)
   .then(createMembership)
-  .then(ActivityManager.queue.bind(null, 'group', req.params.groupId, 'addMember', req.user.id))
+  .then(deleteFollow)
+  .then(ActivityManager.queue.bind(null, 'group', req.params.groupId, 'addMember', req.user.id, req.params.memberId))
   .then(function(createdMembership) {
     res.status(200).json(createdMembership);
   }).catch(function(err) {
@@ -485,7 +508,7 @@ exports.removeMember = function(req, res) {
 
   fetchGroup(req.params.groupId, req.user.id, req.params.memberId)
   .then(destroyMembership)
-  .then(ActivityManager.queue.bind(null, 'group', req.params.groupId, 'removeMember', req.user.id))
+  .then(ActivityManager.queue.bind(null, 'group', req.params.groupId, 'removeMember', req.user.id, req.params.memberId))
   .then(function() {
     res.status(200).json({ status: 200, message: 'Member successfully removed from group.' });
   }).catch(function(err) {
