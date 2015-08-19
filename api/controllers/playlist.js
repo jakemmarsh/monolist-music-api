@@ -284,11 +284,12 @@ exports.search = function(req, res) {
   var recordSearch = function(currentUser, query, results) {
     var attributes = {
       UserId: currentUser ? currentUser.id : null,
-      query: query,
-      results: _.pluck(results, 'id')
+      query: query
     };
 
-    models.PlaylistSearch.create(attributes);
+    models.PlaylistSearch.create(attributes).then(function(record) {
+      record.setResults(results);
+    });
   };
 
   searchPlaylists(req.params.query, req.query.limit).then(function(playlists) {

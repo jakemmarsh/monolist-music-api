@@ -55,16 +55,12 @@ module.exports = function(req, res) {
   var recordSearch = function(currentUser, query, results) {
     var attributes = {
       UserId: currentUser ? currentUser.id : null,
-      query: query,
-      results: _.map(results, function(track) {
-        return {
-          sourceParam: track.sourceParam,
-          source: track.source
-        };
-      })
+      query: query
     };
 
-    models.TrackSearch.create(attributes);
+    models.TrackSearch.create(attributes).then(function(record) {
+      record.setResults(results);
+    });
   };
 
   when.all(getSearchPromises()).then(function(results) {
