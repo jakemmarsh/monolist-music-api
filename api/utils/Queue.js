@@ -25,17 +25,20 @@ function shutdownQueue() {
   });
 }
 
-process.once('exit', shutdownQueue);
-process.once('SIGINT', shutdownQueue);
-
-/* ====================================================== */
-
 function clearAllJobs() {
-  kue.Job.rangeByState('complete', 0, -1, 'asc', function(err, selectedJobs) {
-    _.each(selectedJobs, function(job) {
-      job.remove();
+  kue.Job.rangeByState('inactive', 0, -1, 'asc', function(err, inactiveJobs) {
+    kue.Job.rangeByState('active', 0, -1, 'asc', function(err, activeJobs) {
+      _.each(inactiveJobs, function(job) { job.remove(); });
+      _.each(activeJobs, function(job) { job.remove(); });
+      process.exit(0);
     });
   });
+}
+
+if ( process.env.NODE_ENV === 'development' ) {
+  process.on('SIGINT', clearAllJobs);
+} else {
+  process.once('SIGINT', shutdownQueue);
 }
 
 /* ====================================================== */

@@ -1,11 +1,9 @@
 'use strict';
 
-var _                   = require('lodash');
 var when                = require('when');
 var models              = require('../models');
 var Queue               = require('./Queue');
 var NotificationManager = require('./NotificationManager');
-var ActionTypes         = require('./ActionTypes');
 
 /* ====================================================== */
 
