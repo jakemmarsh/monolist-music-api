@@ -52,21 +52,26 @@ module.exports = function(req, res) {
     return searchPromises;
   };
 
-  var recordSearch = function(currentUser, query) {
+  var recordSearch = function(currentUser, query, results) {
     var attributes = {
       UserId: currentUser ? currentUser.id : null,
-      query: query
+      query: query,
+      results: _.map(results, function(track) {
+        return {
+          sourceParam: track.sourceParam,
+          source: track.source
+        };
+      })
     };
 
     models.TrackSearch.create(attributes);
   };
 
-  // Search all specified resources
   when.all(getSearchPromises()).then(function(results) {
     _.each(results, function(result) {
       searchResults = _.sortBy(searchResults.concat(result), 'title');
     });
-    recordSearch(req.user, req.params.query);
+    recordSearch(req.user, req.params.query, searchResults);
     res.status(200).json(searchResults);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body });

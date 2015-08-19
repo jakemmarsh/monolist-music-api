@@ -279,17 +279,18 @@ exports.search = function(req, res) {
     return deferred.promise;
   };
 
-  var recordSearch = function(currentUser, query) {
+  var recordSearch = function(currentUser, query, results) {
     var attributes = {
       UserId: currentUser ? currentUser.id : null,
-      query: query
+      query: query,
+      results: _.pluck(results, 'id')
     };
 
     models.PlaylistSearch.create(attributes);
   };
 
   searchPlaylists(req.params.query).then(function(playlists) {
-    recordSearch(req.user, req.params.query);
+    recordSearch(req.user, req.params.query, playlists);
     res.status(200).json(playlists);
   }).catch(function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
