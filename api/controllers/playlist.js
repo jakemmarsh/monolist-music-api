@@ -247,8 +247,9 @@ exports.get = function(req, res) {
 
 exports.search = function(req, res) {
 
-  var searchPlaylists = function(query) {
+  var searchPlaylists = function(query, limit) {
     var deferred = when.defer();
+    limit = ( limit && limit < 50 ) ? limit : 20;
 
     models.Playlist.findAll({
       where: Sequelize.and(
@@ -269,7 +270,8 @@ exports.search = function(req, res) {
             )
           )
         )
-      )
+      ),
+      limit: limit
     }).then(function(retrievedPlaylists) {
       deferred.resolve(retrievedPlaylists);
     }).catch(function(err) {
@@ -289,7 +291,7 @@ exports.search = function(req, res) {
     models.PlaylistSearch.create(attributes);
   };
 
-  searchPlaylists(req.params.query).then(function(playlists) {
+  searchPlaylists(req.params.query, req.query.limit).then(function(playlists) {
     recordSearch(req.user, req.params.query, playlists);
     res.status(200).json(playlists);
   }).catch(function(err) {
