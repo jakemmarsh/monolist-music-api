@@ -140,14 +140,17 @@ exports.create = function(req, res) {
 
 exports.getPlaylists = function(req, res) {
 
-  var fetchPlaylists = function(groupId) {
+  var fetchPlaylists = function(groupId, limit, offset) {
     var deferred = when.defer();
+    limit = ( limit && limit < 50 ) ? limit : 20;
 
     models.Playlist.findAll({
       where: {
         ownerId: groupId,
         ownerType: 'group'
-      }
+      },
+      limit: limit,
+      offset: offset
     }).then(function(retrievedPlaylists) {
       deferred.resolve(retrievedPlaylists);
     }).catch(function(err) {
@@ -157,7 +160,7 @@ exports.getPlaylists = function(req, res) {
     return deferred.promise;
   };
 
-  fetchPlaylists(req.params.id).then(function(playlists) {
+  fetchPlaylists(req.params.id, req.query.limit, req.query.offset).then(function(playlists) {
     res.status(200).json(playlists);
   }).catch(function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
