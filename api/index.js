@@ -109,7 +109,7 @@ api.get('/sc_redirect', controllers.soundcloudRedirect);
 // mp3 streaming endpoints
 // api.get('/stream/youtube/:videoId', controllers.streaming.youtube);
 api.get('/stream/soundcloud/:trackId', controllers.streaming.soundcloud);
-api.get('/stream/spotify/:trackId', controllers.streaming.spotify);
+// api.get('/stream/spotify/:trackId', controllers.streaming.spotify);
 api.get('/stream/bandcamp/:trackUrl', controllers.streaming.bandcamp);
 
 /* ====================================================== */
