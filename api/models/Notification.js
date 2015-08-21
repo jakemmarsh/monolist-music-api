@@ -13,6 +13,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM,
       values: _([]).concat(
         ActionTypes.USER_ACTION_TYPES,
+        ActionTypes.POST_ACTION_TYPES,
         ActionTypes.PLAYLIST_ACTION_TYPES,
         ActionTypes.TRACK_ACTION_TYPES,
         ActionTypes.GROUP_ACTION_TYPES

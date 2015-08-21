@@ -42,6 +42,17 @@ api.get('/user/:id/stars', controllers.user.getStars);
 
 /* ====================================================== */
 
+// Post endpoints
+api.post('/post', controllers.auth.isAuthenticated, controllers.post.create);
+api.get('/post/:id', controllers.post.get);
+api.get('/posts/newest', controllers.post.getNewest);
+api.post('/post/:id/like', controllers.auth.isAuthenticated, controllers.post.like);
+api.post('/post/:id/comment', controllers.auth.isAuthenticated, controllers.post.addComment);
+api.delete('/post/:id/comment/:commentId', controllers.auth.isAuthenticated, controllers.post.removeComment);
+api.delete('/post/:id', controllers.auth.isAuthenticated, controllers.post.delete);
+
+/* ====================================================== */
+
 // Group endpoints
 api.post('/group', controllers.auth.isAuthenticated, controllers.group.create);
 api.get('/group/:identifier', controllers.group.get);
