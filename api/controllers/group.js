@@ -142,7 +142,9 @@ exports.getPlaylists = function(req, res) {
 
   var fetchPlaylists = function(groupId, limit, offset) {
     var deferred = when.defer();
+
     limit = ( limit && limit < 50 ) ? limit : 20;
+    offset = offset || 0;
 
     models.Playlist.findAll({
       where: {

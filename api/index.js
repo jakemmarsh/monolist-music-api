@@ -43,7 +43,7 @@ api.get('/user/:id/stars', controllers.user.getStars);
 /* ====================================================== */
 
 // Group endpoints
-api.post('/group', controllers.group.create);
+api.post('/group', controllers.auth.isAuthenticated, controllers.group.create);
 api.get('/group/:identifier', controllers.group.get);
 api.get('/group/:id/playlists', controllers.group.getPlaylists);
 api.get('/groups/trending', controllers.group.getTrending);
@@ -86,7 +86,7 @@ api.delete('/track/:id/comment/:commentId', controllers.auth.isAuthenticated, co
 /* ====================================================== */
 
 // AWS upload endpoints
-api.post('/upload/:type/:id', controllers.aws.upload);
+api.post('/upload/:type/:id', controllers.auth.isAuthenticated, controllers.aws.upload);
 
 /* ====================================================== */
 

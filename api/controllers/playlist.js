@@ -249,7 +249,9 @@ exports.search = function(req, res) {
 
   var searchPlaylists = function(query, limit, offset) {
     var deferred = when.defer();
+
     limit = ( limit && limit < 50 ) ? limit : 20;
+    offset = offset || 0;
 
     models.Playlist.findAll({
       where: Sequelize.and(
@@ -502,7 +504,7 @@ exports.create = function(req, res) {
   };
 
   createPlaylist(req.body, req.user)
-  .then(ActivityManager.queue.bind(null, 'playlist', null, 'follow', req.user.id))
+  .then(ActivityManager.queue.bind(null, 'playlist', null, 'create', req.user.id))
   .then(function(createdPlaylist) {
     res.status(200).json(createdPlaylist);
   }, function(err) {

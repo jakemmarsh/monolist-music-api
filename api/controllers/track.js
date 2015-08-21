@@ -225,7 +225,10 @@ exports.removeComment = function(req, res) {
     var deferred = when.defer();
 
     models.TrackComment.find({
-      where: { id: commentId, TrackId: trackId }
+      where: {
+        id: commentId,
+        TrackId: trackId
+      }
     }).then(function(retrievedComment) {
       if ( user.role === 'admin' || retrievedComment.UserId === user.id ) {
         retrievedComment.destroy().then(function() {
