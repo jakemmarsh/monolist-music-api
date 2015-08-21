@@ -1,6 +1,7 @@
 'use strict';
 
 var request = require('supertest');
+var models  = require('../../api/models');
 
 require('../../utils/createAuthenticatedSuite')('Controller: Track', function() {
 
@@ -17,6 +18,23 @@ require('../../utils/createAuthenticatedSuite')('Controller: Track', function() 
       res.body.should.have.property('title');
       res.body.should.have.property('source');
       res.body.should.have.property('sourceParam');
+      done();
+    });
+  });
+
+  it('should return an array of matching tracks and record the search', function(done) {
+    this.timeout(10000);
+
+    sandbox.mock(models.TrackSearch).expects('create').once();
+
+    request(url)
+    .get('tracks/search/test')
+    .end(function(err, res) {
+      res.status.should.be.equal(200);
+      res.body.should.be.instanceof(Array);
+      res.body[0].should.have.property('title');
+      res.body[0].should.have.property('source');
+      res.body[0].should.have.property('sourceParam');
       done();
     });
   });

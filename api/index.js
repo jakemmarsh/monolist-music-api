@@ -87,7 +87,7 @@ api.delete('/playlist/:playlistId/track/:trackId', controllers.auth.isAuthentica
 
 // Track endpoints
 api.get('/track/:id', controllers.track.get);
-api.get('/tracks/search/:query', controllers.search);
+api.get('/tracks/search/:query', controllers.track.search);
 api.post('/track/star', controllers.auth.isAuthenticated, controllers.track.star);
 api.post('/track/:id/upvote', controllers.auth.isAuthenticated, controllers.track.upvote);
 api.post('/track/:id/downvote', controllers.auth.isAuthenticated, controllers.track.downvote);
