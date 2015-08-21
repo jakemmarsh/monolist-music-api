@@ -11,8 +11,7 @@ module.exports = function(sequelize, DataTypes) {
       associate: function(models) {
         Post.belongsTo(models.User);
         Post.belongsTo(models.Group);
-        Post.hasMany(models.PostDownvote, { as: 'Downvotes', onDelete: 'cascade' });
-        Post.hasMany(models.PostUpvote, { as: 'Upvotes', onDelete: 'cascade' });
+        Post.hasMany(models.PostLike, { as: 'Likes', onDelete: 'cascade' });
         Post.hasMany(models.PostComment, { as: 'Comments', onDelete: 'cascade' });
       }
     }
