@@ -272,7 +272,15 @@ exports.follow = function(req, res) {
   };
 
   followUser(req.user.id, req.params.id)
-  .then(ActivityManager.queue.bind(null, 'user', req.params.id, 'follow', req.user.id))
+  .then(function(result) {
+    // Only create activity if a follow object was returned,
+    // because otherwise a follow was deleted
+    if ( _.isObject(result) ) {
+      ActivityManager.queue('user', req.params.id, 'follow', req.user.id)
+    }
+
+    return when(result);
+  })
   .then(function(following) {
     res.status(200).json(following);
   }).catch(function(err) {

@@ -576,7 +576,15 @@ exports.follow = function(req, res) {
   };
 
   followPlaylist(req.params.id, req.user.id)
-  .then(ActivityManager.queue.bind(null, 'playlist', req.params.id, 'follow', req.user.id))
+  .then(function(result) {
+    // Only create activity if a follow object was returned,
+    // because otherwise a follow was deleted
+    if ( _.isObject(result) ) {
+      ActivityManager.queue('playlist', req.params.id, 'follow', req.user.id)
+    }
+
+    return when(result);
+  })
   .then(function(playlistFollow) {
     res.status(200).json(playlistFollow);
   }).catch(function(err) {
@@ -618,7 +626,15 @@ exports.like = function(req, res) {
   };
 
   likePlaylist(req.params.id, req.user.id)
-  .then(ActivityManager.queue.bind(null, 'playlist', req.params.id, 'like', req.user.id))
+  .then(function(result) {
+    // Only create activity if a like object was returned,
+    // because otherwise a like was deleted
+    if ( _.isObject(result) ) {
+      ActivityManager.queue('playlist', req.params.id, 'like', req.user.id)
+    }
+
+    return when(result);
+  })
   .then(function(like) {
     res.status(200).json(like);
   }, function(err) {
