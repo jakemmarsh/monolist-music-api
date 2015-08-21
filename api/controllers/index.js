@@ -1,6 +1,7 @@
 exports.auth               = require('./auth');
 
 exports.user               = require('./user');
+exports.post               = require('./post');
 exports.group              = require('./group');
 exports.playlist           = require('./playlist');
 exports.track              = require('./track');
