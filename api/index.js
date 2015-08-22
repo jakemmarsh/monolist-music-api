@@ -49,7 +49,7 @@ api.get('/posts/newest', controllers.post.getNewest);
 api.post('/post/:id/like', controllers.auth.isAuthenticated, controllers.post.like);
 api.post('/post/:id/comment', controllers.auth.isAuthenticated, controllers.post.addComment);
 api.delete('/post/:id/comment/:commentId', controllers.auth.isAuthenticated, controllers.post.removeComment);
-api.delete('/post/:id', controllers.post.delete);
+api.delete('/post/:id', controllers.auth.isAuthenticated, controllers.post.delete);
 
 /* ====================================================== */
 
