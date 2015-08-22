@@ -139,14 +139,36 @@ module.exports = {
   groupFollows: [],
 
   groupPlaylists: [
-      {
-        ownerId: 1,
-        ownerType: 'group',
-        title: 'Test Group Playlist',
-        privacy: 'public',
-        tags: ['test', 'hip hop', 'rap'],
-        imageUrl: 'http://franthony.com/wp-content/uploads/2015/04/record-player.jpg'
+    {
+      ownerId: 1,
+      ownerType: 'group',
+      title: 'Test Group Playlist',
+      privacy: 'public',
+      tags: ['test', 'hip hop', 'rap'],
+      imageUrl: 'http://franthony.com/wp-content/uploads/2015/04/record-player.jpg'
+    }
+  ],
+
+  posts: [
+    {
+      UserId: 1,
+      body: 'This is a post without a track.',
+      track: null
+    },
+    {
+      UserId: 2,
+      body: 'This is a post with a track.',
+      track: {
+        imageUrl: 'https://i1.sndcdn.com/artworks-000086001473-mw7dye-large.jpg',
+        PlaylistId: 1,
+        UserId: 1,
+        source: 'soundcloud',
+        sourceParam: '159945668',
+        sourceUrl: 'http://soundcloud.com/rustie/attak-feat-danny-brown',
+        title: 'Attak (feat. Danny Brown)',
+        duration: 181
       }
-    ]
+    }
+  ]
 
 };

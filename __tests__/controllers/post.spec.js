@@ -17,7 +17,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Post', function() {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
       res.body.should.have.property('data');
-      res.body.data.be.instanceof(Object);
+      res.body.data.should.be.instanceof(Object);
       res.body.data.should.have.property('body');
       done();
     });

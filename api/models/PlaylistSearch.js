@@ -3,13 +3,13 @@
 module.exports = function(sequelize, DataTypes) {
 
   var PlaylistSearch = sequelize.define('PlaylistSearch', {
-    query: { type: DataTypes.STRING, allowNull: false }
+    query:     { type: DataTypes.STRING, allowNull: false },
+    resultIds: { type: DataTypes.ARRAY(DataTypes.INTEGER), defaultValue: [] }
   },
   {
     classMethods: {
       associate: function(models) {
-        PlaylistSearch.hasOne(models.User);
-        PlaylistSearch,hasMany(models.Playlist, { as: 'Results' });
+        PlaylistSearch.belongsTo(models.User);
       }
     }
   });

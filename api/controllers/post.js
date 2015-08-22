@@ -244,6 +244,58 @@ exports.removeComment = function(req, res) {
 
 exports.delete = function(req, res) {
 
+  var getGroupMembership = function(groupId, userId) {
+    var deferred = when.defer();
 
+    models.GroupMembership.find({
+      where: {
+        GroupId: groupId,
+        UserId: userId
+      }
+    }).then(function(membership) {
+      deferred.resolve(membership);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var deletePost = function(postId, user) {
+    var deferred = when.defer();
+
+    models.Post.find({
+      where: {
+        id: postId
+      }
+    }).then(function(retrievedPost) {
+      if ( user.role === 'admin' || retrievedPost.UserId === user.id ) {
+        retrievedPost.destroy().then(function() {
+          deferred.resolve('Post successfully deleted.');
+        });
+      } else if ( retrievedPost.GroupId ) {
+        getGroupMembership(retrievedPost.GroupId, user.id).then(function(membership) {
+          if ( !_.isEmpty(membership) && membership.level >= 2 ) {
+            retrievedPost.destroy().then(function() {
+              deferred.resolve('Post successfully deleted.');
+            });
+          }
+        });
+      } else {
+        deferred.reject({ status: 401, body: 'Current user does not have permission to delete post: ' + user.id });
+      }
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  deletePost(req.params.id, req.user).then(function(resp) {
+    ResponseHandler.handleSuccess(res, 200, resp);
+  }).catch(function(err) {
+    console.log('error:', err);
+    ResponseHandler.handleError(res, err.status, err.body);
+  });
 
 };

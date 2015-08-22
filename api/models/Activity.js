@@ -6,7 +6,7 @@ var ActionTypes = require('../utils/ActionTypes');
 module.exports = function(sequelize, DataTypes) {
 
   var Activity = sequelize.define('Activity', {
-    entityType:  { type: DataTypes.ENUM('user', 'playlist', 'group', 'track' ) },
+    entityType:  { type: DataTypes.ENUM('user', 'playlist', 'group', 'track', 'post' ) },
     entityId:    { type: DataTypes.INTEGER },
     recipientId: { type: DataTypes.INTEGER },
     action:      {

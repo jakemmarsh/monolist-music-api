@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
   {
     classMethods: {
       associate: function(models) {
-        TrackSearch.hasOne(models.User);
+        TrackSearch.belongsTo(models.User);
       }
     }
   });

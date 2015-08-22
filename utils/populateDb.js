@@ -174,6 +174,21 @@ module.exports = function(models, mailer) {
     return deferred.promise;
   };
 
+  var createPosts = function() {
+    var deferred = when.defer();
+
+    models.Post.bulkCreate(fixtures.posts, {
+      validate: true,
+      individualHooks: true
+    }).then(function(createdPlaylists) {
+      deferred.resolve(createdPlaylists);
+    }).catch(function(err) {
+      console.log('error creating posts:', err);
+    });
+
+    return deferred.promise;
+  };
+
   createUser()
   .then(createSecondUser)
   .then(createThirdUser)
@@ -186,6 +201,7 @@ module.exports = function(models, mailer) {
   .then(addTrackToPlaylist)
   .then(createGroups)
   .then(createMemberships)
-  .then(createGroupPlaylists);
+  .then(createGroupPlaylists)
+  .then(createPosts);
 
 };
