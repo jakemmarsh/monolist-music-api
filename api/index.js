@@ -73,6 +73,7 @@ api.get('/playlist/:slug', controllers.playlist.get);
 api.get('/playlists/search/:query', controllers.playlist.search);
 api.get('/playlists/trending', controllers.playlist.getTrending);
 api.get('/playlists/newest', controllers.playlist.getNewest);
+api.get('/playlists/searches', controllers.playlist.getSearches);
 api.post('/playlist', controllers.auth.isAuthenticated, controllers.playlist.create);
 api.post('/playlist/:id/play', controllers.playlist.recordPlay);
 api.post('/playlist/:id/follow', controllers.auth.isAuthenticated, controllers.playlist.follow);
@@ -88,6 +89,7 @@ api.delete('/playlist/:playlistId/track/:trackId', controllers.auth.isAuthentica
 // Track endpoints
 api.get('/track/:id', controllers.track.get);
 api.get('/tracks/search/:query', controllers.track.search);
+api.get('/tracks/searches', controllers.track.getSearches);
 api.post('/track/star', controllers.auth.isAuthenticated, controllers.track.star);
 api.post('/track/:id/upvote', controllers.auth.isAuthenticated, controllers.track.upvote);
 api.post('/track/:id/downvote', controllers.auth.isAuthenticated, controllers.track.downvote);

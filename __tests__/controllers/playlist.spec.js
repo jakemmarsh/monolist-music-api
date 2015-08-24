@@ -77,6 +77,23 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     });
   });
 
+  it('should return an array of recent playlist searches', function(done) {
+    var req = request(url).get('playlists/searches');
+
+    req.cookies = global.cookies;
+
+    req.end(function(err, res) {
+      res.status.should.be.equal(200);
+      res.body.should.be.instanceof(Object);
+      res.body.should.have.property('data');
+      res.body.data.should.be.instanceof(Array);
+      res.body.data[0].should.have.property('UserId');
+      res.body.data[0].should.have.property('resultIds');
+      res.body.data[0].should.have.property('query');
+      done();
+    });
+  });
+
   it('should successfully create a new playlist', function(done) {
     var req = request(url).post('playlist');
     var playlist = {

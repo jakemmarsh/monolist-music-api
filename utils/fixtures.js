@@ -169,6 +169,33 @@ module.exports = {
         duration: 181
       }
     }
+  ],
+
+  playlistSearches: [
+    {
+      query: 'test',
+      UserId: 1,
+      resultIds: [1, 2]
+    }
+  ],
+
+  trackSearches: [
+    {
+      query: 'test',
+      UserId: 1,
+      results: [
+        {
+          imageUrl: 'https://i1.sndcdn.com/artworks-000086001473-mw7dye-large.jpg',
+          PlaylistId: 1,
+          UserId: 1,
+          source: 'soundcloud',
+          sourceParam: '159945668',
+          sourceUrl: 'http://soundcloud.com/rustie/attak-feat-danny-brown',
+          title: 'Attak (feat. Danny Brown)',
+          duration: 181
+        }
+      ]
+    }
   ]
 
 };

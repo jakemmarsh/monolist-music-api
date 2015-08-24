@@ -189,6 +189,36 @@ module.exports = function(models, mailer) {
     return deferred.promise;
   };
 
+  var createPlaylistSearches = function() {
+    var deferred = when.defer();
+
+    models.PlaylistSearch.bulkCreate(fixtures.playlistSearches, {
+      validate: true,
+      individualHooks: true
+    }).then(function(createdPlaylistSearches) {
+      deferred.resolve(createdPlaylistSearches);
+    }).catch(function(err) {
+      console.log('error creating posts:', err);
+    });
+
+    return deferred.promise;
+  };
+
+  var createTrackSearches = function() {
+    var deferred = when.defer();
+
+    models.TrackSearch.bulkCreate(fixtures.trackSearches, {
+      validate: true,
+      individualHooks: true
+    }).then(function(createdTrackSearches) {
+      deferred.resolve(createdTrackSearches);
+    }).catch(function(err) {
+      console.log('error creating posts:', err);
+    });
+
+    return deferred.promise;
+  };
+
   createUser()
   .then(createSecondUser)
   .then(createThirdUser)
@@ -202,6 +232,8 @@ module.exports = function(models, mailer) {
   .then(createGroups)
   .then(createMemberships)
   .then(createGroupPlaylists)
-  .then(createPosts);
+  .then(createPosts)
+  .then(createPlaylistSearches)
+  .then(createTrackSearches);
 
 };

@@ -7,6 +7,7 @@ var changeCase      = require('change-case');
 var models          = require('../models');
 var awsRoutes       = require('./aws');
 var ActivityManager = require('../utils/ActivityManager');
+var ResponseHandler = require('../utils/ResponseHandler');
 
 /* ====================================================== */
 
@@ -417,6 +418,7 @@ exports.getNewest = function(req, res) {
 
   var getPlaylists = function(limit) {
     var deferred = when.defer();
+
     limit = ( limit && limit < 50 ) ? limit : 20;
 
     models.Playlist.findAll({
@@ -466,11 +468,41 @@ exports.getNewest = function(req, res) {
 
 /* ====================================================== */
 
+exports.getSearches = function(req, res) {
+
+  var fetchSearches = function(limit, offset) {
+    var deferred = when.defer();
+
+    limit = ( limit && limit < 50 ) ? limit : 20;
+    offset = offset || 0;
+
+    models.PlaylistSearch.findAll({
+      order: ['createdAt'],
+      limit: limit,
+      offset: offset
+    }).then(function(searches) {
+      deferred.resolve(searches);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err })
+    });
+
+    return deferred.promise;
+  };
+
+  fetchSearches(req.query.limit, req.query.offset).then(function(searches) {
+    ResponseHandler.handleSuccess(res, 200, searches);
+  }).catch(function(err) {
+    ResponseHandler.handleError(res, err.status, err.body);
+  });
+
+};
+
+/* ====================================================== */
+
 exports.create = function(req, res) {
 
-  var createPlaylist = function(playlist, currentUser) {
+  var createPlaylist = function(playlist) {
     var deferred = when.defer();
-    var model;
 
     playlist = {
       ownerId: playlist.ownerId || playlist.OwnerId,
@@ -502,7 +534,7 @@ exports.create = function(req, res) {
     return deferred.promise;
   };
 
-  createPlaylist(req.body, req.user)
+  createPlaylist(req.body)
   .then(ActivityManager.queue.bind(null, 'playlist', null, 'create', req.user.id))
   .then(function(createdPlaylist) {
     res.status(200).json(createdPlaylist);

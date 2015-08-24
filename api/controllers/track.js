@@ -8,6 +8,7 @@ var spotify         = require('./sources/spotify');
 var youtube         = require('./sources/youtube');
 var models          = require('../models');
 var ActivityManager = require('../utils/ActivityManager');
+var ResponseHandler = require('../utils/ResponseHandler');
 
 /* ====================================================== */
 
@@ -102,6 +103,8 @@ exports.search = function(req, res) {
       query: query,
       results: results
     };
+
+    models.TrackSearch.create(attributes);
   };
 
   when.all(getSearchPromises()).then(function(results) {
@@ -112,6 +115,37 @@ exports.search = function(req, res) {
     res.status(200).json(searchResults);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body });
+  });
+
+};
+
+/* ====================================================== */
+
+exports.getSearches = function(req, res) {
+
+  var fetchSearches = function(limit, offset) {
+    var deferred = when.defer();
+
+    limit = ( limit && limit < 50 ) ? limit : 20;
+    offset = offset || 0;
+
+    models.TrackSearch.findAll({
+      order: ['createdAt'],
+      limit: limit,
+      offset: offset
+    }).then(function(searches) {
+      deferred.resolve(searches);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err })
+    });
+
+    return deferred.promise;
+  };
+
+  fetchSearches(req.query.limit, req.query.offset).then(function(searches) {
+    ResponseHandler.handleSuccess(res, 200, searches);
+  }).catch(function(err) {
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
