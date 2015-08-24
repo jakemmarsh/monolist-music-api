@@ -55,6 +55,21 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
     });
   });
 
+  it('should retrieve all newest posts for a group', function(done) {
+    var req = request(url).get('group/1/posts');
+
+    req.cookies = global.cookies;
+
+    req.end(function(err, res) {
+      res.status.should.be.equal(200);
+      res.body.should.be.instanceof(Object);
+      res.body.should.have.property('data');
+      res.body.data.should.be.instanceof(Array);
+      res.body.data[0].should.have.property('body');
+      done();
+    });
+  });
+
   it('should update a specific group\'s attributes', function(done) {
     var req = request(url).patch('group/1');
     var updates = {

@@ -57,6 +57,7 @@ api.delete('/post/:id', controllers.auth.isAuthenticated, controllers.post.delet
 api.post('/group', controllers.auth.isAuthenticated, controllers.group.create);
 api.get('/group/:identifier', controllers.group.get);
 api.get('/group/:id/playlists', controllers.group.getPlaylists);
+api.get('/group/:id/posts', controllers.group.getPosts);
 api.get('/groups/trending', controllers.group.getTrending);
 api.get('/groups/search/:query', controllers.group.search);
 api.patch('/group/:id', controllers.auth.isAuthenticated, controllers.group.update);

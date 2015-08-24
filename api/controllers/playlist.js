@@ -161,6 +161,7 @@ exports.get = function(req, res) {
             {
               model: models.TrackComment,
               as: 'Comments',
+              order: [['createdAt', 'DESC']],
               include: [{
                 model: models.User,
                 attributes: ['id', 'username', 'imageUrl']

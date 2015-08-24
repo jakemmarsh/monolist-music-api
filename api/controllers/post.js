@@ -17,6 +17,10 @@ exports.get = function(req, res) {
       where: { id: postId },
       include: [
         {
+          model: models.User,
+          attributes: ['id', 'username', 'imageUrl']
+        },
+        {
           model: models.PostLike,
           as: 'Likes',
           include: [{
@@ -34,6 +38,8 @@ exports.get = function(req, res) {
         }
       ]
     }).then(function(post) {
+      post = post.toJSON();
+      delete post.UserId;
       deferred.resolve(post);
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
@@ -62,10 +68,14 @@ exports.getNewest = function(req, res) {
 
     models.Post.findAll({
       where: { GroupId: null },
-      order: ['createdAt'],
+      order: [['createdAt', 'DESC']],
       limit: limit,
       offset: offset,
       include: [
+        {
+          model: models.User,
+          attributes: ['id', 'username', 'imageUrl']
+        },
         {
           model: models.PostLike,
           as: 'Likes',
@@ -84,6 +94,11 @@ exports.getNewest = function(req, res) {
         }
       ]
     }).then(function(posts) {
+      posts = _.map(posts, function(post) {
+        post = post.toJSON();
+        delete post.UserId;
+        return post;
+      });
       deferred.resolve(posts);
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });

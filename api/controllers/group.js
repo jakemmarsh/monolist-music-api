@@ -5,6 +5,7 @@ var _               = require('lodash');
 var models          = require('../models');
 var Sequelize       = require('sequelize');
 var ActivityManager = require('../utils/ActivityManager');
+var ResponseHandler = require('../utils/ResponseHandler');
 
 /* ====================================================== */
 
@@ -308,7 +309,41 @@ exports.search = function(req, res) {
 
 exports.getPosts = function(req, res) {
 
+  var fetchPosts = function(groupId, limit, offset) {
+    var deferred = when.defer();
 
+    limit = ( limit && limit < 50 ) ? limit : 20;
+    offset = offset || 0;
+
+    models.Post.findAll({
+      where: { GroupId: groupId },
+      limit: limit,
+      offset: offset,
+      include: [
+        {
+          model: models.User,
+          attributes: ['id', 'username', 'imageUrl']
+        }
+      ]
+    }).then(function(posts) {
+      posts = _.map(posts, function(post) {
+        post = post.toJSON();
+        delete post.UserId;
+        return post;
+      });
+      deferred.resolve(posts);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err })
+    });
+
+    return deferred.promise;
+  };
+
+  fetchPosts(req.params.id, req.query.limit, req.query.offset).then(function(posts) {
+    ResponseHandler.handleSuccess(res, 200, posts);
+  }).catch(function(err) {
+    ResponseHandler.handleError(res, err.status, err.body);
+  });
 
 };
 

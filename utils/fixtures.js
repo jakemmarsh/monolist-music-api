@@ -152,6 +152,7 @@ module.exports = {
   posts: [
     {
       UserId: 1,
+      GroupId: 1,
       body: 'This is a post without a track.',
       track: null
     },
@@ -195,6 +196,14 @@ module.exports = {
           duration: 181
         }
       ]
+    }
+  ],
+
+  postComments: [
+    {
+      PostId: 1,
+      UserId: 1,
+      body: 'this is a post comment'
     }
   ]
 
