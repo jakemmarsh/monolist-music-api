@@ -19,12 +19,18 @@ exports.get = function(req, res) {
         {
           model: models.PostLike,
           as: 'Likes',
-          include: [
-            {
+          include: [{
               model: models.User,
               attributes: ['id', 'username']
-            }
-          ]
+          }]
+        },
+        {
+          model: models.PostComment,
+          as: 'Comments',
+          include: [{
+            model: models.User,
+            attributes: ['id', 'username', 'imageUrl']
+          }]
         }
       ]
     }).then(function(post) {
@@ -63,12 +69,18 @@ exports.getNewest = function(req, res) {
         {
           model: models.PostLike,
           as: 'Likes',
-          include: [
-            {
+          include: [{
               model: models.User,
               attributes: ['id', 'username']
-            }
-          ]
+          }]
+        },
+        {
+          model: models.PostComment,
+          as: 'Comments',
+          include: [{
+            model: models.User,
+            attributes: ['id', 'username', 'imageUrl']
+          }]
         }
       ]
     }).then(function(posts) {
