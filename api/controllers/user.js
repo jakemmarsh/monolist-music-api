@@ -379,7 +379,10 @@ exports.getEditablePlaylists = function(req, res) {
         }
       ]
     }).then(function(memberships) {
-      deferred.resolve(_.union(groupIds, _.pluck(memberships, 'Group.id')));
+      var membershipGroupIds = _.map(memberships, function(membership) {
+        return membership.Group.id;
+      });
+      deferred.resolve(_.union(groupIds, membershipGroupIds));
     }).catch(function(err) {
       // Resolve to still pass
       deferred.resolve([]);
@@ -400,7 +403,10 @@ exports.getEditablePlaylists = function(req, res) {
         }
       ]
     }).then(function(collaborations) {
-      deferred.resolve([_.pluck(collaborations, 'Playlist.id'), groupIds]);
+      var playlistIds = _.map(collaborations, function(collaboration) {
+        return collaboration.Playlist.id;
+      });
+      deferred.resolve([playlistIds, groupIds]);
     }).catch(function() {
       // still resolve
       deferred.resolve([[], groupIds]);
@@ -444,7 +450,6 @@ exports.getEditablePlaylists = function(req, res) {
   .then(function(playlists) {
     res.status(200).json(playlists);
   }).catch(function(err) {
-    console.log('error:', err);
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
   });
 
@@ -618,7 +623,6 @@ exports.getGroups = function(req, res) {
     }).then(function(memberships) {
       deferred.resolve(_.pluck(memberships, 'Group'));
     }).catch(function(err) {
-      console.log('error:', err);
       deferred.reject({ status: 500, body: err });
     });
 
