@@ -1,20 +1,21 @@
 'use strict';
 
-var express        = require('express');
-var morgan         = require('morgan');
-var compression    = require('compression');
-var methodOverride = require('method-override');
-var bodyParser     = require('body-parser');
-var busboy         = require('connect-busboy');
-var cookieParser   = require('cookie-parser');
-var session        = require('express-session');
-var passport       = require('passport');
-var server         = express();
-var models         = require('./api/models');
-var populateDb     = require('./utils/populateDb');
-var mailer         = require('./api/mailer');
-var api            = require('./api');
-var SequelizeStore = require('connect-session-sequelize')(session.Store);
+var express         = require('express');
+var morgan          = require('morgan');
+var compression     = require('compression');
+var methodOverride  = require('method-override');
+var bodyParser      = require('body-parser');
+var busboy          = require('connect-busboy');
+var cookieParser    = require('cookie-parser');
+var session         = require('express-session');
+var passport        = require('passport');
+var server          = express();
+var models          = require('./api/models');
+var populateDb      = require('./utils/populateDb');
+var mailer          = require('./api/mailer');
+var api             = require('./api');
+var ResponseHandler = require('./api/utils/ResponseHandler');
+var SequelizeStore  = require('connect-session-sequelize')(session.Store);
 
 /* ====================================================== */
 
@@ -82,6 +83,13 @@ server.use(function (req, res, next) {
 
 // Mount the API
 server.use('/v1', api);
+
+/* ====================================================== */
+
+// Respond with 404 to any routes not matching API endpoints
+server.all('/*', function(req, res) {
+  ResponseHandler.handleError(res, 404, 'No endpoint exists at ' + req.originalUrl);
+});
 
 /* ====================================================== */
 
