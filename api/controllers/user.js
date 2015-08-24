@@ -187,6 +187,7 @@ exports.getNotifications = function(req, res) {
       retrievedNotifications = _.map(retrievedNotifications, function(notification) {
         notification = notification.toJSON();
         delete notification.ActorId;
+        return notification;
       });
       deferred.resolve(retrievedNotifications);
     }).catch(function(err) {

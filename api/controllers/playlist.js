@@ -46,7 +46,10 @@ function ensureCurrentUserCanEdit(req, playlistId) {
         }
       ]
     }).then(function(memberships) {
-      deferred.resolve(_.union(groupIds, _.pluck(memberships, 'Group.id')));
+      var membershipGroupIds = _.map(memberships, function(membership) {
+        return membership.Group.id;
+      });
+      deferred.resolve(_.union(groupIds, membershipGroupIds));
     }).catch(function(err) {
       // Resolve to still pass
       deferred.resolve([]);
