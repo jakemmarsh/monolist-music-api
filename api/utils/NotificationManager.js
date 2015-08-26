@@ -36,6 +36,11 @@ exports.getGroupUserIds = function(groupId, action, actorId, recipientId) {
       ids = _([group.OwnerId]).concat(ids, memberIds, followerIds).uniq().value();
     }
 
+    // Don't notify the person taking the action
+    ids = _.reject(ids, function(id) {
+      return id === actorId;
+    });
+
     deferred.resolve(ids);
   }).catch(function(err) {
     deferred.reject(err);
@@ -81,10 +86,21 @@ exports.getPlaylistUserIds = function(playlistId, action, actorId, recipientId) 
 
         if ( playlist.ownerType === 'user' && !_.contains(ids, playlist.ownerId) ) {
           ids.push(playlist.ownerId);
+
+          // Don't notify the person taking the action
+          ids = _.reject(ids, function(id) {
+            return id === actorId;
+          });
+
           deferred.resolve(ids);
         } else if ( playlist.ownerType === 'group' ) {
           deferred.resolve(getGroupUsers(playlist.ownerId, ids));
         } else {
+          // Don't notify the person taking the action
+          ids = _.reject(ids, function(id) {
+            return id === actorId;
+          });
+
           deferred.resolve(ids);
         }
       }
@@ -144,14 +160,15 @@ exports.getPlaylistUserIds = function(playlistId, action, actorId, recipientId) 
 
 /* ====================================================== */
 
-exports.getTrackUserIds = function(trackId) {
+exports.getTrackUserIds = function(trackId, actorId) {
 
   var deferred = when.defer();
 
   models.Track.find({
     where: { id: trackId }
   }).then(function(track) {
-    deferred.resolve([track.UserId]);
+    // Don't notify the person taking the action
+    deferred.resolve(actorId === track.UserId ? [] : [track.UserId]);
   }).catch(function(err) {
     deferred.reject(err);
   });
