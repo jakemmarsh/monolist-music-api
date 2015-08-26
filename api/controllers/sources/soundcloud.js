@@ -1,10 +1,11 @@
 'use strict';
 
-var qs      = require('querystring');
-var request = require('request');
-var _       = require('lodash');
-var SC      = require('node-soundcloud');
-var when    = require('when');
+var qs              = require('querystring');
+var request         = require('request');
+var _               = require('lodash');
+var SC              = require('node-soundcloud');
+var when            = require('when');
+var ResponseHandler = require('../../utils/ResponseHandler');
 
 /* ====================================================== */
 
@@ -98,8 +99,43 @@ exports.stream = function(req, res) {
 
   getTrackUrl(req.params.trackId).then(function(audioRes) {
     audioRes.pipe(res);
-  }, function(err) {
+  }).catch(function(err) {
     res.status(err.status).json({ status: err.status, message: err.body.toString() });
+  });
+
+};
+
+/* ====================================================== */
+
+exports.getDetails = function(req, res) {
+
+  var getTrackDetails = function(trackUrl) {
+    var deferred = when.defer();
+    var scUrl = 'http://api.soundcloud.com/resolve.json?client_id=' + process.env.SOUNDCLOUD_ID + '&url=' + decodeURIComponent(trackUrl);
+
+    // TODO: why won't this work via SC.get?
+    request.get(scUrl, function(err, response, body) {
+      body = JSON.parse(body);
+
+      console.log('body:', body);
+
+      deferred.resolve({
+        source: 'soundcloud',
+        title: body.title,
+        imageUrl: body.artwork_url ? body.artwork_url : null,
+        duration: body.duration/1000,
+        sourceParam: body.id.toString(),
+        sourceUrl: body.permalink_url
+      });
+    });
+
+    return deferred.promise;
+  };
+
+  getTrackDetails(req.params.url).then(function(details) {
+    ResponseHandler.handleSuccess(res, 200, details);
+  }).catch(function(err) {
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };

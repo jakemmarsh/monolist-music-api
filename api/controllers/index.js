@@ -8,5 +8,5 @@ exports.track              = require('./track');
 
 exports.aws                = require('./aws');
 
-exports.streaming          = require('./streaming');
-exports.soundcloudRedirect = require('./sources/soundcloud').redirect;
+exports.sources            = require('./sources/index.js');
+exports.soundcloudRedirect = exports.sources.soundcloud.redirect;

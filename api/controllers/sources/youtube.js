@@ -1,11 +1,12 @@
 'use strict';
 
-var when     = require('when');
-var qs       = require('querystring');
-var request  = require('request');
-var _        = require('lodash');
-// var ytdl     = require('ytdl-core');
-var fallback = require('fallback');
+var when            = require('when');
+var qs              = require('querystring');
+var request         = require('request');
+var _               = require('lodash');
+var url             = require('url');
+
+var ResponseHandler = require('../../utils/ResponseHandler');
 
 /* ====================================================== */
 
@@ -42,37 +43,43 @@ function parseYouTubeDuration(duration) {
 
 /* ====================================================== */
 
+function addVideoDurations(videos) {
+  if ( videos.constructor !== Array ) {
+    videos = [videos];
+  }
+
+  var deferred = when.defer();
+  var infoUrl = 'https://www.googleapis.com/youtube/v3/videos?';
+  var infoParameters = {
+    part: 'contentDetails',
+    key: process.env.YOUTUBE_KEY,
+    id: _.pluck(videos, 'sourceParam').join(',')
+  };
+
+  infoUrl += qs.stringify(infoParameters);
+
+  request(infoUrl, function(err, response, body) {
+    if ( err ) {
+      deferred.reject({ status: 500, body: err.toString() });
+    } else {
+      body = JSON.parse(body);
+
+      _.each(_.pluck(body.items, 'contentDetails'), function(contentDetails, index) {
+        videos[index].duration = parseYouTubeDuration(contentDetails.duration);
+      });
+
+      deferred.resolve(videos);
+    }
+  });
+
+  return deferred.promise;
+}
+
+/* ====================================================== */
+
 exports.search = function(query, limit, ip) {
 
   var mainDeferred = when.defer();
-
-  var addVideoDurations = function(videos) {
-    var deferred = when.defer();
-    var infoUrl = 'https://www.googleapis.com/youtube/v3/videos?';
-    var infoParameters = {
-      part: 'contentDetails',
-      key: process.env.YOUTUBE_KEY,
-      id: _.pluck(videos, 'sourceParam').join(',')
-    };
-
-    infoUrl += qs.stringify(infoParameters);
-
-    request(infoUrl, function(err, response, body) {
-      if ( err ) {
-        deferred.reject({ status: 500, body: err.toString() });
-      } else {
-        body = JSON.parse(body);
-
-        _.each(_.pluck(body.items, 'contentDetails'), function(contentDetails, index) {
-          videos[index].duration = parseYouTubeDuration(contentDetails.duration);
-        });
-
-        deferred.resolve(videos);
-      }
-    });
-
-    return deferred.promise;
-  };
 
   var getSearchResults = function(searchQuery, userIP) {
     var deferred = when.defer();
@@ -121,6 +128,55 @@ exports.search = function(query, limit, ip) {
   });
 
   return mainDeferred.promise;
+
+};
+
+/* ====================================================== */
+
+exports.getDetails = function(req, res) {
+
+  var getTrackDetails = function(videoUrl) {
+    var deferred = when.defer();
+    var infoUrl = 'https://www.googleapis.com/youtube/v3/videos?';
+    var infoParameters = {
+      part: 'snippet',
+      key: process.env.YOUTUBE_KEY,
+      id: qs.parse(url.parse(videoUrl).query).v
+    };
+
+    infoUrl += qs.stringify(infoParameters);
+
+    request(infoUrl, function(err, response, body) {
+      if ( err ) {
+        deferred.reject({ status: 500, body: err.toString() });
+      } else {
+        body = JSON.parse(body);
+
+        if ( body.items && body.items.length > 0 ) {
+          deferred.resolve({
+            source: 'youtube',
+            title: body.items[0].snippet.title,
+            imageUrl: body.items[0].snippet.thumbnails.high.url,
+            sourceParam: body.items[0].id,
+            sourceUrl: 'http://youtube.com/watch?v=' + body.items[0].id
+          });
+        } else {
+          deferred.reject({ status: 404, body: 'Details for that video could not be found.' });
+        }
+      }
+    });
+
+    return deferred.promise;
+  };
+
+  getTrackDetails(req.params.url)
+  .then(addVideoDurations)
+  .then(function(videos) {
+    var video = videos[0]; // addVideoDurations returns an array by default
+    ResponseHandler.handleSuccess(res, 200, video);
+  }).catch(function(err) {
+    ResponseHandler.handleError(res, err.status, err.body);
+  });
 
 };
 
