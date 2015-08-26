@@ -618,7 +618,11 @@ exports.getGroups = function(req, res) {
       include: [
         {
           model: models.Group,
-          as: 'Group'
+          as: 'Group',
+          include: [{
+            model: models.GroupMembership,
+            as: 'Memberships'
+          }]
         }
       ]
     }).then(function(memberships) {

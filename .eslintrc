@@ -13,10 +13,6 @@
     "jasmine": true,
     "mocha": true
   },
-  "globals": {
-    "sinon": true,
-    "should": true
-  },
   "rules": {
     "quotes": [2, "single"],
     "eol-last": 0,

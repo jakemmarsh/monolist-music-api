@@ -32,6 +32,10 @@ exports.get = function(req, res) {
           model: models.GroupMembership,
           as: 'Memberships',
           include: [models.User]
+        },
+        {
+          model: models.GroupFollow,
+          as: 'Followers'
         }
       ]
     }).then(function(group) {
@@ -41,7 +45,6 @@ exports.get = function(req, res) {
         group = group.toJSON();
         delete group.OwnerId;
         group.members = _.pluck(group.Memberships, 'User');
-        delete group.Memberships;
         deferred.resolve(group);
       }
     }).catch(function(err) {
@@ -179,7 +182,12 @@ exports.getTrending = function(req, res) {
     var deferred = when.defer();
 
     // TODO: real logic here to determine trending
-    models.Group.findAll().then(function(groups) {
+    models.Group.findAll({
+      include: [{
+        model: models.GroupMembership,
+        as: 'Memberships'
+      }]
+    }).then(function(groups) {
       deferred.resolve(groups);
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
@@ -391,44 +399,47 @@ exports.follow = function(req, res) {
 
 exports.addMember = function(req, res) {
 
-  var getCurrentUserLevel = function(groupId, actorId, memberId) {
+  var fetchGroup = function(groupId, actorId, memberId) {
     var deferred = when.defer();
-
-    models.GroupMembership.find({
-      where: {
-        GroupId: groupId,
-        UserId: req.user.id
-      }
-    }).then(function(retrievedMembership) {
-      if ( !_.isEmpty(retrievedMembership) ) {
-        deferred.resolve([groupId, actorId, memberId, retrievedMembership.level]);
-      } else {
-        deferred.reject({ status: 401, body: 'Current user is not a member of that group.' });
-      }
-    });
-
-    return deferred.promise;
-  };
-
-  var fetchGroup = function(data) {
-    var deferred = when.defer();
-    var groupId = data[0];
-    var actorId = data[1];
-    var memberId = data[2];
-    var currentUserLevel = data[3];
 
     models.Group.find({
       where: { id: groupId }
     }).then(function(group) {
       if ( _.isEmpty(group) ) {
         deferred.reject({ status: 404, body: 'Group could not be found at ID: ' + groupId });
-      } else if ( group.inviteLevel > currentUserLevel ) {
+      } else if ( group.privacy !== 'public' && group.inviteLevel > currentUserLevel ) {
         deferred.reject({ status: 401, body: 'User does not have permission to add members to that group.' });
       } else {
-        deferred.resolve([groupId, actorId, memberId]);
+        deferred.resolve([group, actorId, memberId]);
       }
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var getCurrentUserLevel = function(data) {
+    var deferred = when.defer();
+    var group = data[0];
+    var actorId = data[1];
+    var memberId = data[2];
+
+    models.GroupMembership.find({
+      where: {
+        GroupId: group.id,
+        UserId: req.user.id
+      }
+    }).then(function(retrievedMembership) {
+      if ( !_.isEmpty(retrievedMembership) ) {
+        if ( group.privacy !== 'public' && group.inviteLevel > retrievedMembership.level ) {
+          deferred.reject({ status: 401, body: 'User does not have permission to add members to that group.' });
+        } else {
+          deferred.resolve([group.id, actorId, memberId]);
+        }
+      } else {
+        deferred.reject({ status: 401, body: 'Current user is not a member of that group.' });
+      }
     });
 
     return deferred.promise;
@@ -453,7 +464,6 @@ exports.addMember = function(req, res) {
       }
       deferred.resolve(createdMembership);
     }).catch(function(err) {
-      console.log('error creating membership:', err);
       deferred.reject({ status: 500, body: err });
     });
 
@@ -484,8 +494,8 @@ exports.addMember = function(req, res) {
     return deferred.promise;
   };
 
-  getCurrentUserLevel(req.params.groupId, req.user.id, req.params.memberId)
-  .then(fetchGroup)
+  fetchGroup(req.params.groupId, req.user.id, req.params.memberId)
+  .then(getCurrentUserLevel)
   .then(createMembership)
   .then(deleteFollow)
   .then(ActivityManager.queue.bind(null, 'group', req.params.groupId, 'addMember', req.user.id, req.params.memberId))
@@ -588,7 +598,7 @@ exports.updateMemberLevel = function(req, res) {
     var currentUserLevel = data[3];
 
     if ( newLevel > currentUserLevel ) {
-      deferred.reject({ status: 403, body: 'User cannot upgrade members above themselves.' });
+      deferred.reject({ status: 403, body: 'User cannot promote members above themselves.' });
     } else {
       models.GroupMembership.find({
         where: {
