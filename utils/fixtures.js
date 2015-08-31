@@ -205,6 +205,16 @@ module.exports = {
       UserId: 1,
       body: 'this is a post comment'
     }
+  ],
+
+  notifications: [
+    {
+      entityType: 'playlist',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'like'
+    }
   ]
 
 };

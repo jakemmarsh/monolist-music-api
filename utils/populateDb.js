@@ -144,7 +144,7 @@ module.exports = function(models, mailer) {
     return deferred.promise;
   };
 
-  var createMemberships = function(group) {
+  var createMemberships = function() {
     var deferred = when.defer();
 
     models.GroupMembership.bulkCreate(fixtures.groupMemberships, {
@@ -234,6 +234,21 @@ module.exports = function(models, mailer) {
     return deferred.promise;
   };
 
+  var createNotifications = function() {
+    var deferred = when.defer();
+
+    models.Notification.bulkCreate(fixtures.notifications, {
+      validate: true,
+      individualHooks: true
+    }).then(function(createdNotifications) {
+      deferred.resolve(createdNotifications);
+    }).catch(function(err) {
+      console.log('error creating notifications:', err);
+    });
+
+    return deferred.promise;
+  };
+
   createUser()
   .then(createSecondUser)
   .then(createThirdUser)
@@ -250,6 +265,7 @@ module.exports = function(models, mailer) {
   .then(createPosts)
   .then(createPlaylistSearches)
   .then(createTrackSearches)
-  .then(createPostComments);
+  .then(createPostComments)
+  .then(createNotifications);
 
 };
