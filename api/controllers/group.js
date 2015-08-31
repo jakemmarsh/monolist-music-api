@@ -45,6 +45,7 @@ exports.get = function(req, res) {
         group = group.toJSON();
         delete group.OwnerId;
         group.members = _.pluck(group.Memberships, 'User');
+        group.members.push(group.Owner);
         deferred.resolve(group);
       }
     }).catch(function(err) {
@@ -327,10 +328,28 @@ exports.getPosts = function(req, res) {
       where: { GroupId: groupId },
       limit: limit,
       offset: offset,
+      order: [['createdAt', 'DESC']],
       include: [
         {
           model: models.User,
           attributes: ['id', 'username', 'imageUrl']
+        },
+        {
+          model: models.PostLike,
+          as: 'Likes',
+          include: [{
+              model: models.User,
+              attributes: ['id', 'username']
+          }]
+        },
+        {
+          model: models.PostComment,
+          as: 'Comments',
+          order: [['createdAt', 'DESC']],
+          include: [{
+            model: models.User,
+            attributes: ['id', 'username', 'imageUrl']
+          }]
         }
       ]
     }).then(function(posts) {

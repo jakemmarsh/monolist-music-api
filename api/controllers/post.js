@@ -31,6 +31,7 @@ exports.get = function(req, res) {
         {
           model: models.PostComment,
           as: 'Comments',
+          order: [['createdAt', 'DESC']],
           include: [{
             model: models.User,
             attributes: ['id', 'username', 'imageUrl']
@@ -87,6 +88,7 @@ exports.getNewest = function(req, res) {
         {
           model: models.PostComment,
           as: 'Comments',
+          order: [['createdAt', 'DESC']],
           include: [{
             model: models.User,
             attributes: ['id', 'username', 'imageUrl']
@@ -138,7 +140,47 @@ exports.create = function(req, res) {
     return deferred.promise;
   };
 
+  var retrievePost = function(createdPost) {
+    var deferred = when.defer();
+
+    models.Post.find({
+      where: { id: createdPost.id },
+      include: [
+        {
+          model: models.User,
+          attributes: ['id', 'username', 'imageUrl']
+        },
+        {
+          model: models.PostLike,
+          as: 'Likes',
+          include: [{
+              model: models.User,
+              attributes: ['id', 'username']
+          }]
+        },
+        {
+          model: models.PostComment,
+          as: 'Comments',
+          order: [['createdAt', 'DESC']],
+          include: [{
+            model: models.User,
+            attributes: ['id', 'username', 'imageUrl']
+          }]
+        }
+      ]
+    }).then(function(post) {
+      post = post.toJSON();
+      delete post.UserId;
+      deferred.resolve(post);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
   createPost(req.body, req.user)
+  .then(retrievePost)
   .then(ActivityManager.queue.bind(null, 'post', null, 'create', req.user.id))
   .then(function(createdPost) {
     ResponseHandler.handleSuccess(res, 200, createdPost);
