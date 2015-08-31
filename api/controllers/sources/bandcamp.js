@@ -41,7 +41,7 @@ exports.stream = function(req, res) {
   bandcamp.getTrack(url).then(function(stream) {
     stream.pipe(res);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    res.status(err.status).json({ status: err.status, message: err.message });
   });
 
 };
@@ -50,21 +50,21 @@ exports.stream = function(req, res) {
 
 exports.getDetails = function(req, res) {
 
-  var getTrackDetails = function(url) {
-    var deferred = when.defer();
+  var url = decodeURIComponent(req.params.url);
 
-    url = decodeURIComponent(url);
-
-    // TODO: get track details
-    deferred.resolve();
-
-    return deferred.promise;
-  };
-
-  getTrackDetails(req.params.url).then(function(details) {
-    ResponseHandler.handleSuccess(res, 200, details);
+  bandcamp.getDetails(url).then(function(details) {
+    ResponseHandler.handleSuccess(res, 200, {
+      source: 'bandcamp',
+      title: details.title,
+      artist: details.artist,
+      album: details.album,
+      imageUrl: details.image,
+      sourceParam: url,
+      sourceUrl: url
+    });
   }).catch(function(err) {
     ResponseHandler.handleError(res, err.status, err.body);
+    res.status(err.status).json({ status: err.status, message: err.message });
   });
 
 };

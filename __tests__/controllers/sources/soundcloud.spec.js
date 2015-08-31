@@ -18,4 +18,23 @@ describe('soundcloud routes', function() {
     });
   });
 
+  it('should get the details of a track from URL', function(done) {
+    var videoUrl = 'https://soundcloud.com/nickraymondg/skizzy-mars-weekend-millionaires-remix';
+
+    request(url)
+    .get('details/soundcloud/' + encodeURIComponent(videoUrl))
+    .end(function(err, res) {
+      res.status.should.be.equal(200);
+      res.body.should.be.instanceof(Object);
+      res.body.should.have.property('data');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('source');
+      res.body.data.should.have.property('sourceParam');
+      res.body.data.should.have.property('sourceUrl');
+      res.body.data.should.have.property('imageUrl');
+      res.body.data.should.have.property('title');
+      done();
+    });
+  });
+
 });
