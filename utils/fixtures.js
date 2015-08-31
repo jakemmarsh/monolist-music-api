@@ -214,6 +214,111 @@ module.exports = {
       RecipientId: 1,
       ActorId: 2,
       action: 'like'
+    },
+    {
+      entityType: 'playlist',
+      entityId: 2,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'create'
+    },
+    {
+      entityType: 'playlist',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'follow'
+    },
+    {
+      entityType: 'playlist',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'addTrack'
+    },
+    {
+      entityType: 'playlist',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'addCollaborator'
+    },
+    {
+      entityType: 'playlist',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'removeCollaborator'
+    },
+    {
+      entityType: 'track',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'addComment'
+    },
+    {
+      entityType: 'track',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'upvote'
+    },
+    {
+      entityType: 'track',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'downvote'
+    },
+    {
+      entityType: 'group',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'addMember'
+    },
+    {
+      entityType: 'group',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'removeMember'
+    },
+    {
+      entityType: 'group',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'updateMemberLevel'
+    },
+    {
+      entityType: 'user',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'follow'
+    },
+    {
+      entityType: 'post',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'create'
+    },
+    {
+      entityType: 'post',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'like'
+    },
+    {
+      entityType: 'post',
+      entityId: 1,
+      RecipientId: 1,
+      ActorId: 2,
+      action: 'addComment'
     }
   ]
 
