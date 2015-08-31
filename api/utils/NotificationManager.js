@@ -181,7 +181,9 @@ exports.getTrackUserIds = function(trackId, actorId) {
 
 exports.getUserIdsForActivity = function(activity) {
 
-  if ( activity.entityType === 'group' ) {
+  if ( activity.recipientId ) {
+    return when([activity.recipientId]);
+  } else if ( activity.entityType === 'group' ) {
     return exports.getGroupUserIds(activity.entityId, activity.action, activity.actorId, activity.recipientId);
   } else if ( activity.entityType === 'playlist' ) {
     return exports.getPlaylistUserIds(activity.entityId, activity.action, activity.actorId, activity.recipientId);
