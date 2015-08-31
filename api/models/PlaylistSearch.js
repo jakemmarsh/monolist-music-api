@@ -3,8 +3,8 @@
 module.exports = function(sequelize, DataTypes) {
 
   var PlaylistSearch = sequelize.define('PlaylistSearch', {
-    query:     { type: DataTypes.STRING, allowNull: false },
-    resultIds: { type: DataTypes.ARRAY(DataTypes.INTEGER), defaultValue: [] }
+    query:   { type: DataTypes.STRING, allowNull: false },
+    results: { type: DataTypes.ARRAY(DataTypes.INTEGER), defaultValue: [] }
   },
   {
     classMethods: {

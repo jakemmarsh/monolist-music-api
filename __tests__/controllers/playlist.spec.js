@@ -88,7 +88,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
       res.body.should.have.property('data');
       res.body.data.should.be.instanceof(Array);
       res.body.data[0].should.have.property('UserId');
-      res.body.data[0].should.have.property('resultIds');
+      res.body.data[0].should.have.property('results');
       res.body.data[0].should.have.property('query');
       done();
     });

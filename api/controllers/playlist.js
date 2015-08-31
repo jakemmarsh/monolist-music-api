@@ -293,7 +293,7 @@ exports.search = function(req, res) {
     var attributes = {
       UserId: currentUser ? currentUser.id : null,
       query: query,
-      resultIds: _.pluck(results, 'id')
+      results: _.pluck(results, 'id')
     };
 
     models.PlaylistSearch.create(attributes);
