@@ -172,6 +172,32 @@ exports.update = function(req, res) {
 
 exports.getNotifications = function(req, res) {
 
+  var modelMap = {
+    post: models.Post,
+    user: models.User,
+    group: models.Group,
+    playlist: models.Playlist,
+    track: models.Track
+  };
+
+  var getRelatedEntity = function(entityType, entityId) {
+    var deferred = when.defer();
+
+    if ( modelMap[entityType] ) {
+      modelMap[entityType].find({
+        where: { id: entityId }
+      }).then(function(entity) {
+        deferred.resolve(entity);
+      }).catch(function() {
+        deferred.reject({ status: 500, body: 'Related entity could not be found: ' + entityType + ', ' + entityId});
+      });
+    } else {
+      deferred.resolve({});
+    }
+
+    return deferred.promise;
+  };
+
   var fetchNotifications = function(userId) {
     var deferred = when.defer();
 
@@ -184,12 +210,23 @@ exports.getNotifications = function(req, res) {
         }
       ]
     }).then(function(retrievedNotifications) {
-      retrievedNotifications = _.map(retrievedNotifications, function(notification) {
+      var promises = [];
+      var notifications = [];
+
+      _.each(retrievedNotifications, function(notification) {
         notification = notification.toJSON();
         delete notification.ActorId;
-        return notification;
+        notifications.push(notification);
+        promises.push(getRelatedEntity(notification.entityType, notification.entityId));
       });
-      deferred.resolve(retrievedNotifications);
+
+      when.all(promises).then(function(results) {
+        _.each(results, function(result, index) {
+          notifications[index].entity = result;
+        });
+
+        deferred.resolve(notifications);
+      });
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
     });
