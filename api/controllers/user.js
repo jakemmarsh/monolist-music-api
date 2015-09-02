@@ -206,7 +206,8 @@ exports.getNotifications = function(req, res) {
       include: [
         {
           model: models.User,
-          as: 'Actor'
+          as: 'Actor',
+          attributes: ['id', 'username', 'imageUrl']
         }
       ]
     }).then(function(retrievedNotifications) {
