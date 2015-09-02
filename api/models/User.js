@@ -66,6 +66,7 @@ module.exports = function(sequelize, DataTypes) {
     instanceMethods: {
       toJSON: function() {
         // Delete private values from object before sending to client
+        // TODO: this isn't working (at least not in populations)
         var res = this.get();
         delete res.hash;
         delete res.passwordResetKey;
