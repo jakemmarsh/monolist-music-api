@@ -250,27 +250,27 @@ module.exports = {
       ActorId: 2,
       action: 'removeCollaborator'
     },
-    {
-      entityType: 'track',
-      entityId: 1,
-      RecipientId: 1,
-      ActorId: 2,
-      action: 'addComment'
-    },
-    {
-      entityType: 'track',
-      entityId: 1,
-      RecipientId: 1,
-      ActorId: 2,
-      action: 'upvote'
-    },
-    {
-      entityType: 'track',
-      entityId: 1,
-      RecipientId: 1,
-      ActorId: 2,
-      action: 'downvote'
-    },
+    // {
+    //   entityType: 'track',
+    //   entityId: 1,
+    //   RecipientId: 1,
+    //   ActorId: 2,
+    //   action: 'addComment'
+    // },
+    // {
+    //   entityType: 'track',
+    //   entityId: 1,
+    //   RecipientId: 1,
+    //   ActorId: 2,
+    //   action: 'upvote'
+    // },
+    // {
+    //   entityType: 'track',
+    //   entityId: 1,
+    //   RecipientId: 1,
+    //   ActorId: 2,
+    //   action: 'downvote'
+    // },
     {
       entityType: 'group',
       entityId: 1,

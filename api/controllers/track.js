@@ -234,7 +234,7 @@ exports.upvote = function(req, res) {
   };
 
   createOrDeleteUpvote(req.params.id, req.user.id)
-  .then(ActivityManager.queue.bind(null, 'track', req.params.id, 'upvote', req.user.id))
+  //.then(ActivityManager.queue.bind(null, 'track', req.params.id, 'upvote', req.user.id))
   .then(function(resp) {
     res.status(200).json(resp);
   }, function(err) {
@@ -278,7 +278,7 @@ exports.downvote = function(req, res) {
   };
 
   createOrDeleteDownvote(req.params.id, req.user.id)
-  .then(ActivityManager.queue.bind(null, 'track', req.params.id, 'downvote', req.user.id))
+  //.then(ActivityManager.queue.bind(null, 'track', req.params.id, 'downvote', req.user.id))
   .then(function(resp) {
     res.status(200).json(resp);
   }, function(err) {
@@ -310,7 +310,7 @@ exports.addComment = function(req, res) {
   };
 
   createComment(req.params.id, req.body, req.user.id)
-  .then(ActivityManager.queue.bind(null, 'track', req.params.id, 'addComment', req.user.id))
+  //.then(ActivityManager.queue.bind(null, 'track', req.params.id, 'addComment', req.user.id))
   .then(function(comment) {
     res.status(200).json(comment);
   }, function(err) {
