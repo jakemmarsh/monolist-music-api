@@ -56,9 +56,9 @@ exports.get = function(req, res) {
   };
 
   fetchGroup(req.params.identifier).then(function(group) {
-    res.status(200).json(group);
+    ResponseHandler.handleSuccess(res, 200, group);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -133,10 +133,9 @@ exports.create = function(req, res) {
   .then(createGroup)
   .then(createMembership)
   .then(function(resp) {
-    res.status(200).json(resp);
+    ResponseHandler.handleSuccess(res, 200, resp);
   }).catch(function(err) {
-    console.log('finally caught error:', err);
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -168,9 +167,9 @@ exports.getPlaylists = function(req, res) {
   };
 
   fetchPlaylists(req.params.id, req.query.limit, req.query.offset).then(function(playlists) {
-    res.status(200).json(playlists);
+    ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -198,9 +197,9 @@ exports.getTrending = function(req, res) {
   };
 
   fetchGroups().then(function(groups) {
-    res.status(200).json(groups);
+    ResponseHandler.handleSuccess(res, 200, groups);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -251,9 +250,9 @@ exports.update = function(req, res) {
   fetchGroup(req.params.id, req.body)
   .then(updateGroup)
   .then(function(updatedGroup) {
-    res.status(200).json(updatedGroup);
+    ResponseHandler.handleSuccess(res, 200, updatedGroup);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -306,10 +305,9 @@ exports.search = function(req, res) {
   };
 
   searchGroups(req.params.query).then(function(groups) {
-    res.status(200).json(groups);
+    ResponseHandler.handleSuccess(res, 200, groups);
   }).catch(function(err) {
-    console.log('error searching groups:', err);
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -407,9 +405,9 @@ exports.follow = function(req, res) {
   };
 
   followGroup(req.user.id, req.params.id).then(function(resp) {
-    res.status(200).json({ status: 200, data: resp });
+    ResponseHandler.handleSuccess(res, 200, resp);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, error: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -519,9 +517,9 @@ exports.addMember = function(req, res) {
   .then(deleteFollow)
   .then(ActivityManager.queue.bind(null, 'group', req.params.groupId, 'addMember', req.user.id, req.params.memberId))
   .then(function(createdMembership) {
-    res.status(200).json(createdMembership);
+    ResponseHandler.handleSuccess(res, 200, createdMembership);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -579,9 +577,9 @@ exports.removeMember = function(req, res) {
   .then(destroyMembership)
   .then(ActivityManager.queue.bind(null, 'group', req.params.groupId, 'removeMember', req.user.id, req.params.memberId))
   .then(function() {
-    res.status(200).json({ status: 200, message: 'Member successfully removed from group.' });
+    ResponseHandler.handleSuccess(res, 200, 'Member successfully removed from group.');
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -661,9 +659,9 @@ exports.updateMemberLevel = function(req, res) {
   .then(updateMembership)
   .then(ActivityManager.queue.bind(null, 'group', req.params.groupId, 'updateMemberLevel', req.user.id))
   .then(function(updatedMembership) {
-    res.status(200).json(updatedMembership);
+    ResponseHandler.handleSuccess(res, 200, updatedMembership);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -705,9 +703,9 @@ exports.delete = function(req, res) {
   findAndEnsureUserCanDelete(req.user, req.params.id)
   .then(deleteGroup)
   .then(function() {
-    res.status(200).json({ status: 200, message: 'Group successfully deleted.' });
+    ResponseHandler.handleSuccess(res, 200, 'Group successfully deleted.');
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };

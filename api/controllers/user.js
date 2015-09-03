@@ -6,6 +6,7 @@ var _               = require('lodash');
 var models          = require('../models');
 var awsRoutes       = require('./aws');
 var ActivityManager = require('../utils/ActivityManager');
+var ResponseHandler = require('../utils/ResponseHandler');
 
 /* ====================================================== */
 
@@ -78,9 +79,9 @@ exports.get = function(req, res) {
   getUser(req.params.identifier)
   .then(addGroupsToUser)
   .then(function(user) {
-    res.status(200).json(user);
+    ResponseHandler.handleSuccess(res, 200, user);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -108,9 +109,9 @@ exports.search = function(req, res) {
   };
 
   searchUsers(req.params.query, currentUserId).then(function(playlists) {
-    res.status(200).json(playlists);
+    ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -161,9 +162,9 @@ exports.update = function(req, res) {
   fetchUser(req.params.id, req.body)
   .then(updateUser)
   .then(function(updatedUser) {
-    res.status(200).json(updatedUser);
+    ResponseHandler.handleSuccess(res, 200, updatedUser);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -236,9 +237,9 @@ exports.getNotifications = function(req, res) {
   };
 
   fetchNotifications(req.params.id).then(function(notifications) {
-    res.status(200).json(notifications);
+    ResponseHandler.handleSuccess(res, 200, notifications);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -272,9 +273,9 @@ exports.markNotificationsAsRead = function(req, res) {
   };
 
   modifyNotifications(req.params.userId, req.params.ids).then(function() {
-    res.status(200).json('Notifications successfully marked as read.');
+    ResponseHandler.handleSuccess(res, 200, 'Notifications successfully marked as read.');
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 };
 
@@ -321,9 +322,9 @@ exports.follow = function(req, res) {
     return when(result);
   })
   .then(function(following) {
-    res.status(200).json(following);
+    ResponseHandler.handleSuccess(res, 200, following);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -375,9 +376,9 @@ exports.getPlaylists = function(req, res) {
   };
 
   fetchPlaylists(req.params.id).then(function(playlists) {
-    res.status(200).json(playlists);
+    ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -487,9 +488,9 @@ exports.getEditablePlaylists = function(req, res) {
   .then(getUserCollaborations)
   .then(getPlaylists)
   .then(function(playlists) {
-    res.status(200).json(playlists);
+    ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
   return mainDeferred.promise;
@@ -550,9 +551,9 @@ exports.getCollaborations = function(req, res) {
   fetchCollaborations(req.params.id)
   .then(fetchCollaborationPlaylists)
   .then(function(playlists) {
-    res.status(200).json(playlists);
+    ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -611,9 +612,9 @@ exports.getLikes = function(req, res) {
   fetchLikes(req.params.id)
   .then(fetchPlaylists)
   .then(function(likedPlaylists) {
-    res.status(200).json(likedPlaylists);
+    ResponseHandler.handleSuccess(res, 200, likedPlaylists);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -637,9 +638,9 @@ exports.getStars = function(req, res) {
   };
 
   fetchStarredTracks(req.params.id).then(function(starredTracks) {
-    res.status(200).json(starredTracks);
+    ResponseHandler.handleSuccess(res, 200, starredTracks);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -674,9 +675,9 @@ exports.getGroups = function(req, res) {
 
   fetchGroups(req.params.id)
   .then(function(groups) {
-    res.status(200).json(groups);
+    ResponseHandler.handleSuccess(res, 200, groups);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -750,9 +751,9 @@ exports.delete = function(req, res) {
   .then(deleteUser)
   .then(deleteOriginalImage)
   .then(function() {
-    res.status(200).json({ status: 200, message: 'User successfully deleted.' });
+    ResponseHandler.handleSuccess(res, 200, 'User successfully deleted.');
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };

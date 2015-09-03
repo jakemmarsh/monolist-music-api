@@ -1,13 +1,14 @@
 'use strict';
 
-var when       = require('when');
-var _          = require('lodash');
-var Knox       = require('knox');
-var crypto     = require('crypto');
-var moment     = require('moment');
-var mime       = require('mime-types');
-var changeCase = require('change-case');
-var models     = require('../models');
+var when            = require('when');
+var _               = require('lodash');
+var Knox            = require('knox');
+var crypto          = require('crypto');
+var moment          = require('moment');
+var mime            = require('mime-types');
+var changeCase      = require('change-case');
+var models          = require('../models');
+var ResponseHandler = require('../utils/ResponseHandler');
 
 /* ====================================================== */
 
@@ -175,10 +176,9 @@ exports.upload = function(req, res) {
       };
 
       uploadToAWS(finalFile, req.params.type, req.params.id).then(updateEntity).then(function() {
-        res.status(200).json({ status: 200, message: 'Image successfully uploaded and entity imageUrl updated.' });
+        ResponseHandler.handleSuccess(res, 200, 'Image successfully uploaded and entity imageUrl updated.');
       }).catch(function(err) {
-        console.log('error uploading:', err);
-        res.status(err.status || 500).json({ error: err.body || err });
+        ResponseHandler.handleError(res, err.status, err.body);
       });
     });
   });

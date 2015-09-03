@@ -33,8 +33,9 @@ describe('Controller: Auth', function() {
     .send(profile)
     .end(function(err, res) {
       res.status.should.be.equal(200);
-      res.body.should.have.property('username');
-      res.body.should.have.property('email');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('username');
+      res.body.data.should.have.property('email');
       done();
     });
   });
@@ -50,8 +51,9 @@ describe('Controller: Auth', function() {
     .send(user)
     .end(function(err, res) {
       res.status.should.be.equal(200);
-      res.body.should.have.property('username');
-      res.body.should.have.property('email');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('username');
+      res.body.data.should.have.property('email');
       global.cookies = res.headers['set-cookie'].pop().split(';')[0];
       done();
     });
@@ -64,8 +66,9 @@ describe('Controller: Auth', function() {
 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
-      res.body.should.have.property('username');
-      res.body.should.have.property('email');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('username');
+      res.body.data.should.have.property('email');
       done();
     });
   });

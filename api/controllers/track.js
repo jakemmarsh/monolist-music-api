@@ -47,9 +47,9 @@ exports.get = function(req, res) {
   };
 
   getTrack(req.params.id).then(function(track) {
-    res.status(200).json(track);
+    ResponseHandler.handleSuccess(res, 200, track);
   }, function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 };
 
@@ -112,7 +112,7 @@ exports.search = function(req, res) {
       searchResults = _.sortBy(searchResults.concat(result), 'title');
     });
     recordSearch(req.user, req.params.query, searchResults);
-    res.status(200).json(searchResults);
+    ResponseHandler.handleSuccess(res, 200,  searchResults);
   }, function(err) {
     res.status(err.status).json({ status: err.status, message: err.body });
   });
@@ -192,9 +192,9 @@ exports.star = function(req, res) {
   };
 
   starTrack(req.body, req.user.id).then(function(star) {
-    res.status(200).json(star);
+    ResponseHandler.handleSuccess(res, 200, star);
   }, function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -236,9 +236,9 @@ exports.upvote = function(req, res) {
   createOrDeleteUpvote(req.params.id, req.user.id)
   //.then(ActivityManager.queue.bind(null, 'track', req.params.id, 'upvote', req.user.id))
   .then(function(resp) {
-    res.status(200).json(resp);
+    ResponseHandler.handleSuccess(res, 200, resp);
   }, function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -280,9 +280,9 @@ exports.downvote = function(req, res) {
   createOrDeleteDownvote(req.params.id, req.user.id)
   //.then(ActivityManager.queue.bind(null, 'track', req.params.id, 'downvote', req.user.id))
   .then(function(resp) {
-    res.status(200).json(resp);
+    ResponseHandler.handleSuccess(res, 200, resp);
   }, function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -312,9 +312,9 @@ exports.addComment = function(req, res) {
   createComment(req.params.id, req.body, req.user.id)
   //.then(ActivityManager.queue.bind(null, 'track', req.params.id, 'addComment', req.user.id))
   .then(function(comment) {
-    res.status(200).json(comment);
+    ResponseHandler.handleSuccess(res, 200, comment);
   }, function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -349,9 +349,9 @@ exports.removeComment = function(req, res) {
   };
 
   deleteComment(req.params.id, req.params.commentId, req.user).then(function(resp) {
-    res.status(200).json(resp);
+    ResponseHandler.handleSuccess(res, 200, resp);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };

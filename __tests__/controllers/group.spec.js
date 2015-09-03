@@ -16,9 +16,10 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.should.have.property('title');
-      res.body.should.have.property('slug');
-      res.body.should.have.property('privacy');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('title');
+      res.body.data.should.have.property('slug');
+      res.body.data.should.have.property('privacy');
       done();
     });
   });
@@ -30,11 +31,11 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
-      res.body.should.be.instanceof(Array);
-      if ( res.body[0] ) {
-        res.body[0].should.have.property('title');
-        res.body[0].should.have.property('slug');
-        res.body[0].should.have.property('privacy');
+      res.body.data.should.be.instanceof(Array);
+      if ( res.body.data[0] ) {
+        res.body.data[0].should.have.property('title');
+        res.body.data[0].should.have.property('slug');
+        res.body.data[0].should.have.property('privacy');
       }
       done();
     });
@@ -47,10 +48,10 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
-      res.body.should.be.instanceof(Array);
-      res.body[0].should.have.property('title');
-      res.body[0].should.have.property('slug');
-      res.body[0].should.have.property('privacy');
+      res.body.data.should.be.instanceof(Array);
+      res.body.data[0].should.have.property('title');
+      res.body.data[0].should.have.property('slug');
+      res.body.data[0].should.have.property('privacy');
       done();
     });
   });
@@ -81,10 +82,11 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
     req.send(updates).end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.should.have.property('title');
-      res.body.should.have.property('slug');
-      res.body.should.have.property('privacy');
-      res.body.title.should.be.equal(updates.title);
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('title');
+      res.body.data.should.have.property('slug');
+      res.body.data.should.have.property('privacy');
+      res.body.data.title.should.be.equal(updates.title);
       done();
     });
   });
@@ -112,8 +114,9 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.should.have.property('GroupId');
-      res.body.should.have.property('UserId');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('GroupId');
+      res.body.data.should.have.property('UserId');
       done();
     });
   });
@@ -125,7 +128,8 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
-      parseInt(res.body.level).should.equal(2);
+      res.body.data.should.be.instanceof(Object);
+      parseInt(res.body.data.level).should.equal(2);
       done();
     });
   });
@@ -137,7 +141,8 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
-      parseInt(res.body.level).should.equal(1);
+      res.body.data.should.be.instanceof(Object);
+      parseInt(res.body.data.level).should.equal(1);
       done();
     });
   });

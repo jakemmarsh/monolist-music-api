@@ -241,9 +241,9 @@ exports.get = function(req, res) {
   };
 
   getPlaylist(req.params.slug, req.user).then(function(playlist) {
-    res.status(200).json(playlist);
+    ResponseHandler.handleSuccess(res, 200, playlist);
   }, function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -301,9 +301,9 @@ exports.search = function(req, res) {
 
   searchPlaylists(req.params.query, req.query.limit, req.query.offset).then(function(playlists) {
     recordSearch(req.user, req.params.query, playlists);
-    res.status(200).json(playlists);
+    ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -409,9 +409,9 @@ exports.getTrending = function(req, res) {
   .then(process)
   .then(getPlaylists)
   .then(function(playlists) {
-    res.status(200).json(playlists);
+    ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -463,9 +463,9 @@ exports.getNewest = function(req, res) {
   };
 
   getPlaylists(req.query.limit).then(function(playlists) {
-    res.status(200).json(playlists);
+    ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -541,9 +541,9 @@ exports.create = function(req, res) {
   createPlaylist(req.body)
   .then(ActivityManager.queue.bind(null, 'playlist', null, 'create', req.user.id))
   .then(function(createdPlaylist) {
-    res.status(200).json(createdPlaylist);
+    ResponseHandler.handleSuccess(res, 200, createdPlaylist);
   }, function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -571,9 +571,9 @@ exports.recordPlay = function(req, res) {
   };
 
   createPlay(userId, req.params.id).then(function(createdPlay) {
-    res.status(200).json(createdPlay);
+    ResponseHandler.handleSuccess(res, 200, createdPlay);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -621,9 +621,9 @@ exports.follow = function(req, res) {
     return when(result);
   })
   .then(function(playlistFollow) {
-    res.status(200).json(playlistFollow);
+    ResponseHandler.handleSuccess(res, 200, playlistFollow);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -671,9 +671,9 @@ exports.like = function(req, res) {
     return when(result);
   })
   .then(function(like) {
-    res.status(200).json(like);
+    ResponseHandler.handleSuccess(res, 200, like);
   }, function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -702,9 +702,9 @@ exports.addCollaborator = function(req, res) {
   .then(addCollaboration)
   .then(ActivityManager.queue.bind(null, 'playlist', req.params.playlistId, 'addCollaborator', req.user.id))
   .then(function(collaboration) {
-    res.status(200).json(collaboration);
+    ResponseHandler.handleSuccess(res, 200, collaboration);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -734,9 +734,9 @@ exports.removeCollaborator = function(req, res) {
   .then(removeCollaboration)
   .then(ActivityManager.queue.bind(null, 'playlist', req.params.playlistId, 'removeCollaborator', req.user.id, req.params.userId))
   .then(function() {
-    res.status(200).json({ status: 200, message: 'Collaborator successfully removed.' });
+    ResponseHandler.handleSuccess(res, 200, 'Collaborator successfully removed.');
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -797,9 +797,9 @@ exports.addTrack = function(req, res) {
   .then(fetchPlaylist)
   .then(ActivityManager.queue.bind(null, 'playlist', req.params.id, 'addTrack', req.user.id))
   .then(function(modifiedPlaylist) {
-    res.status(200).json(modifiedPlaylist);
+    ResponseHandler.handleSuccess(res, 200, modifiedPlaylist);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -825,9 +825,9 @@ exports.removeTrack = function(req, res) {
   ensureCurrentUserCanEdit(req, req.params.playlistId)
   .then(deleteTrack)
   .then(function() {
-    res.status(200).json({ status: 200, message: 'Track successfully deleted.' });
+    ResponseHandler.handleSuccess(res, 200, 'Track successfully deleted.');
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -889,9 +889,9 @@ exports.delete = function(req, res) {
   .then(deletePlaylist)
   .then(deleteOriginalImage)
   .then(function() {
-    res.status(200).json({ status: 200, message: 'Playlist successfully deleted.' });
+    ResponseHandler.handleSuccess(res, 200, 'Playlist successfully deleted.');
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };

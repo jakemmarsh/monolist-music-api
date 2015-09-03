@@ -19,10 +19,11 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     req.end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.should.have.property('title');
-      res.body.should.have.property('slug');
-      res.body.should.have.property('tags');
-      res.body.should.have.property('privacy');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('title');
+      res.body.data.should.have.property('slug');
+      res.body.data.should.have.property('tags');
+      res.body.data.should.have.property('privacy');
       done();
     });
   });
@@ -36,11 +37,11 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
-      res.body.should.be.instanceof(Array);
-      res.body[0].should.have.property('title');
-      res.body[0].should.have.property('slug');
-      res.body[0].should.have.property('tags');
-      res.body[0].should.have.property('privacy');
+      res.body.data.should.be.instanceof(Array);
+      res.body.data[0].should.have.property('title');
+      res.body.data[0].should.have.property('slug');
+      res.body.data[0].should.have.property('tags');
+      res.body.data[0].should.have.property('privacy');
       done();
     });
   });
@@ -52,11 +53,11 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
-      res.body.should.be.instanceof(Array);
-      res.body[0].should.have.property('title');
-      res.body[0].should.have.property('slug');
-      res.body[0].should.have.property('tags');
-      res.body[0].should.have.property('privacy');
+      res.body.data.should.be.instanceof(Array);
+      res.body.data[0].should.have.property('title');
+      res.body.data[0].should.have.property('slug');
+      res.body.data[0].should.have.property('tags');
+      res.body.data[0].should.have.property('privacy');
       done();
     });
   });
@@ -68,11 +69,11 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
-      res.body.should.be.instanceof(Array);
-      res.body[0].should.have.property('title');
-      res.body[0].should.have.property('slug');
-      res.body[0].should.have.property('tags');
-      res.body[0].should.have.property('privacy');
+      res.body.data.should.be.instanceof(Array);
+      res.body.data[0].should.have.property('title');
+      res.body.data[0].should.have.property('slug');
+      res.body.data[0].should.have.property('tags');
+      res.body.data[0].should.have.property('privacy');
       done();
     });
   });
@@ -109,10 +110,11 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     req.send(playlist).end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.should.have.property('title');
-      res.body.should.have.property('slug');
-      res.body.should.have.property('tags');
-      res.body.should.have.property('privacy');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('title');
+      res.body.data.should.have.property('slug');
+      res.body.data.should.have.property('tags');
+      res.body.data.should.have.property('privacy');
       done();
     });
   });
@@ -125,8 +127,9 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     req.end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.should.have.property('PlaylistId');
-      res.body.should.have.property('UserId');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('PlaylistId');
+      res.body.data.should.have.property('UserId');
       done();
     });
   });
@@ -161,8 +164,9 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     req.end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.should.have.property('PlaylistId');
-      res.body.should.have.property('UserId');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('PlaylistId');
+      res.body.data.should.have.property('UserId');
       done();
     });
   });
@@ -195,10 +199,11 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     req.send(track).end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.should.have.property('title');
-      res.body.should.have.property('slug');
-      res.body.should.have.property('tags');
-      res.body.should.have.property('privacy');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('title');
+      res.body.data.should.have.property('slug');
+      res.body.data.should.have.property('tags');
+      res.body.data.should.have.property('privacy');
       done();
     });
   });

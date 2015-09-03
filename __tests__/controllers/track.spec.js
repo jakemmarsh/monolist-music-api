@@ -15,9 +15,10 @@ require('../../utils/createAuthenticatedSuite')('Controller: Track', function() 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.should.have.property('title');
-      res.body.should.have.property('source');
-      res.body.should.have.property('sourceParam');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('title');
+      res.body.data.should.have.property('source');
+      res.body.data.should.have.property('sourceParam');
       done();
     });
   });
@@ -31,10 +32,10 @@ require('../../utils/createAuthenticatedSuite')('Controller: Track', function() 
     .get('tracks/search/test')
     .end(function(err, res) {
       res.status.should.be.equal(200);
-      res.body.should.be.instanceof(Array);
-      res.body[0].should.have.property('title');
-      res.body[0].should.have.property('source');
-      res.body[0].should.have.property('sourceParam');
+      res.body.data.should.be.instanceof(Array);
+      res.body.data[0].should.have.property('title');
+      res.body.data[0].should.have.property('source');
+      res.body.data[0].should.have.property('sourceParam');
       done();
     });
   });
@@ -70,9 +71,10 @@ require('../../utils/createAuthenticatedSuite')('Controller: Track', function() 
     req.send(track).end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.should.have.property('title');
-      res.body.should.have.property('source');
-      res.body.should.have.property('sourceParam');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('title');
+      res.body.data.should.have.property('source');
+      res.body.data.should.have.property('sourceParam');
       done();
     });
   });
@@ -85,8 +87,9 @@ require('../../utils/createAuthenticatedSuite')('Controller: Track', function() 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.should.have.property('UserId');
-      res.body.should.have.property('TrackId');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('UserId');
+      res.body.data.should.have.property('TrackId');
       done();
     });
   });
@@ -99,8 +102,9 @@ require('../../utils/createAuthenticatedSuite')('Controller: Track', function() 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.should.have.property('UserId');
-      res.body.should.have.property('TrackId');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('UserId');
+      res.body.data.should.have.property('TrackId');
       done();
     });
   });
@@ -116,9 +120,10 @@ require('../../utils/createAuthenticatedSuite')('Controller: Track', function() 
     req.send(comment).end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.should.have.property('UserId');
-      res.body.should.have.property('TrackId');
-      res.body.should.have.property('body');
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('UserId');
+      res.body.data.should.have.property('TrackId');
+      res.body.data.should.have.property('body');
       done();
     });
   });

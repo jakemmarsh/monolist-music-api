@@ -1,11 +1,12 @@
 'use strict';
 
-var when     = require('when');
-var _        = require('lodash');
-var passport = require('passport');
-var crypto   = require('crypto');
-var models   = require('../models');
-var mailer   = require('../mailer');
+var when            = require('when');
+var _               = require('lodash');
+var passport        = require('passport');
+var crypto          = require('crypto');
+var models          = require('../models');
+var mailer          = require('../mailer');
+var ResponseHandler = require('../utils/ResponseHandler');
 
 /* ====================================================== */
 
@@ -14,7 +15,7 @@ exports.isAuthenticated = function(req, res, next) {
   if ( req.isAuthenticated() || (req.session && req.session.user) ) {
     return next();
   } else {
-    return res.status(401).json({ status: 401, message: 'User must be logged in.' });
+    return ResponseHandler(res, 401, 'User must be logged in.');
   }
 
 };
@@ -26,7 +27,7 @@ exports.isAdmin = function(req, res, next) {
   if ( req.user && req.user.role === 'admin' ) {
     return next();
   } else {
-    return res.status(401).json({ error: 'User must be an admin.' });
+    return ResponseHandler.handleError(res, 401, 'User must be an admin.');
   }
 
 };
@@ -120,9 +121,9 @@ exports.register = function(req, res) {
   .then(createUser)
   .then(mailer.sendWelcome)
   .then(function(user) {
-    res.status(200).json(user);
+    ResponseHandler.handleSuccess(res, 200, user);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body.toString() });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -145,14 +146,14 @@ exports.login = function(req, res, next) {
     if ( err ) {
       return next(err);
     } else if ( _.isEmpty(user) ) {
-      return res.status(401).json({ status: 401, message: info.message || 'Authentication failed.' });
+      return ResponseHandler.handleError(res, 401, info.message || 'Authentication failed.');
     } else {
       req.login(user, function(err) {
         if ( err ) {
           return next(err);
         } else {
           req.session.cookie.maxAge = 1000*60*60*24*7*4; // four weeks
-          return res.status(200).json(user);
+          return ResponseHandler.handleSuccess(res, 200, user);
         }
       });
     }
@@ -170,14 +171,14 @@ exports.facebookLogin = function(req, res, next) {
     if ( err ) {
       return next(err);
     } else if ( _.isEmpty(user) ) {
-      return res.status(401).json({ status: 401, message: info.message || 'Authentication failed.' });
+      return ResponseHandler.handleError(res, 401, info.message || 'Authentication failed.');
     } else {
       req.login(user, function(err) {
         if ( err ) {
           return next(err);
         } else {
           req.session.cookie.maxAge = 1000*60*60*24*7*4; // four weeks
-          return res.status(200).json(user);
+          return ResponseHandler.handleSuccess(res, 200, user);
         }
       });
     }
@@ -243,9 +244,9 @@ exports.forgotPassword = function(req, res) {
   .then(updateUser)
   .then(sendEmail)
   .then(function() {
-    res.status(200).json({ status: 200, message: 'Password reset email successfully sent.' });
+    ResponseHandler.handleSuccess(res, 200, 'Password reset email successfully sent.');
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -296,9 +297,9 @@ exports.resetPassword = function(req, res) {
   fetchUser(req.params.id, req.params.key, req.body.password)
   .then(updateUser)
   .then(function(resp) {
-    res.status(200).json(resp);
+    ResponseHandler.handleSuccess(res, 200 ,resp);
   }).catch(function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body });
+    ResponseHandler.handleError(res, err.status, err.body);
   });
 
 };
@@ -308,6 +309,6 @@ exports.resetPassword = function(req, res) {
 exports.logout = function(req, res) {
 
   req.logout();
-  res.status(200).json({ message: 'User successfully logged out.' });
+  ResponseHandler.handleSuccess(res, 200, 'User successfully logged out.');
 
 };
