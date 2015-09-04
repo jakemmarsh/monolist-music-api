@@ -1,9 +1,10 @@
 'use strict';
 
-var express       = require('express');
-var api           = express.Router();
-var setupPassport = require('./utils/passport');
-var controllers   = require('./controllers');
+var express         = require('express');
+var api             = express.Router();
+var setupPassport   = require('./utils/passport');
+var controllers     = require('./controllers');
+var ResponseHandler = require('./utils/ResponseHandler')
 
 /* ====================================================== */
 
@@ -14,7 +15,7 @@ setupPassport();
 // Auth endpoints
 api.post('/auth/register', controllers.auth.register);
 api.get('/auth/check', controllers.auth.isAuthenticated, function(req, res) {
-  res.status(200).json(req.user);
+  ResponseHandler.handleSuccess(res, 200, req.user);
 });
 api.post('/auth/login', controllers.auth.login);
 api.post('/auth/login/facebook', controllers.auth.facebookLogin);

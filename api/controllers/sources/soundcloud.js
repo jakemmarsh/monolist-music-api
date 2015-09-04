@@ -117,8 +117,6 @@ exports.getDetails = function(req, res) {
     request.get(scUrl, function(err, response, body) {
       body = JSON.parse(body);
 
-      console.log('body:', body);
-
       deferred.resolve({
         source: 'soundcloud',
         title: body.title,
