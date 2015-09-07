@@ -27,11 +27,11 @@ exports.sendContact = function(userEmail, body) {
     text: body
   };
 
-  exports.transport.sendMail(mailOptions, function(err/*, response*/) {
+  exports.transport.sendMail(mailOptions, function(err, response) {
     if ( err ) {
       deferred.reject(err);
     } else {
-      deferred.resolve();
+      deferred.resolve(response.message);
     }
   });
 
@@ -61,13 +61,9 @@ exports.sendWelcome = function(user) {
         mailOptions.html = html;
         mailOptions.text = text;
 
-        exports.transport.sendMail(mailOptions, function(err/*, response*/) {
-          if ( err ) {
-            // Still resolve since user was successfully registered before sending email
-            deferred.resolve(user);
-          } else {
-            deferred.resolve(user);
-          }
+        exports.transport.sendMail(mailOptions, function() {
+          // Resolve no matter what since user was already created
+          deferred.resolve(user);
         });
       });
     }
