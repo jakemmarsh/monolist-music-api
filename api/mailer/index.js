@@ -15,6 +15,30 @@ var transport      = nodemailer.createTransport(ses({
 }));
 
 exports.transport = transport;
+/* ====================================================== */
+
+exports.sendContact = function(userEmail, body) {
+
+  var deferred = when.defer();
+  var mailOptions = {
+    from: userEmail || 'Monolist <jake@monolist.co>',
+    to: 'jake@monolist.co',
+    subject: 'Message sent from monolist.co',
+    html: body,
+    text: body
+  };
+
+  exports.transport.sendMail(mailOptions, function(err/*, response*/) {
+    if ( err ) {
+      deferred.reject(err);
+    } else {
+      deferred.resolve();
+    }
+  });
+
+  return deferred.promise;
+
+};
 
 /* ====================================================== */
 

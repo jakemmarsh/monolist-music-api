@@ -125,4 +125,9 @@ api.get('/details/bandcamp/:url', controllers.sources.bandcamp.getDetails);
 
 /* ====================================================== */
 
+// email endpoints
+api.post('/contact', controllers.email.contact);
+
+/* ====================================================== */
+
 module.exports = api;
