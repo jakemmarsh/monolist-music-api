@@ -9,7 +9,7 @@
   },
   "private": true,
   "engines": {
-    "node": "^0.12.x"
+    "node": "^4.0.0"
   },
   "dependencies": {
     "bcrypt": "^0.8.0",
@@ -61,7 +61,8 @@
     "dev": "redis-server & supervisor server.js",
     "test": "redis-server & istanbul cover --report html --dir \"__coverage__/\" --x \"__tests__/**/*\" --x \"populateDb.js\" --x \"server.js\" --x \"api/routes/aws.js\" node_modules/.bin/_mocha -- -i \"__tests__/**/*.js\"",
     "deploy": "ebs-deploy deploy --environment monolist-api-staging",
-    "deploy-prod": "ebs-deploy zdt_deploy --environment monolist-api-prod",
-    "gen-docs": "apidoc -i api/controllers/ -o doc/"
+    "deploy-prod": "ebs-deploy deploy --environment monolist-api-prod",
+    "gen-docs": "apidoc -i api/controllers/ -o doc/",
+    "clean": "rm *.zip"
   }
 }
