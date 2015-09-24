@@ -76,6 +76,7 @@ api.get('/playlists/trending', controllers.playlist.getTrending);
 api.get('/playlists/newest', controllers.playlist.getNewest);
 api.get('/playlists/searches', controllers.playlist.getSearches);
 api.post('/playlist', controllers.auth.isAuthenticated, controllers.playlist.create);
+api.patch('/playlist/:id', controllers.auth.isAuthenticated, controllers.playlist.update);
 api.post('/playlist/:id/play', controllers.playlist.recordPlay);
 api.post('/playlist/:id/follow', controllers.auth.isAuthenticated, controllers.playlist.follow);
 api.post('/playlist/:id/like', controllers.auth.isAuthenticated, controllers.playlist.like);

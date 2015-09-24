@@ -550,6 +550,59 @@ exports.create = function(req, res) {
 
 /* ====================================================== */
 
+exports.update = function(req, res) {
+
+  var fetchPlaylist = function(id, updates) {
+    var deferred = when.defer();
+
+    models.Playlist.find({
+      where: { id: id }
+    }).then(function(playlist) {
+      if ( !_.isEmpty(playlist) ) {
+        deferred.resolve([playlist, updates]);
+      } else {
+        deferred.reject({ status: 404, body: 'Playlist could not be found at the ID: ' + id });
+      }
+    });
+
+    return deferred.promise;
+  };
+
+  var updatePlaylist = function(data) {
+    var deferred = when.defer();
+    var retrievedPlaylist = data[0];
+    var updates = data[1];
+    var sanitizedUpdates = {};
+
+    if ( updates.title || updates.Title ) {
+      sanitizedUpdates.title = updates.title || updates.Title;
+    }
+
+    if ( updates.privacy || updates.Privacy ) {
+      sanitizedUpdates.privacy = updates.privacy || updates.Privacy;
+    }
+
+    retrievedPlaylist.updateAttributes(sanitizedUpdates).then(function(updatedPlaylist) {
+      deferred.resolve(updatedPlaylist);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  fetchPlaylist(req.params.id, req.body)
+  .then(updatePlaylist)
+  .then(function(updatedPlaylist) {
+    ResponseHandler.handleSuccess(res, 200, updatedPlaylist);
+  }).catch(function(err) {
+    ResponseHandler.handleError(res, err.status, err.body);
+  });
+
+};
+
+/* ====================================================== */
+
 exports.recordPlay = function(req, res) {
 
   var userId = req.user ? req.user.id : null;
