@@ -203,7 +203,10 @@ exports.getNotifications = function(req, res) {
     var deferred = when.defer();
 
     models.Notification.findAll({
-      where: { RecipientId: userId },
+      where: {
+        RecipientId: userId,
+        read: false
+      },
       include: [
         {
           model: models.User,
