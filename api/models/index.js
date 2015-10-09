@@ -13,7 +13,7 @@ var sequelize;
 
 dotenv.load();
 
-connectString = 'postgres://' + process.env.DB_USER + ':' + process.env.DB_PASSWORD + '@' + process.env.DB_HOST + ':' + process.env.DB_PORT + '/' + process.env.DB_NAME;
+connectString = 'postgres://' + process.env.PG_USER + ':' + process.env.PG_PASSWORD + '@' + process.env.PG_HOST + ':' + process.env.PG_PORT + '/' + process.env.PG_NAME;
 
 sequelize = new Sequelize(connectString, {
   dialect: 'postgres',

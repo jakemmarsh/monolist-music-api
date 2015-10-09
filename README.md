@@ -32,13 +32,15 @@ Below is a `.env` file (with any actual keys/credentials removed). This same str
 ```
 NODE_ENV=''
 
-DB_USER=''
-DB_PASSWORD=''
-DB_HOST=''
-DB_PORT=
-DB_NAME=''
+PG_USER=''
+PG_PASSWORD=''
+PG_HOST=''
+PG_PORT=
+PG_NAME=''
 
-REDIS_URL='<URL to Redis instance>'
+REDIS_PORT=''
+REDIST_HOST=''
+REDIS_AUTH=''
 
 SECRET='<random string to serve as secret for session>'
 
