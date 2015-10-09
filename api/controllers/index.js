@@ -10,3 +10,5 @@ exports.aws                = require('./aws');
 
 exports.sources            = require('./sources/index.js');
 exports.soundcloudRedirect = exports.sources.soundcloud.redirect;
+
+exports.email              = require('./email');

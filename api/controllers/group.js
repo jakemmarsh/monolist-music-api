@@ -45,7 +45,6 @@ exports.get = function(req, res) {
         group = group.toJSON();
         delete group.OwnerId;
         group.members = _.pluck(group.Memberships, 'User');
-        group.members.push(group.Owner);
         deferred.resolve(group);
       }
     }).catch(function(err) {
@@ -238,8 +237,16 @@ exports.update = function(req, res) {
       sanitizedUpdates.description = updates.description || updates.Description;
     }
 
-    retrievedGroup.updateAttributes(sanitizedUpdates).then(function(updatedUser) {
-      deferred.resolve(updatedUser);
+    if ( updates.privacy || updates.Privacy ) {
+      sanitizedUpdates.privacy = updates.privacy || updates.Privacy;
+    }
+
+    if ( updates.inviteLevel || updates.InviteLevel ) {
+      sanitizedUpdates.inviteLevel = updates.inviteLevel || updates.InviteLevel;
+    }
+
+    retrievedGroup.updateAttributes(sanitizedUpdates).then(function(updatedGroup) {
+      deferred.resolve(updatedGroup);
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
     });

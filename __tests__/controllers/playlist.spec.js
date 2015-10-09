@@ -119,6 +119,26 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     });
   });
 
+  it('should update a specific group\'s attributes', function(done) {
+    var req = request(url).patch('playlist/1');
+    var updates = {
+      title: 'new title'
+    };
+
+    req.cookies = global.cookies;
+
+    req.send(updates).end(function(err, res) {
+      res.status.should.be.equal(200);
+      res.body.should.be.instanceof(Object);
+      res.body.data.should.be.instanceof(Object);
+      res.body.data.should.have.property('title');
+      res.body.data.should.have.property('slug');
+      res.body.data.should.have.property('privacy');
+      res.body.data.title.should.be.equal(updates.title);
+      done();
+    });
+  });
+
   it('should successfully record a play', function(done) {
     var req = request(url).post('playlist/1/play');
 

@@ -1,9 +1,10 @@
 'use strict';
 
-var express       = require('express');
-var api           = express.Router();
-var setupPassport = require('./utils/passport');
-var controllers   = require('./controllers');
+var express         = require('express');
+var api             = express.Router();
+var setupPassport   = require('./utils/passport');
+var controllers     = require('./controllers');
+var ResponseHandler = require('./utils/ResponseHandler')
 
 /* ====================================================== */
 
@@ -14,7 +15,7 @@ setupPassport();
 // Auth endpoints
 api.post('/auth/register', controllers.auth.register);
 api.get('/auth/check', controllers.auth.isAuthenticated, function(req, res) {
-  res.status(200).json(req.user);
+  ResponseHandler.handleSuccess(res, 200, req.user);
 });
 api.post('/auth/login', controllers.auth.login);
 api.post('/auth/login/facebook', controllers.auth.facebookLogin);
@@ -75,6 +76,7 @@ api.get('/playlists/trending', controllers.playlist.getTrending);
 api.get('/playlists/newest', controllers.playlist.getNewest);
 api.get('/playlists/searches', controllers.playlist.getSearches);
 api.post('/playlist', controllers.auth.isAuthenticated, controllers.playlist.create);
+api.patch('/playlist/:id', controllers.auth.isAuthenticated, controllers.playlist.update);
 api.post('/playlist/:id/play', controllers.playlist.recordPlay);
 api.post('/playlist/:id/follow', controllers.auth.isAuthenticated, controllers.playlist.follow);
 api.post('/playlist/:id/like', controllers.auth.isAuthenticated, controllers.playlist.like);
@@ -121,6 +123,11 @@ api.get('/details/youtube/:url', controllers.sources.youtube.getDetails);
 api.get('/details/soundcloud/:url', controllers.sources.soundcloud.getDetails);
 // api.get('/details/spotify/:trackId', controllers.sources.spotify.getDetails);
 api.get('/details/bandcamp/:url', controllers.sources.bandcamp.getDetails);
+
+/* ====================================================== */
+
+// email endpoints
+api.post('/contact', controllers.email.contact);
 
 /* ====================================================== */
 

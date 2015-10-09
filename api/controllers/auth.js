@@ -15,7 +15,7 @@ exports.isAuthenticated = function(req, res, next) {
   if ( req.isAuthenticated() || (req.session && req.session.user) ) {
     return next();
   } else {
-    return ResponseHandler(res, 401, 'User must be logged in.');
+    return ResponseHandler.handleError(res, 401, 'User must be logged in.');
   }
 
 };

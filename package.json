@@ -9,7 +9,7 @@
   },
   "private": true,
   "engines": {
-    "node": "^0.12.x"
+    "node": "^4.0.0"
   },
   "dependencies": {
     "bcrypt": "^0.8.0",
