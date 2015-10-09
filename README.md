@@ -1,5 +1,5 @@
-monolist-api
-============
+monolist-api [ ![Codeship Status for jakemmarsh/monolist-api](https://codeship.com/projects/ec14b0e0-5048-0133-827d-72fb7a1a2aa1/status?branch=master)](https://codeship.com/projects/107628)
+=============================================================================================================================================================================================
 
 node.js server and Express API for the Monolist application. All endpoints can be seen in [`api/index.js`](https://github.com/jakemmarsh/monolist-api/blob/master/api/index.js).
 
