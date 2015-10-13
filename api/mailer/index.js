@@ -86,7 +86,7 @@ exports.sendReset = function(user, key) {
   var mailData = {
     user: user,
     key: key,
-    resetUrl: 'http://www.monolist.co/reset.html?user=' + user.id + '&key=' + key
+    resetUrl: 'http://app.monolist.co/reset/' + user.id + '/' + key
   };
 
   emailTemplates(templatesDir, function(err, template) {
