@@ -1,5 +1,42 @@
 'use strict';
 
+var log4js = require('log4js');
+var logger;
+
+/* ====================================================== */
+
+log4js.configure({
+  'replaceConsole': false,
+  'appenders': [
+    {
+      type: 'console'
+    },
+    {
+      type: 'logLevelFilter',
+      level: 'ERROR',
+      appender: {
+        type: 'smtp',
+        recipients: 'jakemmarsh@gmail.com',
+        sender: 'jake@monolist.co',
+        sendInterval: 60,
+        transport: 'SMTP',
+        SMTP: {
+          host: 'email-smtp.us-east-1.amazonaws.com',
+          port: 25,
+          auth: {
+            user: process.env.SES_SMTP_USER,
+            pass: process.env.SES_SMTP_PASSWORD
+          }
+        }
+      }
+    }
+  ]
+});
+logger = log4js.getLogger();
+exports.logger = logger;
+
+/* ====================================================== */
+
 exports.handleSuccess = function(res, status, data) {
   return res.status(status).json({
     status: status,
@@ -11,6 +48,8 @@ exports.handleSuccess = function(res, status, data) {
 /* ====================================================== */
 
 exports.handleError = function(res, status, error) {
+  logger.error(error);
+
   return res.status(status).json({
     status: status,
     data: null,
