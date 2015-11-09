@@ -34,7 +34,7 @@ exports.contact = function(req, res) {
   sendContactEmail(req.body.email, req.body.body).then(function() {
     ResponseHandler.handleSuccess(res, 200, 'Contact email successfully sent.');
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };

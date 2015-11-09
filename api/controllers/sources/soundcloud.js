@@ -100,7 +100,7 @@ exports.stream = function(req, res) {
   getTrackUrl(req.params.trackId).then(function(audioRes) {
     audioRes.pipe(res);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -133,7 +133,7 @@ exports.getDetails = function(req, res) {
   getTrackDetails(req.params.url).then(function(details) {
     ResponseHandler.handleSuccess(res, 200, details);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };

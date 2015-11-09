@@ -15,7 +15,7 @@ exports.isAuthenticated = function(req, res, next) {
   if ( req.isAuthenticated() || (req.session && req.session.user) ) {
     return next();
   } else {
-    return ResponseHandler.handleError(res, 401, 'User must be logged in.');
+    return ResponseHandler.handleError(req, res, 401, 'User must be logged in.');
   }
 
 };
@@ -27,7 +27,7 @@ exports.isAdmin = function(req, res, next) {
   if ( req.user && req.user.role === 'admin' ) {
     return next();
   } else {
-    return ResponseHandler.handleError(res, 401, 'User must be an admin.');
+    return ResponseHandler.handleError(req, res, 401, 'User must be an admin.');
   }
 
 };
@@ -123,7 +123,7 @@ exports.register = function(req, res) {
   .then(function(user) {
     ResponseHandler.handleSuccess(res, 200, user);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -146,7 +146,7 @@ exports.login = function(req, res, next) {
     if ( err ) {
       return next(err);
     } else if ( _.isEmpty(user) ) {
-      return ResponseHandler.handleError(res, 401, info.message || 'Authentication failed.');
+      return ResponseHandler.handleError(req, res, 401, info.message || 'Authentication failed.');
     } else {
       req.login(user, function(err) {
         if ( err ) {
@@ -171,7 +171,7 @@ exports.facebookLogin = function(req, res, next) {
     if ( err ) {
       return next(err);
     } else if ( _.isEmpty(user) ) {
-      return ResponseHandler.handleError(res, 401, info.message || 'Authentication failed.');
+      return ResponseHandler.handleError(req, res, 401, info.message || 'Authentication failed.');
     } else {
       req.login(user, function(err) {
         if ( err ) {
@@ -246,7 +246,7 @@ exports.forgotPassword = function(req, res) {
   .then(function() {
     ResponseHandler.handleSuccess(res, 200, 'Password reset email successfully sent.');
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -299,7 +299,7 @@ exports.resetPassword = function(req, res) {
   .then(function(resp) {
     ResponseHandler.handleSuccess(res, 200 ,resp);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };

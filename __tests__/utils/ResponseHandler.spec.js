@@ -37,18 +37,27 @@ describe('Util: ActivityManager', function() {
         };
       }
     };
+    var testReq = {
+      ip: 'test'
+    };
     var error = {
       test: 'test'
     };
     var loggerStub = sandbox.stub(ResponseHandler.logger, 'error');
 
-    ResponseHandler.handleError(testRes, 400, error);
+    ResponseHandler.handleError(testReq, testRes, 400, error);
 
-    sinon.assert.calledWith(loggerStub, error);
+    sinon.assert.calledWith(loggerStub, {
+      request: testReq,
+      error: error
+    });
   });
 
   it('#handleError should respond accordingly', function() {
     var jsonStub = sandbox.stub();
+    var testReq = {
+      ip: 'test'
+    };
     var testRes = {
       status: function() {
         return {
@@ -63,7 +72,7 @@ describe('Util: ActivityManager', function() {
     };
 
     sandbox.stub(ResponseHandler.logger, 'error');
-    ResponseHandler.handleError(testRes, status, error);
+    ResponseHandler.handleError(testReq, testRes, status, error);
 
     sinon.assert.calledWith(statusSpy, status);
     sinon.assert.calledWith(jsonStub, {

@@ -178,7 +178,7 @@ exports.upload = function(req, res) {
       uploadToAWS(finalFile, req.params.type, req.params.id).then(updateEntity).then(function() {
         ResponseHandler.handleSuccess(res, 200, 'Image successfully uploaded and entity imageUrl updated.');
       }).catch(function(err) {
-        ResponseHandler.handleError(res, err.status, err.body);
+        ResponseHandler.handleError(req, res, err.status, err.body);
       });
     });
   });

@@ -47,8 +47,13 @@ exports.handleSuccess = function(res, status, data) {
 
 /* ====================================================== */
 
-exports.handleError = function(res, status, error) {
-  logger.error(error);
+exports.handleError = function(req, res, status, error) {
+  var logObject = {
+    request: req,
+    error: error
+  };
+
+  logger.error(logObject);
 
   return res.status(status).json({
     status: status,

@@ -243,7 +243,7 @@ exports.get = function(req, res) {
   getPlaylist(req.params.slug, req.user).then(function(playlist) {
     ResponseHandler.handleSuccess(res, 200, playlist);
   }, function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -303,7 +303,7 @@ exports.search = function(req, res) {
     recordSearch(req.user, req.params.query, playlists);
     ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -411,7 +411,7 @@ exports.getTrending = function(req, res) {
   .then(function(playlists) {
     ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -465,7 +465,7 @@ exports.getNewest = function(req, res) {
   getPlaylists(req.query.limit).then(function(playlists) {
     ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -496,7 +496,7 @@ exports.getSearches = function(req, res) {
   fetchSearches(req.query.limit, req.query.offset).then(function(searches) {
     ResponseHandler.handleSuccess(res, 200, searches);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -543,7 +543,7 @@ exports.create = function(req, res) {
   .then(function(createdPlaylist) {
     ResponseHandler.handleSuccess(res, 200, createdPlaylist);
   }, function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -596,7 +596,7 @@ exports.update = function(req, res) {
   .then(function(updatedPlaylist) {
     ResponseHandler.handleSuccess(res, 200, updatedPlaylist);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -626,7 +626,7 @@ exports.recordPlay = function(req, res) {
   createPlay(userId, req.params.id).then(function(createdPlay) {
     ResponseHandler.handleSuccess(res, 200, createdPlay);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -676,7 +676,7 @@ exports.follow = function(req, res) {
   .then(function(playlistFollow) {
     ResponseHandler.handleSuccess(res, 200, playlistFollow);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -726,7 +726,7 @@ exports.like = function(req, res) {
   .then(function(like) {
     ResponseHandler.handleSuccess(res, 200, like);
   }, function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -757,7 +757,7 @@ exports.addCollaborator = function(req, res) {
   .then(function(collaboration) {
     ResponseHandler.handleSuccess(res, 200, collaboration);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -789,7 +789,7 @@ exports.removeCollaborator = function(req, res) {
   .then(function() {
     ResponseHandler.handleSuccess(res, 200, 'Collaborator successfully removed.');
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -852,7 +852,7 @@ exports.addTrack = function(req, res) {
   .then(function(modifiedPlaylist) {
     ResponseHandler.handleSuccess(res, 200, modifiedPlaylist);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -880,7 +880,7 @@ exports.removeTrack = function(req, res) {
   .then(function() {
     ResponseHandler.handleSuccess(res, 200, 'Track successfully deleted.');
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -944,7 +944,7 @@ exports.delete = function(req, res) {
   .then(function() {
     ResponseHandler.handleSuccess(res, 200, 'Playlist successfully deleted.');
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };

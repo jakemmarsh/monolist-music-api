@@ -52,7 +52,7 @@ exports.get = function(req, res) {
   getPost(req.params.id).then(function(post) {
     ResponseHandler.handleSuccess(res, 200, post);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -112,7 +112,7 @@ exports.getNewest = function(req, res) {
   getNewestPosts(req.query.limit, req.query.offset).then(function(posts) {
     ResponseHandler.handleSuccess(res, 200, posts);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -185,7 +185,7 @@ exports.create = function(req, res) {
   .then(function(createdPost) {
     ResponseHandler.handleSuccess(res, 200, createdPost);
   }, function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -235,7 +235,7 @@ exports.like = function(req, res) {
   .then(function(like) {
     ResponseHandler.handleSuccess(res, 200, like);
   }, function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -267,7 +267,7 @@ exports.addComment = function(req, res) {
   .then(function(comment) {
     ResponseHandler.handleSuccess(res, 200, comment);
   }, function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -304,7 +304,7 @@ exports.removeComment = function(req, res) {
   deleteComment(req.params.id, req.params.commentId, req.user).then(function(resp) {
     ResponseHandler.handleSuccess(res, 200, resp);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -364,7 +364,7 @@ exports.delete = function(req, res) {
     ResponseHandler.handleSuccess(res, 200, resp);
   }).catch(function(err) {
     console.log('error:', err);
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };

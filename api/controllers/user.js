@@ -81,7 +81,7 @@ exports.get = function(req, res) {
   .then(function(user) {
     ResponseHandler.handleSuccess(res, 200, user);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -111,7 +111,7 @@ exports.search = function(req, res) {
   searchUsers(req.params.query, currentUserId).then(function(playlists) {
     ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -164,7 +164,7 @@ exports.update = function(req, res) {
   .then(function(updatedUser) {
     ResponseHandler.handleSuccess(res, 200, updatedUser);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -242,7 +242,7 @@ exports.getNotifications = function(req, res) {
   fetchNotifications(req.params.id).then(function(notifications) {
     ResponseHandler.handleSuccess(res, 200, notifications);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -278,7 +278,7 @@ exports.markNotificationsAsRead = function(req, res) {
   modifyNotifications(req.params.userId, req.params.ids).then(function() {
     ResponseHandler.handleSuccess(res, 200, 'Notifications successfully marked as read.');
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 };
 
@@ -327,7 +327,7 @@ exports.follow = function(req, res) {
   .then(function(following) {
     ResponseHandler.handleSuccess(res, 200, following);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -381,7 +381,7 @@ exports.getPlaylists = function(req, res) {
   fetchPlaylists(req.params.id).then(function(playlists) {
     ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -493,7 +493,7 @@ exports.getEditablePlaylists = function(req, res) {
   .then(function(playlists) {
     ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
   return mainDeferred.promise;
@@ -556,7 +556,7 @@ exports.getCollaborations = function(req, res) {
   .then(function(playlists) {
     ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -617,7 +617,7 @@ exports.getLikes = function(req, res) {
   .then(function(likedPlaylists) {
     ResponseHandler.handleSuccess(res, 200, likedPlaylists);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -643,7 +643,7 @@ exports.getStars = function(req, res) {
   fetchStarredTracks(req.params.id).then(function(starredTracks) {
     ResponseHandler.handleSuccess(res, 200, starredTracks);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -680,7 +680,7 @@ exports.getGroups = function(req, res) {
   .then(function(groups) {
     ResponseHandler.handleSuccess(res, 200, groups);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -756,7 +756,7 @@ exports.delete = function(req, res) {
   .then(function() {
     ResponseHandler.handleSuccess(res, 200, 'User successfully deleted.');
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };

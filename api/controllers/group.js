@@ -57,7 +57,7 @@ exports.get = function(req, res) {
   fetchGroup(req.params.identifier).then(function(group) {
     ResponseHandler.handleSuccess(res, 200, group);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -134,7 +134,7 @@ exports.create = function(req, res) {
   .then(function(resp) {
     ResponseHandler.handleSuccess(res, 200, resp);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -168,7 +168,7 @@ exports.getPlaylists = function(req, res) {
   fetchPlaylists(req.params.id, req.query.limit, req.query.offset).then(function(playlists) {
     ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -198,7 +198,7 @@ exports.getTrending = function(req, res) {
   fetchGroups().then(function(groups) {
     ResponseHandler.handleSuccess(res, 200, groups);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -259,7 +259,7 @@ exports.update = function(req, res) {
   .then(function(updatedGroup) {
     ResponseHandler.handleSuccess(res, 200, updatedGroup);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -314,7 +314,7 @@ exports.search = function(req, res) {
   searchGroups(req.params.query).then(function(groups) {
     ResponseHandler.handleSuccess(res, 200, groups);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -374,7 +374,7 @@ exports.getPosts = function(req, res) {
   fetchPosts(req.params.id, req.query.limit, req.query.offset).then(function(posts) {
     ResponseHandler.handleSuccess(res, 200, posts);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -414,7 +414,7 @@ exports.follow = function(req, res) {
   followGroup(req.user.id, req.params.id).then(function(resp) {
     ResponseHandler.handleSuccess(res, 200, resp);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -526,7 +526,7 @@ exports.addMember = function(req, res) {
   .then(function(createdMembership) {
     ResponseHandler.handleSuccess(res, 200, createdMembership);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -586,7 +586,7 @@ exports.removeMember = function(req, res) {
   .then(function() {
     ResponseHandler.handleSuccess(res, 200, 'Member successfully removed from group.');
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -668,7 +668,7 @@ exports.updateMemberLevel = function(req, res) {
   .then(function(updatedMembership) {
     ResponseHandler.handleSuccess(res, 200, updatedMembership);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -712,7 +712,7 @@ exports.delete = function(req, res) {
   .then(function() {
     ResponseHandler.handleSuccess(res, 200, 'Group successfully deleted.');
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };

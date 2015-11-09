@@ -175,7 +175,7 @@ exports.getDetails = function(req, res) {
     var video = videos[0]; // addVideoDurations returns an array by default
     ResponseHandler.handleSuccess(res, 200, video);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };

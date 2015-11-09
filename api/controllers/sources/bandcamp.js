@@ -41,7 +41,7 @@ exports.stream = function(req, res) {
   bandcamp.getTrack(url).then(function(stream) {
     stream.pipe(res);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -63,7 +63,7 @@ exports.getDetails = function(req, res) {
       sourceUrl: url
     });
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };

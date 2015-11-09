@@ -49,7 +49,7 @@ exports.get = function(req, res) {
   getTrack(req.params.id).then(function(track) {
     ResponseHandler.handleSuccess(res, 200, track);
   }, function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 };
 
@@ -145,7 +145,7 @@ exports.getSearches = function(req, res) {
   fetchSearches(req.query.limit, req.query.offset).then(function(searches) {
     ResponseHandler.handleSuccess(res, 200, searches);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -194,7 +194,7 @@ exports.star = function(req, res) {
   starTrack(req.body, req.user.id).then(function(star) {
     ResponseHandler.handleSuccess(res, 200, star);
   }, function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -238,7 +238,7 @@ exports.upvote = function(req, res) {
   .then(function(resp) {
     ResponseHandler.handleSuccess(res, 200, resp);
   }, function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -282,7 +282,7 @@ exports.downvote = function(req, res) {
   .then(function(resp) {
     ResponseHandler.handleSuccess(res, 200, resp);
   }, function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -314,7 +314,7 @@ exports.addComment = function(req, res) {
   .then(function(comment) {
     ResponseHandler.handleSuccess(res, 200, comment);
   }, function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
@@ -351,7 +351,7 @@ exports.removeComment = function(req, res) {
   deleteComment(req.params.id, req.params.commentId, req.user).then(function(resp) {
     ResponseHandler.handleSuccess(res, 200, resp);
   }).catch(function(err) {
-    ResponseHandler.handleError(res, err.status, err.body);
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };
