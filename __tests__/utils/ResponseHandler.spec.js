@@ -40,10 +40,11 @@ describe('Util: ActivityManager', function() {
     var error = {
       test: 'test'
     };
-
-    sandbox.mock(ResponseHandler.logger).expects('error').withArgs(error);
+    var loggerStub = sandbox.stub(ResponseHandler.logger, 'error');
 
     ResponseHandler.handleError(testRes, 400, error);
+
+    sinon.assert.calledWith(loggerStub, error);
   });
 
   it('#handleError should respond accordingly', function() {
@@ -61,6 +62,7 @@ describe('Util: ActivityManager', function() {
       test: 'test'
     };
 
+    sandbox.stub(ResponseHandler.logger, 'error');
     ResponseHandler.handleError(testRes, status, error);
 
     sinon.assert.calledWith(statusSpy, status);
