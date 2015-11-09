@@ -20,9 +20,9 @@ exports.sendContact = function(userEmail, body) {
 
   var deferred = when.defer();
   var mailOptions = {
-    from: userEmail || 'Monolist <jake@monolist.co>',
+    from: 'Monolist <jake@monolist.co>',
     to: 'jake@monolist.co',
-    subject: 'Message sent from monolist.co',
+    subject: 'Message sent from monolist.co - ' + userEmail,
     html: body,
     text: body
   };

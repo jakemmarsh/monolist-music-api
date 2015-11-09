@@ -21,9 +21,9 @@ describe('Mailer', function() {
 
     mailer.sendContact(user.email, messageBody).then(function() {
       sinon.assert.calledWith(this.sendMailStub.firstCall, sinon.match({
-        from: user.email,
+        from: from,
         to: 'jake@monolist.co',
-        subject: 'Message sent from monolist.co',
+        subject: 'Message sent from monolist.co - ' + user.email,
         html: messageBody,
         text: messageBody
       }), sinon.match.any);
