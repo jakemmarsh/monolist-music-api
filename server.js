@@ -87,7 +87,7 @@ server.use('/v1', api);
 
 // Respond with 404 to any routes not matching API endpoints
 server.all('/*', function(req, res) {
-  ResponseHandler.handleError(res, 404, 'No endpoint exists at ' + req.originalUrl);
+  ResponseHandler.handleError(req, res, 404, 'No endpoint exists at ' + req.originalUrl);
 });
 
 /* ====================================================== */
