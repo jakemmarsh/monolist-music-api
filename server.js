@@ -85,12 +85,5 @@ server.use('/v1', api);
 
 /* ====================================================== */
 
-// Respond with 404 to any routes not matching API endpoints
-server.all('/*', function(req, res) {
-  ResponseHandler.handleError(req, res, 404, 'No endpoint exists at ' + req.originalUrl);
-});
-
-/* ====================================================== */
-
 // start the server
 server.listen(process.env.PORT || 3000);

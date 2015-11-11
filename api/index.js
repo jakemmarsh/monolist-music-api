@@ -131,4 +131,11 @@ api.post('/contact', controllers.email.contact);
 
 /* ====================================================== */
 
+// Respond with 404 to any routes not matching API endpoints
+api.all('/*', function(req, res) {
+  ResponseHandler.handleError(req, res, 404, 'No endpoint exists at ' + req.originalUrl);
+});
+
+/* ====================================================== */
+
 module.exports = api;
