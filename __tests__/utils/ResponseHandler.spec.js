@@ -2,7 +2,7 @@
 
 var ResponseHandler = require('../../api/utils/ResponseHandler');
 
-describe('Util: ActivityManager', function() {
+describe('Util: ResponseHandler', function() {
 
   it('#handleSuccess should respond accordingly', function() {
     var jsonStub = sandbox.stub();
@@ -48,8 +48,8 @@ describe('Util: ActivityManager', function() {
     ResponseHandler.handleError(testReq, testRes, 400, error);
 
     sinon.assert.calledWith(loggerStub, {
-      request: testReq,
-      error: error
+      error: error,
+      request: testReq
     });
   });
 
