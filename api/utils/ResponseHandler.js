@@ -47,13 +47,17 @@ exports.handleSuccess = function(res, status, data) {
 
 /* ====================================================== */
 
-exports.handleError = function(req, res, status, error) {
-  var logObject = {
-    request: req,
-    error: error
-  };
+exports.handleError = function(req, res, status, error, shouldLog) {
+  shouldLog = typeof(shouldLog) === 'undefined' ? true : shouldLog;
 
-  logger.error(logObject);
+  if ( shouldLog && process.env.NODE_ENV === 'production' ) {
+    var logObject = {
+      request: req,
+      error: error
+    };
+
+    logger.error(logObject);
+  }
 
   return res.status(status).json({
     status: status,
