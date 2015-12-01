@@ -14,9 +14,7 @@ setupPassport();
 
 // Auth endpoints
 api.post('/auth/register', controllers.auth.register);
-api.get('/auth/check', controllers.auth.isAuthenticated, function(req, res) {
-  ResponseHandler.handleSuccess(res, 200, req.user);
-});
+api.get('/auth/check', controllers.auth.checkAuthentication);
 api.post('/auth/login', controllers.auth.login);
 api.post('/auth/login/facebook', controllers.auth.facebookLogin);
 api.post('/auth/forgot/:username', controllers.auth.forgotPassword);
