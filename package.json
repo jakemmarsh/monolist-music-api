@@ -59,8 +59,8 @@
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "redis-server & supervisor server.js",
-    "test": "redis-server & istanbul cover --report html --dir \"__coverage__/\" --x \"__tests__/**/*\" --x \"populateDb.js\" --x \"server.js\" --x \"api/routes/aws.js\" node_modules/.bin/_mocha -- -i \"__tests__/**/*.js\"",
+    "dev": "NODE_ENV=development redis-server & supervisor server.js",
+    "test": "NODE_ENV=test redis-server & istanbul cover --report html --dir \"__coverage__/\" --x \"__tests__/**/*\" --x \"populateDb.js\" --x \"server.js\" --x \"api/routes/aws.js\" node_modules/.bin/_mocha -- -i \"__tests__/**/*.js\"",
     "gen-docs": "apidoc -i api/controllers/ -o doc/"
   }
 }
