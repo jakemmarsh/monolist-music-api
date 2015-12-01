@@ -52,8 +52,8 @@ exports.handleError = function(req, res, status, error, shouldLog) {
 
   if ( shouldLog && process.env.NODE_ENV === 'production' ) {
     var logObject = {
-      request: req,
-      error: error
+      error: error,
+      request: req
     };
 
     logger.error(logObject);
