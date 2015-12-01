@@ -1,7 +1,6 @@
 'use strict';
 
 var log4js = require('log4js');
-var logger;
 
 /* ====================================================== */
 
@@ -32,8 +31,8 @@ log4js.configure({
     }
   ]
 });
-logger = log4js.getLogger();
-exports.logger = logger;
+
+exports.logger = log4js.getLogger();
 
 /* ====================================================== */
 
@@ -56,7 +55,7 @@ exports.handleError = function(req, res, status, error, shouldLog) {
       request: req
     };
 
-    logger.error(logObject);
+    exports.logger.error(logObject);
   }
 
   return res.status(status).json({
