@@ -14,7 +14,6 @@ var models          = require('./api/models');
 var populateDb      = require('./utils/populateDb');
 var mailer          = require('./api/mailer');
 var api             = require('./api');
-var ResponseHandler = require('./api/utils/ResponseHandler');
 var SequelizeStore  = require('connect-session-sequelize')(session.Store);
 
 /* ====================================================== */

@@ -4,7 +4,6 @@ var express         = require('express');
 var api             = express.Router();
 var setupPassport   = require('./utils/passport');
 var controllers     = require('./controllers');
-var ResponseHandler = require('./utils/ResponseHandler')
 
 /* ====================================================== */
 
@@ -126,13 +125,6 @@ api.get('/details/bandcamp/:url', controllers.sources.bandcamp.getDetails);
 
 // email endpoints
 api.post('/contact', controllers.email.contact);
-
-/* ====================================================== */
-
-// Respond with 404 to any routes not matching API endpoints
-// api.all('/*', function(req, res) {
-//   ResponseHandler.handleError(req, res, 404, 'No endpoint exists at ' + req.originalUrl);
-// });
 
 /* ====================================================== */
 
