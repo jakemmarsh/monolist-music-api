@@ -49,7 +49,7 @@ exports.handleSuccess = function(res, status, data) {
 exports.handleError = function(req, res, status, error, shouldLog) {
   shouldLog = typeof(shouldLog) === 'undefined' ? true : shouldLog;
 
-  if ( shouldLog && (process.env.NODE_ENV === 'production' || process.env.NODE_ENV  === 'test') ) {
+  if ( shouldLog && process.env.NODE_ENV === 'production' ) {
     var logObject = {
       error: error,
       request: req

@@ -44,13 +44,17 @@ describe('Util: ResponseHandler', function() {
       test: 'test'
     };
     var loggerStub = sandbox.stub(ResponseHandler.logger, 'error');
+    var originalEnv = process.env.NODE_ENV;
 
+    process.env.NODE_ENV = 'production';
     ResponseHandler.handleError(testReq, testRes, 400, error);
 
     sinon.assert.calledWith(loggerStub, {
       error: error,
       request: testReq
     });
+
+    process.env.NODE_ENV = originalEnv;
   });
 
   it('#handleError should respond accordingly', function() {
