@@ -8,7 +8,7 @@ before(function(done) {
 
   // Ensure that 'should' library methods will be
   // available to all tests
-  global.should = require('should');
+  global.Should = require('should');
   global.sinon = require('sinon');
 
   // Load all process.env.* variables
