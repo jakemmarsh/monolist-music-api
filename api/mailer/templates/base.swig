@@ -21,7 +21,7 @@
                   <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateHeader">
                       <tr>
                         <td valign="top" class="headerContent">
-                          <a href="https://monolist.co" target="_blank"><img src="http://assets.monolist.co/marketing/images/logo.png" id="headerImage" /></a>
+                          <a href="https://monolist.co" target="_blank"><img src="http://monolist.co/images/logo.png" id="headerImage" /></a>
                         </td>
                       </tr>
                   </table>
@@ -48,7 +48,7 @@
                   <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateFooter">
                     <tr>
                       <td valign="top" class="footerContent">
-                        <em>Copyright &copy; 2014-2015 Monolist, All rights reserved.</em>
+                        <em>Copyright &copy; 2014-2016 Monolist, All rights reserved.</em>
                       </td>
                     </tr>
                   </table>
