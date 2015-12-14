@@ -11,11 +11,13 @@ var ResponseHandler = require('../utils/ResponseHandler');
 /* ====================================================== */
 
 exports.checkAuthentication = function(req, res) {
+
   if ( req.isAuthenticated() || (req.session && req.session.user) ) {
     return ResponseHandler.handleSuccess(res, 200, req.user);
   } else {
     return ResponseHandler.handleError(req, res, 401, 'User must be logged in.', false);
   }
+
 };
 
 /* ====================================================== */
