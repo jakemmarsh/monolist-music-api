@@ -191,6 +191,8 @@ exports.getUserIdsForActivity = function(activity) {
     return exports.getTrackUserIds(activity.entityId, activity.action, activity.actorId, activity.recipientId);
   } else if ( activity.entityType === 'user' ) {
     return when([activity.entityId]);
+  } else {
+    return when([]);
   }
 
 }
