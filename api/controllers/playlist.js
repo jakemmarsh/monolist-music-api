@@ -170,13 +170,16 @@ exports.get = function(req, res) {
                 attributes: ['id', 'username', 'imageUrl']
               }]
             },
+            // TODO: why arent upvotes/downvotes populated on retrieval?
             {
               model: models.TrackUpvote,
-              as: 'Upvotes'
+              as: 'Upvotes',
+              attributes: ['id', 'UserId']
             },
             {
               model: models.TrackDownvote,
-              as: 'Downvotes'
+              as: 'Downvotes',
+              attributes: ['id', 'UserId']
             }
           ]
         },
