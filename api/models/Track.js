@@ -5,7 +5,7 @@ module.exports = function(sequelize, DataTypes) {
   var Track = sequelize.define('Track', {
     title:       { type: DataTypes.STRING, allowNull: false },
     artist:      { type: DataTypes.STRING },
-    duration:    { type: DataTypes.INTEGER },
+    duration:    { type: DataTypes.DOUBLE },
     source:      { type: DataTypes.ENUM('soundcloud', 'bandcamp', 'youtube', 'spotify'), allowNull: false },
     sourceParam: { type: DataTypes.STRING, allowNull: false },
     sourceUrl:   {
