@@ -177,7 +177,7 @@ exports.getPlaylists = function(req, res) {
 
 exports.getTrending = function(req, res) {
 
-  var fetchGroups = function()limit {
+  var fetchGroups = function(limit) {
     var deferred = when.defer();
 
     limit = ( limit && limit < 50 ) ? limit : 20;
