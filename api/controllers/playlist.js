@@ -915,7 +915,7 @@ exports.delete = function(req, res) {
     var deferred = when.defer();
 
     playlist.destroy().then(function() {
-      deferred.resolve();
+      deferred.resolve(playlist.id);
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
     });
@@ -923,12 +923,12 @@ exports.delete = function(req, res) {
     return deferred.promise;
   };
 
-  var deleteOriginalImage = function() {
+  var deleteOriginalImage = function(playlistId) {
     var deferred = when.defer();
 
     if ( !_.isEmpty(originalImageUrl) ) {
       awsRoutes.delete(originalImageUrl).then(function(res) {
-        deferred.resolve(res);
+        deferred.resolve(playlistId);
       }).catch(function() {
         // Still resolve since playlist was successfully deleted
         deferred.resolve();
@@ -940,9 +940,28 @@ exports.delete = function(req, res) {
     return deferred.promise;
   };
 
+  var deleteNotifications = function(playlistId) {
+    var deferred = when.defer();
+
+    models.Notification.destroy({
+      where: {
+        entityType: 'playlist',
+        entityId: playlistId
+      }
+    }).then(function() {
+      deferred.resolve();
+    }).catch(function() {
+      // Still resolve since playlist was successfully deleted
+      deferred.resolve();
+    });
+
+    return deferred.promise;
+  };
+
   findAndEnsureUserCanDelete(req.user, parseInt(req.params.id))
   .then(deletePlaylist)
   .then(deleteOriginalImage)
+  .then(deleteNotifications)
   .then(function() {
     ResponseHandler.handleSuccess(res, 200, 'Playlist successfully deleted.');
   }).catch(function(err) {
