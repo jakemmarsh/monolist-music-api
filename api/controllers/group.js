@@ -435,8 +435,6 @@ exports.addMember = function(req, res) {
     }).then(function(group) {
       if ( _.isEmpty(group) ) {
         deferred.reject({ status: 404, body: 'Group could not be found at ID: ' + groupId });
-      } else if ( group.privacy !== 'public' && group.inviteLevel > currentUserLevel ) {
-        deferred.reject({ status: 401, body: 'User does not have permission to add members to that group.' });
       } else {
         deferred.resolve([group, actorId, memberId]);
       }
