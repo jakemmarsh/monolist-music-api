@@ -177,11 +177,15 @@ exports.getPlaylists = function(req, res) {
 
 exports.getTrending = function(req, res) {
 
-  var fetchGroups = function() {
+  var fetchGroups = function()limit {
     var deferred = when.defer();
+
+    limit = ( limit && limit < 50 ) ? limit : 20;
 
     // TODO: real logic here to determine trending
     models.Group.findAll({
+      where: { privacy: 'public' },
+      limit: limit,
       include: [{
         model: models.GroupMembership,
         as: 'Memberships'
@@ -195,7 +199,7 @@ exports.getTrending = function(req, res) {
     return deferred.promise;
   };
 
-  fetchGroups().then(function(groups) {
+  fetchGroups(req.query.limit).then(function(groups) {
     ResponseHandler.handleSuccess(res, 200, groups);
   }).catch(function(err) {
     ResponseHandler.handleError(req, res, err.status, err.body);
