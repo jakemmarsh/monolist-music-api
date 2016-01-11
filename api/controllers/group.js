@@ -44,7 +44,9 @@ exports.get = function(req, res) {
       } else {
         group = group.toJSON();
         delete group.OwnerId;
-        group.members = _.pluck(group.Memberships, 'User');
+        group.members = _.filter(_.pluck(group.Memberships, 'User'), function(member) {
+          return member;
+        });
         deferred.resolve(group);
       }
     }).catch(function(err) {
