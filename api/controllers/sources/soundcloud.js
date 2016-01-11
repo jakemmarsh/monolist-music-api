@@ -53,6 +53,7 @@ exports.search = function(query, limit) {
           return {
             source: 'soundcloud',
             title: item.title,
+            artist: item.user.username,
             imageUrl: item.artwork_url ? item.artwork_url : null,
             duration: item.duration/1000,
             sourceParam: item.id.toString(),
@@ -120,6 +121,7 @@ exports.getDetails = function(req, res) {
       deferred.resolve({
         source: 'soundcloud',
         title: body.title,
+        artist: body.user.username,
         imageUrl: body.artwork_url ? body.artwork_url : null,
         duration: body.duration/1000,
         sourceParam: body.id.toString(),

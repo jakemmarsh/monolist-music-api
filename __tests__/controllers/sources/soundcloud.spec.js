@@ -33,6 +33,7 @@ describe('soundcloud routes', function() {
       res.body.data.should.have.property('sourceUrl');
       res.body.data.should.have.property('imageUrl');
       res.body.data.should.have.property('title');
+      res.body.data.should.have.property('artist');
       done();
     });
   });
