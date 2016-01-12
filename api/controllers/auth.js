@@ -46,7 +46,9 @@ exports.isAdmin = function(req, res, next) {
 
 /* ====================================================== */
 
-exports.register = function(req, res) {
+exports.register = function(req, res, next) {
+
+  var isFacebookRegister = false;
 
   var checkUsername = function(user) {
     var deferred = when.defer();
@@ -110,40 +112,18 @@ exports.register = function(req, res) {
       email: user.email || user.Email,
       imageUrl: user.imageUrl || user.ImageUrl
     };
-    var userForLogin;
 
     if ( user.password || user.Password ) {
       newUser.hash = user.password || user.Password;
     } else if ( user.facebookId || user.FacebookId ) {
+      isFacebookRegister = true;
       newUser.facebookId = user.facebookId || user.FacebookId;
     }
 
     models.User.create(newUser).then(function(createdUser) {
-      userForLogin = {
-        username: newUser.username,
-        password: newUser.hash
-      };
-
-      deferred.resolve([userForLogin, createdUser]);
+      deferred.resolve(createdUser);
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
-    });
-
-    return deferred.promise;
-  };
-
-  var loginUser = function(data) {
-    var deferred = when.defer();
-    var userForLogin = data[0];
-    var createdUser = data[1];
-
-    req.login(userForLogin, function(err) {
-      if ( err ) {
-        deferred.reject({ status: 500, body: err });
-      } else {
-        req.session.cookie.maxAge = 1000*60*60*24*7*4; // four weeks
-        deferred.resolve(createdUser);
-      }
     });
 
     return deferred.promise;
@@ -153,10 +133,13 @@ exports.register = function(req, res) {
   .then(checkEmail)
   .then(checkFacebookId)
   .then(createUser)
-  .then(loginUser)
   .then(mailer.sendWelcome)
-  .then(function(user) {
-    ResponseHandler.handleSuccess(res, 200, user);
+  .then(function() {
+    if ( isFacebookRegister ) {
+      exports.facebookLogin(req, res, next);
+    } else {
+      exports.login(req, res, next);
+    }
   }).catch(function(err) {
     ResponseHandler.handleError(req, res, err.status, err.body);
   });
@@ -203,6 +186,7 @@ exports.facebookLogin = function(req, res, next) {
   passport.authenticate('facebook-token', {
     scope: ['email', 'public_profile', 'user_friends']
   }, function(err, user, info) {
+    console.log(err, user, info);
     if ( err ) {
       return next(err);
     } else if ( _.isEmpty(user) ) {
