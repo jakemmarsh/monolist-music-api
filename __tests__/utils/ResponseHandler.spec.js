@@ -6,7 +6,6 @@ describe('Util: ResponseHandler', function() {
 
     var testReq = {
       error: {},
-      ip: '192.168.1.1',
       url: '/foo',
       headers: {
         referer: '/bar'
@@ -14,7 +13,9 @@ describe('Util: ResponseHandler', function() {
       params: {},
       query: {},
       body: {},
-      user: {}
+      session: {
+        user: {}
+      }
     };
 
   it('#handleSuccess should respond accordingly', function() {
@@ -61,13 +62,12 @@ describe('Util: ResponseHandler', function() {
 
     sinon.assert.calledWith(loggerStub, {
       error: error,
-      ip: testReq.ip,
       url: testReq.url,
       referer: testReq.headers.referer,
       params: testReq.params,
       query: testReq.query,
       body: testReq.body,
-      user: testReq.user
+      user: testReq.session.user
     });
 
     process.env.NODE_ENV = originalEnv;
