@@ -110,6 +110,7 @@ exports.register = function(req, res) {
       email: user.email || user.Email,
       imageUrl: user.imageUrl || user.ImageUrl
     };
+    var userForLogin;
 
     if ( user.password || user.Password ) {
       newUser.hash = user.password || user.Password;
@@ -118,9 +119,31 @@ exports.register = function(req, res) {
     }
 
     models.User.create(newUser).then(function(createdUser) {
-      deferred.resolve(createdUser);
+      userForLogin = {
+        username: newUser.username,
+        password: newUser.hash
+      };
+
+      deferred.resolve([userForLogin, createdUser]);
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var loginUser = function(data) {
+    var deferred = when.defer();
+    var userForLogin = data[0];
+    var createdUser = data[1];
+
+    req.login(userForLogin, function(err) {
+      if ( err ) {
+        deferred.reject({ status: 500, body: err });
+      } else {
+        req.session.cookie.maxAge = 1000*60*60*24*7*4; // four weeks
+        deferred.resolve(createdUser);
+      }
     });
 
     return deferred.promise;
@@ -130,6 +153,7 @@ exports.register = function(req, res) {
   .then(checkEmail)
   .then(checkFacebookId)
   .then(createUser)
+  .then(loginUser)
   .then(mailer.sendWelcome)
   .then(function(user) {
     ResponseHandler.handleSuccess(res, 200, user);

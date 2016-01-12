@@ -19,14 +19,13 @@ describe('Controller: Auth', function() {
     });
   });
 
-  it('should register a new user and send the welcome email', function(done) {
+  it('should register a new user, send the welcome email, and log in', function(done) {
     var profile = {
       username: 'jane.doe',
       email: 'jane.doe@gmail.com',
       password: 'janedoe1'
     };
-
-    sandbox.mock(mailer).expects('sendWelcome').once().returns(when(profile));
+    var sendWelcomeStub = sandbox.stub(mailer, 'sendWelcome').returns(when(profile));
 
     request(url)
     .post('auth/register')
@@ -36,7 +35,16 @@ describe('Controller: Auth', function() {
       res.body.data.should.be.instanceof(Object);
       res.body.data.should.have.property('username');
       res.body.data.should.have.property('email');
-      done();
+
+      sinon.assert.calledOnce(sendWelcomeStub);
+
+      // Ensure user is now logged in
+      request(url)
+      .get('auth/check')
+      .end(function(err, res) {
+        res.status.should.be.equal(200);
+        done();
+      });
     });
   });
 
