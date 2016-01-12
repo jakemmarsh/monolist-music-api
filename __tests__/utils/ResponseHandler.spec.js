@@ -4,6 +4,19 @@ var ResponseHandler = require('../../api/utils/ResponseHandler');
 
 describe('Util: ResponseHandler', function() {
 
+    var testReq = {
+      error: {},
+      ip: '192.168.1.1',
+      url: '/foo',
+      headers: {
+        referer: '/bar'
+      },
+      params: {},
+      query: {},
+      body: {},
+      user: {}
+    };
+
   it('#handleSuccess should respond accordingly', function() {
     var jsonStub = sandbox.stub();
     var testRes = {
@@ -37,9 +50,6 @@ describe('Util: ResponseHandler', function() {
         };
       }
     };
-    var testReq = {
-      ip: 'test'
-    };
     var error = {
       test: 'test'
     };
@@ -51,7 +61,13 @@ describe('Util: ResponseHandler', function() {
 
     sinon.assert.calledWith(loggerStub, {
       error: error,
-      request: testReq
+      ip: testReq.ip,
+      url: testReq.url,
+      referer: testReq.headers.referer,
+      params: testReq.params,
+      query: testReq.query,
+      body: testReq.body,
+      user: testReq.user
     });
 
     process.env.NODE_ENV = originalEnv;
@@ -60,7 +76,7 @@ describe('Util: ResponseHandler', function() {
   it('#handleError should respond accordingly', function() {
     var jsonStub = sandbox.stub();
     var testReq = {
-      ip: 'test'
+      ip: '192.168.1.1'
     };
     var testRes = {
       status: function() {

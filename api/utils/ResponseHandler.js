@@ -50,12 +50,16 @@ exports.handleError = function(req, res, status, error, shouldLog) {
   shouldLog = typeof(shouldLog) === 'undefined' ? true : shouldLog;
 
   if ( shouldLog && process.env.NODE_ENV === 'production' ) {
-    var logObject = {
+    exports.logger.error({
       error: error,
-      request: req
-    };
-
-    exports.logger.error(logObject);
+      ip: req.ip,
+      url: req.url,
+      referer: req.headers.referer,
+      params: req.params,
+      query: req.query,
+      body: req.body,
+      user: req.user
+    });
   }
 
   return res.status(status).json({
