@@ -120,7 +120,6 @@ exports.register = function(req, res) {
     models.User.create(newUser).then(function(createdUser) {
       deferred.resolve(createdUser);
     }).catch(function(err) {
-      console.log('error creating user:', err);
       deferred.reject({ status: 500, body: err });
     });
 

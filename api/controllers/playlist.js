@@ -369,6 +369,9 @@ exports.getTrending = function(req, res) {
 
   var getPlaylists = function(playlistIds) {
     var deferred = when.defer();
+    var limit = req.query.limit;
+
+    limit = ( limit && limit < 50 ) ? limit : 20;
 
     models.Playlist.findAll({
       where: Sequelize.and(
@@ -387,6 +390,7 @@ exports.getTrending = function(req, res) {
           )
         )
       ),
+      limit: limit,
       include: [
         {
           model: models.PlaylistLike,

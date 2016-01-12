@@ -44,7 +44,7 @@ exports.get = function(req, res) {
       } else {
         group = group.toJSON();
         delete group.OwnerId;
-        group.members = _.pluck(group.Memberships, 'User');
+        group.members = _.filter(_.pluck(group.Memberships, 'User'));
         deferred.resolve(group);
       }
     }).catch(function(err) {
@@ -177,11 +177,15 @@ exports.getPlaylists = function(req, res) {
 
 exports.getTrending = function(req, res) {
 
-  var fetchGroups = function() {
+  var fetchGroups = function(limit) {
     var deferred = when.defer();
+
+    limit = ( limit && limit < 50 ) ? limit : 20;
 
     // TODO: real logic here to determine trending
     models.Group.findAll({
+      where: { privacy: 'public' },
+      limit: limit,
       include: [{
         model: models.GroupMembership,
         as: 'Memberships'
@@ -195,7 +199,7 @@ exports.getTrending = function(req, res) {
     return deferred.promise;
   };
 
-  fetchGroups().then(function(groups) {
+  fetchGroups(req.query.limit).then(function(groups) {
     ResponseHandler.handleSuccess(res, 200, groups);
   }).catch(function(err) {
     ResponseHandler.handleError(req, res, err.status, err.body);
@@ -431,8 +435,6 @@ exports.addMember = function(req, res) {
     }).then(function(group) {
       if ( _.isEmpty(group) ) {
         deferred.reject({ status: 404, body: 'Group could not be found at ID: ' + groupId });
-      } else if ( group.privacy !== 'public' && group.inviteLevel > currentUserLevel ) {
-        deferred.reject({ status: 401, body: 'User does not have permission to add members to that group.' });
       } else {
         deferred.resolve([group, actorId, memberId]);
       }
