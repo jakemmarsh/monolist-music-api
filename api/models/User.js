@@ -26,7 +26,10 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       allowNull: false,
       validate: {
-        notContains: ' ' // don't allow spaces in username
+        notContains: {
+          args: ' ', // don't allow spaces in username
+          msg: 'Username cannot contain spaces.'
+        }
       }
     },
     firstName:        { type: DataTypes.STRING },
@@ -36,7 +39,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       unique: true,
       validate: {
-        isEmail: true
+        isEmail: {
+          args: true,
+          msg: 'User email must be a valid email address.'
+        }
       }
     },
     imageUrl:         { type: DataTypes.STRING },

@@ -10,7 +10,10 @@ module.exports = function(sequelize, DataTypes) {
     sourceUrl:   {
       type: DataTypes.STRING,
       validate: {
-        isUrl: true
+        isUrl: {
+          args: true,
+          msg: 'Track sourceUrl must be a valid URL.'
+        }
       }
     },
     imageUrl:    { type: DataTypes.STRING }
