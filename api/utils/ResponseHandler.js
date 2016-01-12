@@ -64,6 +64,6 @@ exports.handleError = function(req, res, status, error, shouldLog) {
   return res.status(status).json({
     status: status,
     data: null,
-    error: error
+    error: error.message || error
   });
 };
