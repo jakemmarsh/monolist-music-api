@@ -21,7 +21,6 @@ exports.contact = function(req, res) {
       mailer.sendContact(userEmail, body).then(function() {
         deferred.resolve();
       }).catch(function(err) {
-        console.log('error:', err);
         deferred.reject({ status: 500, body: err });
       });
     } else {

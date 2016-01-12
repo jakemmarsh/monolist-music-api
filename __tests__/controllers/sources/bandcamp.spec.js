@@ -8,9 +8,9 @@ describe('bandcamp routes', function() {
   var url = 'http://localhost:3000/v1/';
 
   it('should return an audio stream provided a track URL', function(done) {
-    var passThrough = new stream.PassThrough();
-
     this.timeout(10000);
+
+    var passThrough = new stream.PassThrough();
 
     passThrough.on('data', function(chunk) {
       // Stream has begun successfully once chunks are being received

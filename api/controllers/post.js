@@ -363,7 +363,6 @@ exports.delete = function(req, res) {
   deletePost(req.params.id, req.user).then(function(resp) {
     ResponseHandler.handleSuccess(res, 200, resp);
   }).catch(function(err) {
-    console.log('error:', err);
     ResponseHandler.handleError(req, res, err.status, err.body);
   });
 

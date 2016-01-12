@@ -44,14 +44,12 @@ if ( process.env.NODE_ENV === 'development' ) {
 /* ====================================================== */
 
 jobQueue.process('activity', function(job, done) {
-  console.log('now processing activity:', job.data);
   ActivityManager.create(job.data).then(done);
 });
 
 /* ====================================================== */
 
 jobQueue.process('notification', function(job, done) {
-  console.log('now processing notification:', job.data);
   NotificationManager.create(job.data).then(done);
 });
 
@@ -61,17 +59,13 @@ exports.activity = function(activity) {
 
   var deferred = when.defer();
 
-  console.log('create activity job for:', activity);
-
   // Can be assumed activity is sanitized since coming from ActivityManager
   var job = jobQueue.create('activity', activity)
   .removeOnComplete(true)
   .save(function(err){
     if( err ) {
-      console.log('Error saving activity job:', err);
       deferred.reject(err);
     } else {
-      console.log('activity job saved');
       deferred.resolve(null, activity);
     }
   });
@@ -84,8 +78,6 @@ exports.activity = function(activity) {
 
 exports.notifications = function(notifications) {
 
-  console.log('create notification jobs for:', notifications);
-
   var mainDeferred = when.defer();
 
   var queueNotification = function(notification) {
@@ -95,10 +87,8 @@ exports.notifications = function(notifications) {
     .removeOnComplete(true)
     .save(function(err){
       if( err ) {
-        console.log('Error saving notification job:', err);
         deferred.reject(err);
       } else {
-        console.log('notification job saved');
         deferred.resolve(notification);
       }
     });

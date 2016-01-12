@@ -55,7 +55,7 @@ exports.sendWelcome = function(user) {
 
   emailTemplates(templatesDir, function(err, template) {
     if ( err ) {
-      console.log(err);
+      console.log('error doing emailTemplates for welcome:', err);
     } else {
       template('welcome', mailData, function(err, html, text) {
         mailOptions.html = html;
@@ -91,7 +91,7 @@ exports.sendReset = function(user, key) {
 
   emailTemplates(templatesDir, function(err, template) {
     if ( err ) {
-      console.log(err);
+      console.log('error doing emailTemplates for reset:', err);
     } else {
       template('reset', mailData, function(err, html, text) {
         mailOptions.html = html;

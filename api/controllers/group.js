@@ -101,7 +101,6 @@ exports.create = function(req, res) {
       savedGroup.owner = currentUser;
       deferred.resolve([savedGroup, currentUser]);
     }).catch(function(err) {
-      console.log('error creating group:', err);
       deferred.reject({ status: 500, body: err });
     });
 

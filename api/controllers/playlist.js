@@ -235,7 +235,6 @@ exports.get = function(req, res) {
         }
       }
     }).catch(function(err) {
-      console.log('error getting playlist:', err);
       deferred.reject({ status: 500, body: err });
     });
 
