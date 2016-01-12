@@ -6,10 +6,8 @@ var bcrypt = require('bcrypt');
 
 function hashNewPasword(user, model, cb) {
   if ( user.hash ) {
-    console.log('hash before:', user.hash);
     bcrypt.hash(user.hash, 10, function(err, hash) {
       if ( err ) { throw err; }
-      console.log('hash after:', hash);
       user.setDataValue('hash', hash);
       cb(null, user);
     });
