@@ -7,7 +7,7 @@ var soundcloud      = require('./sources/soundcloud');
 var spotify         = require('./sources/spotify');
 var youtube         = require('./sources/youtube');
 var models          = require('../models');
-var ActivityManager = require('../utils/ActivityManager');
+// var ActivityManager = require('../utils/ActivityManager');
 var ResponseHandler = require('../utils/ResponseHandler');
 
 /* ====================================================== */
