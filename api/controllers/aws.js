@@ -105,8 +105,8 @@ function updateEntity(data) {
 
     item.updateAttributes({
       imageUrl: 'http://assets.monolist.co' + imagePath
-    }).then(function(updatedItem) {
-      deferred.resolve(updatedItem);
+    }).then(function(updatedEntity) {
+      deferred.resolve(updatedEntity);
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
     });
@@ -114,26 +114,26 @@ function updateEntity(data) {
     return deferred.promise;
   };
 
-  var deleteOriginalImage = function() {
+  var deleteOriginalImage = function(updatedEntity) {
     var deferred = when.defer();
 
     if ( !_.isEmpty(originalImageUrl) ) {
-       deleteFile(originalImageUrl).then(function(res) {
-        deferred.resolve(res);
+       deleteFile(originalImageUrl).then(function(updatedEntity) {
+        deferred.resolve(updatedEntity);
        }).catch(function() {
         // Still resolve since entity was successfully updated
-        deferred.resolve();
+        deferred.resolve(updatedEntity);
       });
     } else {
       // No original image to delete
-      deferred.resolve();
+      deferred.resolve(updatedEntity);
     }
 
     return deferred.promise;
   };
 
-  fetchItem(id).then(updateItem).then(deleteOriginalImage).then(function(updatedItem) {
-    mainDeferred.resolve(updatedItem);
+  fetchItem(id).then(updateItem).then(deleteOriginalImage).then(function(updatedEntity) {
+    mainDeferred.resolve(updatedEntity);
   }).catch(function(err) {
     mainDeferred.reject({ status: err.status, error: err.body });
   });
@@ -175,8 +175,8 @@ exports.upload = function(req, res) {
         mimetype: mimetype
       };
 
-      uploadToAWS(finalFile, req.params.type, req.params.id).then(updateEntity).then(function() {
-        ResponseHandler.handleSuccess(res, 200, 'Image successfully uploaded and entity imageUrl updated.');
+      uploadToAWS(finalFile, req.params.type, req.params.id).then(updateEntity).then(function(updatedEntity) {
+        ResponseHandler.handleSuccess(res, 200, updatedEntity);
       }).catch(function(err) {
         ResponseHandler.handleError(req, res, err.status, err.body);
       });
