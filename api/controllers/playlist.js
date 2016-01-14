@@ -370,7 +370,7 @@ exports.getTrending = function(req, res) {
     var deferred = when.defer();
     var limit = req.query.limit;
 
-    limit = ( limit && limit < 50 ) ? limit : 20;
+    limit = ( limit && limit < 50 ) ? limit : 30;
 
     models.Playlist.findAll({
       where: Sequelize.and(
@@ -390,6 +390,7 @@ exports.getTrending = function(req, res) {
         )
       ),
       limit: limit,
+      order: [['createdAt', 'DESC']],
       include: [
         {
           model: models.PlaylistLike,
@@ -428,7 +429,7 @@ exports.getNewest = function(req, res) {
   var getPlaylists = function(limit) {
     var deferred = when.defer();
 
-    limit = ( limit && limit < 50 ) ? limit : 20;
+    limit = ( limit && limit < 50 ) ? limit : 30;
 
     models.Playlist.findAll({
       where: Sequelize.or(
@@ -445,7 +446,7 @@ exports.getNewest = function(req, res) {
         )
       ),
       limit: limit,
-      order: ['createdAt'],
+      order: [['createdAt', 'DESC']],
       include: [
         {
           model: models.PlaylistLike,
