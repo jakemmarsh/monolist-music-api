@@ -112,6 +112,7 @@ api.get('/sc_redirect', controllers.soundcloudRedirect);
 api.get('/stream/soundcloud/:trackId', controllers.sources.soundcloud.stream);
 // api.get('/stream/spotify/:trackId', controllers.sources.spotify.stream);
 api.get('/stream/bandcamp/:trackUrl', controllers.sources.bandcamp.stream);
+api.get('/stream/audiomack/:trackUrl', controllers.sources.audiomack.stream);
 
 /* ====================================================== */
 
