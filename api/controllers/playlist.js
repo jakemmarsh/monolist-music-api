@@ -390,7 +390,6 @@ exports.getTrending = function(req, res) {
         )
       ),
       limit: limit,
-      order: [['createdAt', 'DESC']],
       include: [
         {
           model: models.PlaylistLike,
