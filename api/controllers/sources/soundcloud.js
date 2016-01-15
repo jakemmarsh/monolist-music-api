@@ -33,12 +33,12 @@ exports.search = function(query, limit) {
 
   var mainDeferred = when.defer();
 
-  var getSearchResults = function(searchQuery) {
+  var getSearchResults = function(searchQuery, queryLimit) {
     var deferred = when.defer();
     var queryUrl = '/tracks?';
     var searchParameters = {
       q: searchQuery.replace(/(%20)|( )/gi, '+'),
-      limit: limit
+      limit: queryLimit
     };
     var searchResults;
 
@@ -68,7 +68,7 @@ exports.search = function(query, limit) {
     return deferred.promise;
   };
 
-  getSearchResults(query).then(function(results) {
+  getSearchResults(query, limit).then(function(results) {
     mainDeferred.resolve(results);
   }).catch(function() {
     mainDeferred.reject({ status: 500, body: 'Unable to retrieve Soundcloud search results.' });
