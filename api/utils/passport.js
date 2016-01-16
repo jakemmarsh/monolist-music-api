@@ -103,7 +103,7 @@ module.exports = function() {
       if ( !_.isEmpty(retrievedUser) ) {
         return done(null, retrievedUser);
       } else {
-        return done(null, false, { message: 'No user could be found for that Facebook account.' });
+        return done(null, false, { message: 'No user could be found for that Facebook account. Have you registered yet?' });
       }
     }).catch(function(err) {
       return done(err);
