@@ -31,7 +31,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
   it('should return playlists matching a search query and record the search', function(done) {
     var req = request(url).get('playlists/search/test');
 
-    sandbox.mock(models.PlaylistSearch).expects('create').once();
+    sandbox.mock(models.PlaylistSearch).expects('create').returns(when()).once();
 
     req.cookies = global.cookies;
 
