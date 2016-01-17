@@ -326,7 +326,8 @@ exports.getTrending = function(req, res) {
 
     models.PlaylistLike.findAll({
       attributes: ['PlaylistId'],
-      order: ['createdAt']
+      order: [['createdAt', 'DESC']],
+      limit: 1000
     }).then(function(likes) {
       deferred.resolve(likes);
     }).catch(function(err) {
@@ -341,9 +342,28 @@ exports.getTrending = function(req, res) {
 
     models.PlaylistPlay.findAll({
       attributes: ['PlaylistId'],
-      order: ['createdAt']
+      order: [['createdAt', 'DESC']],
+      limit: 1000
     }).then(function(plays) {
       deferred.resolve([likes, plays]);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var getFollows = function(data) {
+    var deferred = when.defer();
+    var likes = data[0];
+    var plays = data[1];
+
+    models.PlaylistFollow.findAll({
+      attributes: ['PlaylistId'],
+      order: [['createdAt', 'DESC']],
+      limit: 1000
+    }).then(function(follows) {
+      deferred.resolve([likes, plays, follows]);
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
     });
@@ -354,16 +374,17 @@ exports.getTrending = function(req, res) {
   var process = function(data) {
     var deferred = when.defer();
     var likes = _.countBy(data[0], function(like) { return like.PlaylistId; });
-    var plays = _.countBy(data[0], function(play) { return play.PlaylistId; });
-    var merged = _.merge(likes, plays, function(a, b) { return a + b; });
+    var plays = _.countBy(data[1], function(play) { return play.PlaylistId; });
+    var follows = _.countBy(data[2], function(follow) { return follow.PlaylistId; });
+    var merged = _.merge(likes, plays, follows, function(a, b) { return a + b; });
     var formatted = [];
     var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 20;
     var results;
 
     _.forOwn(merged, function(num, key) {
       formatted.push({
-        'PlaylistId': parseInt(key),
-        'NumInteractions': num
+        PlaylistId: parseInt(key),
+        NumInteractions: num
       });
     });
 
@@ -419,6 +440,7 @@ exports.getTrending = function(req, res) {
 
   getLikes()
   .then(getPlays)
+  .then(getFollows)
   .then(process)
   .then(getPlaylists)
   .then(function(playlists) {
