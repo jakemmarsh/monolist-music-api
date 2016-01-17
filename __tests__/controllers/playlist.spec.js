@@ -134,6 +134,8 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
       res.body.data.should.have.property('title');
       res.body.data.should.have.property('slug');
       res.body.data.should.have.property('privacy');
+      res.body.data.should.have.property('Owner');
+      res.body.data.should.have.property('Collaborators');
       res.body.data.title.should.be.equal(updates.title);
       done();
     });
