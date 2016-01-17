@@ -565,7 +565,10 @@ exports.getRecentlyPlayed = function(req, res) {
     var playlistIds = _.pluck(plays, 'PlaylistId');
 
     models.Playlist.findAll({
-      where: { id: playlistIds },
+      where: {
+        id: playlistIds,
+        privacy: 'public'
+      },
       limit: limit,
       include: [
         {
