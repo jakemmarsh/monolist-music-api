@@ -494,7 +494,7 @@ exports.getSearches = function(req, res) {
     offset = offset || 0;
 
     models.PlaylistSearch.findAll({
-      order: ['createdAt'],
+      order: [['createdAt', 'DESC']],
       limit: limit,
       offset: offset
     }).then(function(searches) {
@@ -508,6 +508,56 @@ exports.getSearches = function(req, res) {
 
   fetchSearches(req.query.limit, req.query.offset).then(function(searches) {
     ResponseHandler.handleSuccess(res, 200, searches);
+  }).catch(function(err) {
+    ResponseHandler.handleError(req, res, err.status, err.body);
+  });
+
+};
+
+/* ====================================================== */
+
+exports.getRecentlyPlayed = function(req, res) {
+
+  var getRecentPlays = function() {
+    var deferred = when.defer();
+
+    models.PlaylistPlay.findAll({
+      where: {
+        createdAt: {
+          $gt: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
+        }
+      },
+      order: [['createdAt', 'DESC']]
+    }).then(function(plays) {
+      deferred.resolve(plays);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var getPlaylists = function(plays) {
+    var deferred = when.defer();
+    var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 20;
+    var playlistIds = _.pluck(plays, 'PlaylistId');
+
+    models.Playlist.findAll({
+      where: { id: playlistIds },
+      limit: limit
+    }).then(function(playlists) {
+      deferred.resolve(playlists);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  getRecentPlays()
+  .then(getPlaylists)
+  .then(function(playlists) {
+    ResponseHandler.handleSuccess(res, 200, playlists);
   }).catch(function(err) {
     ResponseHandler.handleError(req, res, err.status, err.body);
   });

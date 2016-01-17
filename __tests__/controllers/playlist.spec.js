@@ -95,6 +95,22 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     });
   });
 
+  it('should return an array of recently played playlists', function(done) {
+    var req = request(url).get('playlists/played/recent');
+
+    req.cookies = global.cookies;
+
+    req.end(function(err, res) {
+      res.status.should.be.equal(200);
+      res.body.data.should.be.instanceof(Array);
+      res.body.data[0].should.have.property('title');
+      res.body.data[0].should.have.property('slug');
+      res.body.data[0].should.have.property('tags');
+      res.body.data[0].should.have.property('privacy');
+      done();
+    });
+  });
+
   it('should successfully create a new playlist', function(done) {
     var req = request(url).post('playlist');
     var playlist = {

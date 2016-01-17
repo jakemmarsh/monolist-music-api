@@ -72,6 +72,7 @@ api.get('/playlists/search/:query', controllers.playlist.search);
 api.get('/playlists/trending', controllers.playlist.getTrending);
 api.get('/playlists/newest', controllers.playlist.getNewest);
 api.get('/playlists/searches', controllers.playlist.getSearches);
+api.get('/playlists/played/recent', controllers.playlist.getRecentlyPlayed);
 api.post('/playlist', controllers.auth.isAuthenticated, controllers.playlist.create);
 api.patch('/playlist/:id', controllers.auth.isAuthenticated, controllers.playlist.update);
 api.post('/playlist/:id/play', controllers.playlist.recordPlay);
