@@ -152,14 +152,19 @@ exports.get = function(req, res) {
       include: [
         {
           model: models.Collaboration,
-          include: [models.User]
+          include: [
+            {
+              model: models.User,
+              attributes: ['id', 'username', 'imageUrl']
+            }
+          ]
         },
         {
           model: models.Track,
           include: [
             {
               model: models.User,
-              attributes: ['id', 'username']
+              attributes: ['id', 'username', 'imageUrl']
             },
             {
               model: models.TrackComment,
@@ -658,14 +663,19 @@ exports.update = function(req, res) {
       include: [
         {
           model: models.Collaboration,
-          include: [models.User]
+          include: [
+            {
+              model: models.User,
+              attributes: ['id', 'username', 'imageUrl']
+            }
+          ]
         },
         {
           model: models.Track,
           include: [
             {
               model: models.User,
-              attributes: ['id', 'username']
+              attributes: ['id', 'username', 'imageUrl']
             },
             {
               model: models.TrackComment,

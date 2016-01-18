@@ -31,7 +31,12 @@ exports.get = function(req, res) {
         {
           model: models.GroupMembership,
           as: 'Memberships',
-          include: [models.User]
+          include: [
+            {
+              model: models.User,
+              attributes: ['id', 'username', 'imageUrl']
+            }
+          ]
         },
         {
           model: models.GroupFollow,
@@ -223,7 +228,12 @@ exports.update = function(req, res) {
         {
           model: models.GroupMembership,
           as: 'Memberships',
-          include: [models.User]
+          include: [
+            {
+              model: models.User,
+              attributes: ['id', 'username', 'imageUrl']
+            }
+          ]
         },
         {
           model: models.GroupFollow,
@@ -308,7 +318,7 @@ exports.search = function(req, res) {
           include: [
             {
               model: models.User,
-              attributes: ['id']
+              attributes: ['id', 'username', 'imageUrl']
             }
           ]
         }
@@ -362,7 +372,7 @@ exports.getPosts = function(req, res) {
           as: 'Likes',
           include: [{
               model: models.User,
-              attributes: ['id', 'username']
+              attributes: ['id', 'username', 'imageUrl']
           }]
         },
         {
