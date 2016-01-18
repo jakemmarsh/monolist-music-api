@@ -31,7 +31,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
   it('should return playlists matching a search query and record the search', function(done) {
     var req = request(url).get('playlists/search/test');
 
-    sandbox.mock(models.PlaylistSearch).expects('create').once();
+    sandbox.mock(models.PlaylistSearch).expects('create').returns(when()).once();
 
     req.cookies = global.cookies;
 
@@ -95,6 +95,22 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     });
   });
 
+  it('should return an array of recently played playlists', function(done) {
+    var req = request(url).get('playlists/played/recent');
+
+    req.cookies = global.cookies;
+
+    req.end(function(err, res) {
+      res.status.should.be.equal(200);
+      res.body.data.should.be.instanceof(Array);
+      res.body.data[0].should.have.property('title');
+      res.body.data[0].should.have.property('slug');
+      res.body.data[0].should.have.property('tags');
+      res.body.data[0].should.have.property('privacy');
+      done();
+    });
+  });
+
   it('should successfully create a new playlist', function(done) {
     var req = request(url).post('playlist');
     var playlist = {
@@ -134,6 +150,8 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
       res.body.data.should.have.property('title');
       res.body.data.should.have.property('slug');
       res.body.data.should.have.property('privacy');
+      res.body.data.should.have.property('Owner');
+      res.body.data.should.have.property('Collaborators');
       res.body.data.title.should.be.equal(updates.title);
       done();
     });

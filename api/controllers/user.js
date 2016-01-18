@@ -476,7 +476,17 @@ exports.getEditablePlaylists = function(req, res) {
             { ownerType: 'group' }
           )
         )
-      )
+      ),
+      include: [
+        {
+          model: models.PlaylistLike,
+          as: 'Likes'
+        },
+        {
+          model: models.PlaylistPlay,
+          as: 'Plays'
+        }
+      ]
     }).then(function(playlists) {
       deferred.resolve(playlists);
     }).catch(function(err) {

@@ -31,7 +31,12 @@ exports.get = function(req, res) {
         {
           model: models.GroupMembership,
           as: 'Memberships',
-          include: [models.User]
+          include: [
+            {
+              model: models.User,
+              attributes: ['id', 'username', 'imageUrl']
+            }
+          ]
         },
         {
           model: models.GroupFollow,
@@ -214,7 +219,27 @@ exports.update = function(req, res) {
     var deferred = when.defer();
 
     models.Group.find({
-      where: { id: id }
+      where: { id: id },
+      include: [
+        {
+          model: models.User,
+          as: 'Owner'
+        },
+        {
+          model: models.GroupMembership,
+          as: 'Memberships',
+          include: [
+            {
+              model: models.User,
+              attributes: ['id', 'username', 'imageUrl']
+            }
+          ]
+        },
+        {
+          model: models.GroupFollow,
+          as: 'Followers'
+        }
+      ]
     }).then(function(group) {
       if ( !_.isEmpty(group) ) {
         deferred.resolve([group, updates]);
@@ -248,8 +273,8 @@ exports.update = function(req, res) {
       sanitizedUpdates.inviteLevel = updates.inviteLevel || updates.InviteLevel;
     }
 
-    retrievedGroup.updateAttributes(sanitizedUpdates).then(function(updatedGroup) {
-      deferred.resolve(updatedGroup);
+    retrievedGroup.updateAttributes(sanitizedUpdates).then(function() {
+      deferred.resolve(_.assign(retrievedGroup, sanitizedUpdates));
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
     });
@@ -293,7 +318,7 @@ exports.search = function(req, res) {
           include: [
             {
               model: models.User,
-              attributes: ['id']
+              attributes: ['id', 'username', 'imageUrl']
             }
           ]
         }
@@ -347,7 +372,7 @@ exports.getPosts = function(req, res) {
           as: 'Likes',
           include: [{
               model: models.User,
-              attributes: ['id', 'username']
+              attributes: ['id', 'username', 'imageUrl']
           }]
         },
         {

@@ -138,10 +138,18 @@ exports.getDetails = function(req, res) {
   var getTrackDetails = function(videoUrl) {
     var deferred = when.defer();
     var infoUrl = 'https://www.googleapis.com/youtube/v3/videos?';
+    var videoId = qs.parse(url.parse(videoUrl).query).v;
+
+    // Video ID was not found in normal format, may be shortened URL
+    if ( !videoId ) {
+      var urlParts = videoUrl.split('/');
+      videoId = urlParts[urlParts.length - 1];
+    }
+
     var infoParameters = {
       part: 'snippet',
       key: process.env.YOUTUBE_KEY,
-      id: qs.parse(url.parse(videoUrl).query).v
+      id: videoId
     };
 
     infoUrl += qs.stringify(infoParameters);
