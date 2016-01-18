@@ -3,8 +3,21 @@
 var qs      = require('querystring');
 var when    = require('when');
 var request = require('superagent');
+var OAuth   = require('oauth');
 
 var API_ROOT = 'https://www.audiomack.com/v1/';
+
+/* ====================================================== */
+
+exports.oauth = new OAuth.OAuth(
+  'https://audiomack.com/v1/debug',
+  'https://audiomack.com/v1/debug',
+  process.env.AUDIOMACK_KEY,
+  process.env.AUDIOMACK_SECRET,
+  '1.0A',
+  null,
+  'HMAC-SHA1'
+);
 
 /* ====================================================== */
 
@@ -12,13 +25,27 @@ function authorize() {
 
   var deferred = when.defer();
 
-  request.post(API_ROOT + 'access_token', {
-    x_auth_username: 'test'
+  exports.oauth.getOAuthAccessToken('', { grant_type: 'client_credentials' }, function(err, accessToken, refreshToken, results) {
+    console.log('\n\n==================================================================================');
+    if ( err ) {
+      console.log('error:', err);
+      deferred.reject(err);
+    } else {
+      console.log('accessToken:', accessToken);
+      console.log('\n');
+      console.log('refreshToken:', refreshToken);
+      console.log('\n');
+      console.log('results:', results);
+      deferred.resolve(accessToken);
+    }
+    console.log('==================================================================================\n\n');
   });
 
   return deferred.promise;
 
 };
+
+// authorize();
 
 /* ====================================================== */
 
@@ -34,16 +61,20 @@ exports.search = function(query, limit) {
       limit: queryLimit
     };
 
-    request.get(API_ROOT + 'search?' + qs.stringify(searchParameters))
-    .end(function(res) {
-      if ( !res.ok || res.body.errorcode !== 200 ) {
-        console.log('failed res:', res.body.message);
-        deferred.reject(res.body.message);
-      } else {
-        console.log('successful res:', res.body);
-        deferred.resolve(res.body);
+    exports.oauth.get(
+      'https://audiomack.com/v1/search?' + qs.stringify(searchParameters),
+      null,
+      null,
+      function(err, data, res) {
+        if ( err ) {
+          console.log('error:', err);
+          deferred.reject(err);
+        } else {
+          console.log('data:', data);
+          deferred.resolve(data);
+        }
       }
-    });
+    );
 
     return deferred.promise;
   };
