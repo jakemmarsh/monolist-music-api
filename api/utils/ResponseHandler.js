@@ -41,7 +41,7 @@ exports.logger = log4js.getLogger();
 /* ====================================================== */
 
 exports.censorData = function(data) {
-  let dataCopy = JSON.parse(JSON.stringify(data));
+  var dataCopy = JSON.parse(JSON.stringify(data));
 
   _.forIn(dataCopy, (val, key) => {
     if ( typeof(val) === 'object' ) {
