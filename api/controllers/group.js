@@ -97,9 +97,12 @@ exports.create = function(req, res) {
       OwnerId: currentUser.id,
       title: group.title || group.Title,
       description: group.description || group.Description,
+      tags: group.tags || group.Tags,
       privacy: group.privacy || group.Privacy,
       inviteLevel: group.inviteLevel || group.InviteLevel,
     };
+
+    group.tags = _.map(group.tags, function(tag) { return tag.toLowerCase(); });
 
     models.Group.create(group).then(function(savedGroup) {
       savedGroup = savedGroup.toJSON();
@@ -303,8 +306,11 @@ exports.search = function(req, res) {
       where: Sequelize.or(
         { title: { ilike: '%' + query + '%' } },
         Sequelize.or(
-          { slug: { ilike: '%' + query + '%' } },
-          { description: { ilike: '%' + query + '%' } }
+          { tags: { ilike: '%' + query + '%' } },
+          Sequelize.or(
+            { slug: { ilike: '%' + query + '%' } },
+            { description: { ilike: '%' + query + '%' } }
+          )
         )
       ),
       include: [

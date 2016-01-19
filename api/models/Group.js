@@ -9,6 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     slug:        { type: DataTypes.STRING, allowNull: false, unique: true },
     description: { type: DataTypes.TEXT },
     imageUrl:    { type: DataTypes.STRING },
+    tags:        { type: DataTypes.STRING },
     privacy:     { type: DataTypes.ENUM('public', 'private'), defaultValue: 'public' },
     inviteLevel: {
       type: DataTypes.INTEGER,
@@ -20,6 +21,16 @@ module.exports = function(sequelize, DataTypes) {
     }
   },
   {
+    setterMethods: {
+      tags: function(v) {
+        return this.setDataValue('tags', v.join(','));
+      }
+    },
+    getterMethods: {
+      tags: function() {
+        return this.getDataValue('tags') ? this.getDataValue('tags').split(',') : null;
+      }
+    },
     hooks: {
       beforeValidate: function(group, model, cb) {
         var titleSlug = slug(group.title).toLowerCase();
