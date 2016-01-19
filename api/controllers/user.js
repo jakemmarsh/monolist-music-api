@@ -17,7 +17,7 @@ exports.get = function(req, res) {
     var query = { id: identifier };
 
     if ( isNaN(parseInt(identifier)) ) {
-      query = { username: identifier };
+      query = { username: { ilike: identifier } };
     }
 
     models.User.find({

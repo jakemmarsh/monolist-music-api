@@ -15,7 +15,7 @@ module.exports = function() {
     var deferred = when.defer();
 
     models.User.find({
-      where: { username: username },
+      where: { username: { ilike: username } },
       include: [
         {
           model: models.StarredTrack,
