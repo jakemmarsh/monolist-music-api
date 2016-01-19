@@ -19,7 +19,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
       res.body.data.should.be.instanceof(Object);
       res.body.data.should.have.property('title');
       res.body.data.should.have.property('slug');
-      res.body.data[0].should.have.property('tags');
+      res.body.data.should.have.property('tags');
       res.body.data.should.have.property('privacy');
       done();
     });
@@ -88,7 +88,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
       res.body.data.should.be.instanceof(Object);
       res.body.data.should.have.property('title');
       res.body.data.should.have.property('slug');
-      res.body.data[0].should.have.property('tags');
+      res.body.data.should.have.property('tags');
       res.body.data.should.have.property('privacy');
       res.body.data.should.have.property('Owner');
       res.body.data.should.have.property('Memberships');
