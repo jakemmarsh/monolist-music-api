@@ -554,7 +554,8 @@ exports.getRecentlyPlayed = function(req, res) {
           $gt: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
         }
       },
-      order: [['createdAt', 'DESC']]
+      order: [['createdAt', 'DESC']],
+      limit: 500
     }).then(function(plays) {
       deferred.resolve(plays);
     }).catch(function(err) {
@@ -584,7 +585,8 @@ exports.getRecentlyPlayed = function(req, res) {
           model: models.PlaylistPlay,
           as: 'Plays'
         }
-      ]
+      ],
+      order: [[{ model: models.PlaylistPlay, as: 'Plays' }, 'createdAt', 'DESC']]
     }).then(function(playlists) {
       deferred.resolve(playlists);
     }).catch(function(err) {
