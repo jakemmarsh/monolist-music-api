@@ -46,6 +46,7 @@
     "slug": "^0.8.0",
     "superagent": "^0.18.2",
     "swig": "^1.4.2",
+    "trim-body": "0.0.4",
     "when": "^3.6.4"
   },
   "devDependencies": {
