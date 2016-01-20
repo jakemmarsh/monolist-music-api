@@ -114,6 +114,16 @@ margin-left:0;
 /*@editable*/ text-align:left;
 }
 
+h3 a{
+/*@editable*/ color:#b5bad0 !important;
+/*@editable*/ text-decoration: none;
+}
+
+h3 a:hover{
+/*@editable*/ color:#b5bad0 !important;
+/*@editable*/ text-decoration: underline;
+}
+
 /**
 * @tab Page
 * @section heading 4

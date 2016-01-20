@@ -29,7 +29,7 @@
               </tr>
               <tr>
                 <td valign="top" class="leftColumnContent" mc:edit="left_column_content">
-                  <h3>Your favorite sources</h3>
+                  <h3><a href="http://app.monolist.co/search/tracks" target="_blank">Your favorite sources</a></h3>
                   Tracks can be chosen and played from three of the biggest sources: YouTube, Soundcloud, and Bandcamp. This means you'll always be able to find that perfect track you're looking for.
                 </td>
               </tr>
@@ -44,7 +44,7 @@
               </tr>
               <tr>
                 <td valign="top" class="centerColumnContent" mc:edit="center_column_content">
-                  <h3>Groups</h3>
+                  <h3><a href="http://app.monolist.co/groups" target="_blank">Groups</a></h3>
                   Creating a group allows free collaboration among all members on playlists created within the group, and also provides a location to privately share and discuss new tracks.
                 </td>
               </tr>
@@ -59,7 +59,7 @@
               </tr>
               <tr>
                 <td valign="top" class="rightColumnContent" mc:edit="right_column_content">
-                  <h3>Exploration</h3>
+                  <h3><a href="http://app.monolist.co/explore" target="_blank">Exploration</a></h3>
                   Between collaboration, the easy-to-use tag system, and track sharing, discovering new music has never been easier. Always find the perfect music for the moment.
                 </td>
               </tr>
