@@ -102,8 +102,6 @@ exports.create = function(req, res) {
       inviteLevel: group.inviteLevel || group.InviteLevel,
     };
 
-    group.tags = _.map(group.tags, function(tag) { return tag.toLowerCase(); });
-
     models.Group.create(group).then(function(savedGroup) {
       savedGroup = savedGroup.toJSON();
       savedGroup.owner = currentUser;
@@ -270,6 +268,10 @@ exports.update = function(req, res) {
 
     if ( updates.privacy || updates.Privacy ) {
       sanitizedUpdates.privacy = updates.privacy || updates.Privacy;
+    }
+
+    if ( updates.tags || updates.Tags ) {
+      sanitizedUpdates.tags = updates.tags || updates.Tags;
     }
 
     if ( updates.inviteLevel || updates.InviteLevel ) {

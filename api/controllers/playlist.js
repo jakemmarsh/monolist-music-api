@@ -622,8 +622,6 @@ exports.create = function(req, res) {
       privacy: playlist.privacy || playlist.Privacy
     };
 
-    playlist.tags = _.map(playlist.tags, function(tag) { return tag.toLowerCase(); });
-
     models.Playlist.create(playlist).then(function(savedPlaylist) {
       var model = models[changeCase.pascal(savedPlaylist.ownerType)];
 
@@ -757,6 +755,10 @@ exports.update = function(req, res) {
 
     if ( updates.privacy || updates.Privacy ) {
       sanitizedUpdates.privacy = updates.privacy || updates.Privacy;
+    }
+
+    if ( updates.tags || updates.Tags ) {
+      sanitizedUpdates.tags = updates.tags || updates.Tags;
     }
 
     retrievedPlaylist.updateAttributes(sanitizedUpdates).then(function() {

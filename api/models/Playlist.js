@@ -21,6 +21,8 @@ module.exports = function(sequelize, DataTypes) {
         playlist.setDataValue('slug', titleSlug);
         cb(null, playlist);
       });
+    } else {
+      cb(null, playlist);
     }
   }
 
@@ -45,7 +47,7 @@ module.exports = function(sequelize, DataTypes) {
   {
     setterMethods: {
       tags: function(v) {
-        return this.setDataValue('tags', v.join(','));
+        return this.setDataValue('tags', v.join(',').toLowerCase());
       }
     },
     getterMethods: {
