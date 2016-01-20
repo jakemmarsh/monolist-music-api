@@ -4,9 +4,18 @@ var slug = require('slug');
 
 module.exports = function(sequelize, DataTypes) {
 
+  function processNewTitle(group, model, cb) {
+    if ( group.changed('title') ) {
+      var titleSlug = slug(group.title).toLowerCase();
+      group.setDataValue('slug', titleSlug);
+    }
+
+    cb(null, group);
+  }
+
   var Group = sequelize.define('Group', {
     title:       { type: DataTypes.STRING, allowNull: false, unique: true },
-    slug:        { type: DataTypes.STRING, allowNull: false, unique: true },
+    slug:        { type: DataTypes.STRING, unique: true },
     description: { type: DataTypes.TEXT },
     imageUrl:    { type: DataTypes.STRING },
     tags:        { type: DataTypes.STRING },
@@ -23,7 +32,7 @@ module.exports = function(sequelize, DataTypes) {
   {
     setterMethods: {
       tags: function(v) {
-        return this.setDataValue('tags', v.join(','));
+        return this.setDataValue('tags', v.join(',').toLowerCase());
       }
     },
     getterMethods: {
@@ -32,12 +41,8 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     hooks: {
-      beforeValidate: function(group, model, cb) {
-        var titleSlug = slug(group.title).toLowerCase();
-
-        group.setDataValue('slug', titleSlug);
-        cb(null, group);
-      }
+      beforeCreate: processNewTitle,
+      beforeUpdate: processNewTitle
     },
     classMethods: {
       associate: function(models) {
