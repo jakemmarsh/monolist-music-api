@@ -4,6 +4,26 @@ var slug = require('slug');
 
 module.exports = function(sequelize, DataTypes) {
 
+  function processNewTitle(playlist, model, cb) {
+    if ( playlist.changed('title') ) {
+      var titleSlug = slug(playlist.title).toLowerCase();
+      var query = {
+        ownerType: playlist.ownerType,
+        title: { ilike: playlist.title }
+      };
+
+      Playlist.count({
+        where: query
+      }).then(function(c) {
+        if ( c > 0 ) {
+          titleSlug += '-' + c;
+        }
+        playlist.setDataValue('slug', titleSlug);
+        cb(null, playlist);
+      });
+    }
+  }
+
   var Playlist = sequelize.define('Playlist', {
     title:     {
       type: DataTypes.STRING,
@@ -17,7 +37,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     ownerType: { type: DataTypes.ENUM('user', 'group'), defaultValue: 'user' },
     ownerId:   { type: DataTypes.INTEGER, allowNull: false },
-    slug:      { type: DataTypes.STRING, allowNull: false, unique: true },
+    slug:      { type: DataTypes.STRING, unique: true },
     imageUrl:  { type: DataTypes.STRING },
     tags:      { type: DataTypes.STRING },
     privacy:   { type: DataTypes.ENUM('public', 'private'), defaultValue: 'public' }
@@ -34,23 +54,8 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     hooks: {
-      beforeValidate: function(playlist, model, cb) {
-        var titleSlug = slug(playlist.title).toLowerCase();
-        var query = {
-          ownerType: playlist.ownerType,
-          title: { ilike: playlist.title }
-        };
-
-        Playlist.count({
-          where: query
-        }).then(function(c) {
-          if ( c > 0 ) {
-            titleSlug += '-' + c;
-          }
-          playlist.setDataValue('slug', titleSlug);
-          cb(null, playlist);
-        });
-      }
+      beforeCreate: processNewTitle,
+      beforeUpdate: processNewTitle
     },
     classMethods: {
       associate: function(models) {
