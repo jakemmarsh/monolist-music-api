@@ -13,9 +13,7 @@ describe('Util: ResponseHandler', function() {
     params: {},
     query: {},
     body: {},
-    session: {
-      user: {}
-    }
+    user: {}
   };
 
   it('#censorData should remove any censored fields', function() {
@@ -94,7 +92,7 @@ describe('Util: ResponseHandler', function() {
       params: testReq.params,
       query: testReq.query,
       body: testReq.body,
-      user: testReq.session.user
+      user: testReq.user
     });
 
     process.env.NODE_ENV = originalEnv;

@@ -77,7 +77,7 @@ exports.handleError = function(req, res, status, error, shouldLog) {
       params: req.params,
       query: req.query,
       body: req.body,
-      user: req.session ? req.session.user : null
+      user: req.user || null
     }));
   }
 
