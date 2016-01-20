@@ -4,7 +4,7 @@ var bcrypt = require('bcrypt');
 
 /* ====================================================== */
 
-function hashNewPasword(user, model, cb) {
+function processNewPassword(user, model, cb) {
   if ( user.hash ) {
     bcrypt.hash(user.hash, 10, function(err, hash) {
       if ( err ) { throw err; }
@@ -52,8 +52,8 @@ module.exports = function(sequelize, DataTypes) {
   },
   {
     hooks: {
-      beforeCreate: hashNewPasword,
-      beforeUpdate: hashNewPasword
+      beforeCreate: processNewPassword,
+      beforeUpdate: processNewPassword
     },
     classMethods: {
       associate: function(models) {
