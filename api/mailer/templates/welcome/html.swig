@@ -9,7 +9,9 @@
   <h3>Get ready to create, share, and discover</h3>
   Now that you're registered for Monolist, you're ready to begin creating and collaborating!
   <br />
-  Here are just some of the features that Monolist offers:
+  <br />
+  <a class="block" href="http://app.monolist.co/login" target="_blank">Get Started</a>
+  <br />
 {% endblock %}
 
 {% block columns %}
@@ -28,7 +30,7 @@
               <tr>
                 <td valign="top" class="leftColumnContent" mc:edit="left_column_content">
                   <h3>Your favorite sources</h3>
-                  Tracks can be chosen and played from three of the biggest sources: YouTube, Soundcloud, and Bandcamp. This means you'll always be able to find that perfect track you're looking for to add to your new playlist.
+                  Tracks can be chosen and played from three of the biggest sources: YouTube, Soundcloud, and Bandcamp. This means you'll always be able to find that perfect track you're looking for.
                 </td>
               </tr>
             </table>
@@ -43,7 +45,7 @@
               <tr>
                 <td valign="top" class="centerColumnContent" mc:edit="center_column_content">
                   <h3>Groups</h3>
-                  Beyond single-playlist collaboration, it is also possible to create groups for you and all of your friends. This allows free collaboration among all members on playlists created within the group, and also provides a location to privately share and discuss new tracks.
+                  Creating a group allows free collaboration among all members on playlists created within the group, and also provides a location to privately share and discuss new tracks.
                 </td>
               </tr>
             </table>
@@ -58,7 +60,7 @@
               <tr>
                 <td valign="top" class="rightColumnContent" mc:edit="right_column_content">
                   <h3>Exploration</h3>
-                  Between collaboration, the easy-to-use tag system, and track sharing both globally and within your groups, discovering new music has never been easier. Always find the perfect track or playlist for the moment.
+                  Between collaboration, the easy-to-use tag system, and track sharing, discovering new music has never been easier. Always find the perfect music for the moment.
                 </td>
               </tr>
             </table>
