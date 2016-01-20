@@ -55,7 +55,7 @@ exports.register = function(req, res, next) {
     var username = user.username || user.Username;
 
     models.User.find({
-      where: { username: username }
+      where: { username: { ilike: username } }
     }).then(function(retrievedUser) {
       if ( !_.isEmpty(retrievedUser) ) {
         deferred.reject({ status: 400, body: 'That username is already taken.' });
@@ -72,7 +72,7 @@ exports.register = function(req, res, next) {
     var email = user.email || user.Email;
 
     models.User.find({
-      where: { email: email }
+      where: { email: { ilike: email } }
     }).then(function(retrievedUser) {
       if ( !_.isEmpty(retrievedUser) ) {
         deferred.reject({ status: 400, body: 'That email address is already registered.' });
@@ -213,7 +213,7 @@ exports.forgotPassword = function(req, res) {
     var deferred = when.defer();
 
     models.User.find({
-      where: { username: username }
+      where: { username: { ilike: username } }
     }).then(function(retrievedUser) {
       if ( !_.isEmpty(retrievedUser) ) {
         deferred.resolve(retrievedUser);

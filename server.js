@@ -9,6 +9,7 @@ var busboy          = require('connect-busboy');
 var cookieParser    = require('cookie-parser');
 var session         = require('express-session');
 var passport        = require('passport');
+var trimBody        = require('trim-body');
 var server          = express();
 var models          = require('./api/models');
 var populateDb      = require('./utils/populateDb');
@@ -52,7 +53,7 @@ if ( process.env.NODE_ENV === 'production' ) {
 /* ====================================================== */
 
 // Add headers
-server.use(function (req, res, next) {
+server.use(function(req, res, next) {
   // Website you wish to allow to connect
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
   // Request methods you wish to allow
@@ -63,6 +64,17 @@ server.use(function (req, res, next) {
   // to the API (e.g. in case you use sessions)
   res.setHeader('Access-Control-Allow-Credentials', true);
   // Pass to next layer of middleware
+  next();
+});
+
+/* ====================================================== */
+
+// Trim leading and trailing whitespace from body
+server.use(function(req, res, next) {
+  if ( req.body ) {
+    trimBody(req.body);
+  }
+
   next();
 });
 
