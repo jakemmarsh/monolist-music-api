@@ -384,7 +384,7 @@ exports.getTrending = function(req, res) {
     var follows = _.countBy(data[2], function(follow) { return follow.PlaylistId; });
     var merged = _.merge(likes, plays, follows, function(a, b) { return a + b; });
     var formatted = [];
-    var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 20;
+    var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 30;
     var results;
 
     _.forOwn(merged, function(num, key) {
@@ -403,9 +403,6 @@ exports.getTrending = function(req, res) {
 
   var getPlaylists = function(playlistIds) {
     var deferred = when.defer();
-    var limit = req.query.limit;
-
-    limit = ( limit && limit < 50 ) ? limit : 30;
 
     models.Playlist.findAll({
       where: Sequelize.and(
@@ -424,7 +421,6 @@ exports.getTrending = function(req, res) {
           )
         )
       ),
-      limit: limit,
       include: [
         {
           model: models.PlaylistLike,
