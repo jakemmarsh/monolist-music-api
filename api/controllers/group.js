@@ -182,14 +182,70 @@ exports.getPlaylists = function(req, res) {
 
 exports.getTrending = function(req, res) {
 
-  var fetchGroups = function(limit) {
+  var getMemberships = function() {
     var deferred = when.defer();
 
-    limit = ( limit && limit < 50 ) ? limit : 20;
+    models.GroupMembership.findAll({
+      attributes: ['GroupId'],
+      order: [['createdAt', 'DESC']],
+      limit: 1000
+    }).then(function(memberships) {
+      deferred.resolve(memberships);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
 
-    // TODO: real logic here to determine trending
+    return deferred.promise;
+  };
+
+  var getFollows = function(memberships) {
+    var deferred = when.defer();
+
+    models.GroupFollow.findAll({
+      attributes: ['GroupId'],
+      order: [['createdAt', 'DESC']],
+      limit: 1000
+    }).then(function(follows) {
+      deferred.resolve([memberships, follows]);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var process = function(data) {
+    var deferred = when.defer();
+    var memberships = _.countBy(data[0], function(membership) { return membership.GroupId; });
+    var follows = _.countBy(data[1], function(follow) { return follow.GroupId; });
+    var merged = _.merge(memberships, follows, function(a, b) { return a + b; });
+    var formatted = [];
+    var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 30;
+    var results;
+
+    _.forOwn(merged, function(num, key) {
+      formatted.push({
+        GroupId: parseInt(key),
+        NumInteractions: num
+      });
+    });
+
+    results = _.sortBy(formatted, function(item) { return -item.NumInteractions; }).slice(0, limit);
+
+    deferred.resolve(_.pluck(results, 'GroupId'));
+
+    return deferred.promise;
+  };
+
+  var getGroups = function(groupIds) {
+    var deferred = when.defer();
+    var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 30;
+
     models.Group.findAll({
-      where: { privacy: 'public' },
+      where: {
+        id: groupIds,
+        privacy: 'public'
+      },
       limit: limit,
       include: [{
         model: models.GroupMembership,
@@ -204,7 +260,11 @@ exports.getTrending = function(req, res) {
     return deferred.promise;
   };
 
-  fetchGroups(req.query.limit).then(function(groups) {
+  getMemberships()
+  .then(getFollows)
+  .then(process)
+  .then(getGroups)
+  .then(function(groups) {
     ResponseHandler.handleSuccess(res, 200, groups);
   }).catch(function(err) {
     ResponseHandler.handleError(req, res, err.status, err.body);
