@@ -274,6 +274,39 @@ exports.getTrending = function(req, res) {
 
 /* ====================================================== */
 
+exports.getNewest = function(req, res) {
+
+  var getGroups = function(limit) {
+    var deferred = when.defer();
+
+    limit = ( limit && limit < 50 ) ? limit : 30;
+
+    models.Group.findAll({
+      where: { privacy: 'public' },
+      limit: limit,
+      include: [{
+        model: models.GroupMembership,
+        as: 'Memberships'
+      }]
+    }).then(function(groups) {
+      deferred.resolve(groups);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  getGroups(req.query.limit).then(function(groups) {
+    ResponseHandler.handleSuccess(res, 200, groups);
+  }).catch(function(err) {
+    ResponseHandler.handleError(req, res, err.status, err.body);
+  });
+
+};
+
+/* ====================================================== */
+
 exports.update = function(req, res) {
 
   var fetchGroup = function(id, updates) {

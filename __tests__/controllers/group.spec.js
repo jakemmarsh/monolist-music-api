@@ -43,6 +43,24 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
     });
   });
 
+  it('should return all newest groups', function(done) {
+    var req = request(url).get('groups/newest');
+
+    req.cookies = global.cookies;
+
+    req.end(function(err, res) {
+      res.status.should.be.equal(200);
+      res.body.data.should.be.instanceof(Array);
+      if ( res.body.data[0] ) {
+        res.body.data[0].should.have.property('title');
+        res.body.data[0].should.have.property('slug');
+        res.body.data[0].should.have.property('tags');
+        res.body.data[0].should.have.property('privacy');
+      }
+      done();
+    });
+  });
+
   it('should return groups matching a search query', function(done) {
     var req = request(url).get('groups/search/test');
 
