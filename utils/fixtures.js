@@ -114,6 +114,7 @@ module.exports = {
       OwnerId: 2,
       title: 'Test Group Two',
       description: 'This is another group for anyone since it is just for testing.',
+      tags: ['#hash'],
       imageUrl: 'https://scontent-sjc2-1.xx.fbcdn.net/hphotos-xap1/v/t1.0-9/10375152_10153451820467673_5915045047010730686_n.jpg?oh=3eec477b3d0925b8f39802bbb68c3789&oe=565AA6AE',
       inviteLevel: 2
     }
@@ -145,7 +146,7 @@ module.exports = {
       ownerType: 'group',
       title: 'Test Group Playlist',
       privacy: 'public',
-      tags: ['test', 'hip hop', 'rap'],
+      tags: ['group', '#hash', 'playlist'],
       imageUrl: 'http://franthony.com/wp-content/uploads/2015/04/record-player.jpg'
     }
   ],
