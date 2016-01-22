@@ -86,6 +86,7 @@ exports.search = function(query, limit, ip) {
     var searchUrl = 'https://www.googleapis.com/youtube/v3/search?';
     var searchParameters = {
       type: 'video',
+      videoEmbeddable: true,
       part: 'snippet',
       q: searchQuery.replace(/(%20)|( )/gi, '+'),
       restriction: userIP,
