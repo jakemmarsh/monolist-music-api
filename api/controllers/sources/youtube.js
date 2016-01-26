@@ -107,6 +107,7 @@ exports.search = function(query, limit, ip) {
           return {
             source: 'youtube',
             title: item.snippet.title,
+            artist: item.snippet.channelTitle && item.snippet.channelTitle.length ? item.snippet.channelTitle : null,
             imageUrl: item.snippet.thumbnails.high.url,
             sourceParam: item.id.videoId.toString(),
             sourceUrl: 'http://youtube.com/watch?v=' + item.id.videoId
@@ -165,6 +166,7 @@ exports.getDetails = function(req, res) {
           deferred.resolve({
             source: 'youtube',
             title: body.items[0].snippet.title,
+            artist: body.items[0].snippet.channelTitle && item.snippet.channelTitle.length ? item.snippet.channelTitle : null,
             imageUrl: body.items[0].snippet.thumbnails.high.url,
             sourceParam: body.items[0].id,
             sourceUrl: 'http://youtube.com/watch?v=' + body.items[0].id
