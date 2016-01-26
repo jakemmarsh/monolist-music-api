@@ -33,8 +33,8 @@ module.exports = function(sequelize, DataTypes) {
     setterMethods: {
       tags: function(v) {
         var tags = v.map(function(tag) {
-          if ( tag.indexOf('#') !== 0 ) { tag = '#' + tag.trim(); }
-          return tag.toLowerCase();
+          if ( tag.indexOf('#') !== 0 ) { tag = '#' + tag; }
+          return tag.replace(' ', '').toLowerCase();
         }).join(',');
 
         return this.setDataValue('tags', tags);
