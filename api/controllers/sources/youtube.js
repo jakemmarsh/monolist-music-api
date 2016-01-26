@@ -166,7 +166,7 @@ exports.getDetails = function(req, res) {
           deferred.resolve({
             source: 'youtube',
             title: body.items[0].snippet.title,
-            artist: body.items[0].snippet.channelTitle && item.snippet.channelTitle.length ? item.snippet.channelTitle : null,
+            artist: body.items[0].snippet.channelTitle && body.items[0].snippet.channelTitle.length ? body.items[0].snippet.channelTitle : null,
             imageUrl: body.items[0].snippet.thumbnails.high.url,
             sourceParam: body.items[0].id,
             sourceUrl: 'http://youtube.com/watch?v=' + body.items[0].id
