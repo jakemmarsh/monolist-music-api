@@ -124,9 +124,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Group', function() 
     req.end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
-      res.body.data.should.be.instanceof(Object);
-      res.body.data.should.have.property('GroupId');
-      res.body.data.should.have.property('FollowerId');
+      res.body.data.should.be.instanceof(String);
       done();
     });
   });

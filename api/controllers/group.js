@@ -597,7 +597,7 @@ exports.follow = function(req, res) {
     }).then(function(retrievedFollowing) {
       if ( _.isEmpty(retrievedFollowing) ) {
         models.GroupFollow.create(attributes).then(function(savedFollow) {
-          deferred.resolve('Successfully followed playlist.');
+          deferred.resolve('Successfully followed group.');
         }).catch(function(err) {
           deferred.reject({ status: 500, body: err });
         });
