@@ -9,6 +9,15 @@ var ResponseHandler = require('../utils/ResponseHandler');
 
 /* ====================================================== */
 
+/**
+ * @api {get} /group/:identifier GetGroup
+ * @apiName GetGroup
+ * @apiGroup Group
+ *
+ * @apiParam {String} identifier ID or slug to retrieve group for
+ *
+ * @apiSuccess {Object} Retrieved group object
+ */
 exports.get = function(req, res) {
 
   var fetchGroup = function(identifier) {
@@ -146,6 +155,15 @@ exports.create = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {get} /group/:id/playlists GetGroupPlaylists
+ * @apiName GetGroupPlaylists
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id Group ID to retrieve playlists for
+ *
+ * @apiSuccess {Object[]} Playlists retrieved for group
+ */
 exports.getPlaylists = function(req, res) {
 
   var fetchPlaylists = function(groupId, limit, offset) {
@@ -180,6 +198,13 @@ exports.getPlaylists = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {get} /groups/trending GetTrendingGroups
+ * @apiName GetTrendingGroups
+ * @apiGroup Group
+ *
+ * @apiSuccess {Object[]} Retrieved trending groups
+ */
 exports.getTrending = function(req, res) {
 
   var getMemberships = function() {
@@ -274,6 +299,13 @@ exports.getTrending = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {get} /groups/newest GetNewestGroups
+ * @apiName GetNewestGroups
+ * @apiGroup Group
+ *
+ * @apiSuccess {Object[]} Retrieved newest groups
+ */
 exports.getNewest = function(req, res) {
 
   var getGroups = function(limit) {
@@ -307,6 +339,20 @@ exports.getNewest = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {patch} /group/:id UpdateGroup
+ * @apiName UpdateGroup
+ * @apiGroup Group
+ *
+ * @apiParam {Number}   id            ID for group to update
+ * @apiParam {String}   [title]       New group title
+ * @apiParam {String}   [description] New group description
+ * @apiParam {String}   [privacy]     New group privacy
+ * @apiParam {String[]} [tags]        New group tags
+ * @apiParam {Number}   [inviteLevel] New group inviteLevel
+ *
+ * @apiSuccess {Object} Updated group object
+ */
 exports.update = function(req, res) {
 
   var fetchGroup = function(id, updates) {
@@ -392,6 +438,15 @@ exports.update = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {get} /groups/search/:query SearchGroups
+ * @apiName SearchGroups
+ * @apiGroup Group
+ *
+ * @apiParam {String} query Search query
+ *
+ * @apiSuccess {Object[]} Retrieved groups matching query
+ */
 exports.search = function(req, res) {
 
   var searchGroups = function(query) {
@@ -450,6 +505,15 @@ exports.search = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {get} /group/:id/posts GetGroupPosts
+ * @apiName GetGroupPosts
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id ID for group to retrieve posts for
+ *
+ * @apiSuccess {Object[]} Retrieved posts for group
+ */
 exports.getPosts = function(req, res) {
 
   var fetchPosts = function(groupId, limit, offset) {
@@ -510,6 +574,15 @@ exports.getPosts = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {post} /group/:id/follow FollowGroup
+ * @apiName FollowGroup
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id ID for group to follow or unfollow
+ *
+ * @apiSuccess {String} Success message for follow or unfollow
+ */
 exports.follow = function(req, res) {
 
   var followGroup = function(currentUserId, groupId) {
@@ -524,7 +597,7 @@ exports.follow = function(req, res) {
     }).then(function(retrievedFollowing) {
       if ( _.isEmpty(retrievedFollowing) ) {
         models.GroupFollow.create(attributes).then(function(savedFollow) {
-          deferred.resolve(savedFollow);
+          deferred.resolve('Successfully followed playlist.');
         }).catch(function(err) {
           deferred.reject({ status: 500, body: err });
         });
@@ -550,6 +623,16 @@ exports.follow = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {post} /group/:id/member/:memberId AddMember
+ * @apiName AddMember
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id       ID for group
+ * @apiParam {Number} memberId ID for user to add as a member
+ *
+ * @apiSuccess {Object} Created Membership object
+ */
 exports.addMember = function(req, res) {
 
   var fetchGroup = function(groupId, actorId, memberId) {
@@ -660,6 +743,16 @@ exports.addMember = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {delete} /group/:id/member/:memberId RemoveMember
+ * @apiName RemoveMember
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id       ID for group
+ * @apiParam {Number} memberId ID for user to remove as a member
+ *
+ * @apiSuccess {String} Success message for member removal
+ */
 exports.removeMember = function(req, res) {
 
   // TODO: better checking to let admins remove members
@@ -720,6 +813,17 @@ exports.removeMember = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {post} /group/:id/member/:memberId/level/:newLevel UpdateMemberLevel
+ * @apiName UpdateMemberLevel
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id       ID for group to follow or unfollow
+ * @apiParam {Number} memberId ID for user to modify membership level
+ * @apiParam {Number} newLevel New level (1-3) for member
+ *
+ * @apiSuccess {Object} Updated Membership object
+ */
 exports.updateMemberLevel = function(req, res) {
 
   var getCurrentUserLevel = function(groupId, memberId, newLevel) {
@@ -802,6 +906,17 @@ exports.updateMemberLevel = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {delete} /group/:id/member/:memberId/level/:newLevel DeleteGroup
+ * @apiName DeleteGroup
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id       ID for group to follow or unfollow
+ * @apiParam {Number} memberId ID for user to modify membership level
+ * @apiParam {Number} newLevel New level (1-3) for member
+ *
+ * @apiSuccess {Object} Updated Membership object
+ */
 exports.delete = function(req, res) {
 
   var findAndEnsureUserCanDelete = function(currentUser, groupId) {

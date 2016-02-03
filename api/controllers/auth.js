@@ -46,6 +46,18 @@ exports.isAdmin = function(req, res, next) {
 
 /* ====================================================== */
 
+/**
+ * @api {post} /auth/register Register
+ * @apiName Register
+ * @apiGroup Auth
+ *
+ * @apiParam {String} username     New user's username
+ * @apiParam {String} email        New user's email
+ * @apiParam {String} [password]   New user's password
+ * @apiParam {String} [facebookId] New user's Facebook ID
+ *
+ * @apiSuccess {Object} New user object
+ */
 exports.register = function(req, res, next) {
 
   var isFacebookRegister = false;
@@ -153,8 +165,8 @@ exports.register = function(req, res, next) {
  * @apiName Login
  * @apiGroup Auth
  *
- * @apiParam {String} username User's username.
- * @apiParam {String} password User's password.
+ * @apiParam {String} username User's username
+ * @apiParam {String} password User's password
  *
  * @apiSuccess {Object} User object
  */
@@ -207,6 +219,15 @@ exports.facebookLogin = function(req, res, next) {
 
 /* ====================================================== */
 
+/**
+ * @api {post} /auth/forgot/:username ForgotPassword
+ * @apiName ForgotPassword
+ * @apiGroup Auth
+ *
+ * @apiParam {String} username User's username
+ *
+ * @apiSuccess {String} Success message
+ */
 exports.forgotPassword = function(req, res) {
 
   var fetchUser = function(username) {
@@ -272,6 +293,16 @@ exports.forgotPassword = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {post} /auth/reset/:id/:key ResetPassword
+ * @apiName ResetPassword
+ * @apiGroup Auth
+ *
+ * @apiParam {String} id  User's id
+ * @apiParam {String} key User's password reset key
+ *
+ * @apiSuccess {Object} Updated User object
+ */
 exports.resetPassword = function(req, res) {
 
   var fetchUser = function(userId, resetKey, password) {
@@ -316,7 +347,7 @@ exports.resetPassword = function(req, res) {
   fetchUser(req.params.id, req.params.key, req.body.password)
   .then(updateUser)
   .then(function(resp) {
-    ResponseHandler.handleSuccess(res, 200 ,resp);
+    ResponseHandler.handleSuccess(res, 200, resp);
   }).catch(function(err) {
     ResponseHandler.handleError(req, res, err.status, err.body);
   });
@@ -325,6 +356,13 @@ exports.resetPassword = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {post} /auth/logout Logout
+ * @apiName Logout
+ * @apiGroup Auth
+ *
+ * @apiSuccess {String} Success message
+ */
 exports.logout = function(req, res) {
 
   req.logout();
