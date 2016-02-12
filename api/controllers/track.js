@@ -5,7 +5,6 @@ var _               = require('lodash');
 var audiomack       = require('./sources/audiomack');
 var bandcamp        = require('./sources/bandcamp');
 var soundcloud      = require('./sources/soundcloud');
-var spotify         = require('./sources/spotify');
 var youtube         = require('./sources/youtube');
 var models          = require('../models');
 // var ActivityManager = require('../utils/ActivityManager');
@@ -58,7 +57,6 @@ exports.get = function(req, res) {
 
 exports.search = function(req, res) {
 
-  var searchResults = [];
   var limit = req.query.limit || 20;
   var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
@@ -73,7 +71,6 @@ exports.search = function(req, res) {
       'audiomack': audiomack.search,
       'bandcamp': bandcamp.search,
       'soundcloud': soundcloud.search,
-      'spotify': spotify.search,
       'youtube': youtube.search
     };
     var searchPromises = [];
@@ -92,7 +89,6 @@ exports.search = function(req, res) {
         sourcePromisesMap.audiomack(req.params.query, limit, ip),
         sourcePromisesMap.bandcamp(req.params.query, limit, ip),
         sourcePromisesMap.soundcloud(req.params.query, limit, ip),
-        sourcePromisesMap.spotify(req.params.query, limit, ip),
         sourcePromisesMap.youtube(req.params.query, limit, ip)
       ];
     }
@@ -110,11 +106,15 @@ exports.search = function(req, res) {
     models.TrackSearch.create(attributes);
   };
 
-  when.all(getSearchPromises()).then(function(results) {
-    _.each(_.filter(results), function(result) {
-      searchResults = _.sortBy(searchResults.concat(result), 'title');
+  when.all(getSearchPromises()).then(function(resultsBySource) {
+    var searchResults = [];
+
+    _.each(resultsBySource, function(results) {
+      searchResults = searchResults.concat(results);
     });
-    recordSearch(req.user, req.params.query, searchResults);
+
+    searchResults = _.sortBy(searchResults, 'title');
+
     ResponseHandler.handleSuccess(res, 200,  searchResults);
   }).catch(function(err) {
     ResponseHandler.handleError(req, res, err.status, err.body);

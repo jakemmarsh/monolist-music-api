@@ -4,19 +4,44 @@ var ResponseHandler = require('../../api/utils/ResponseHandler');
 
 describe('Util: ResponseHandler', function() {
 
-    var testReq = {
-      error: {},
-      url: '/foo',
-      headers: {
-        referer: '/bar'
+  var testReq = {
+    error: {},
+    url: '/foo',
+    headers: {
+      referer: '/bar'
+    },
+    params: {},
+    query: {},
+    body: {},
+    user: {}
+  };
+
+  it('#censorData should remove any censored fields', function() {
+    var data = {
+      title: 'Test Title',
+      password: 'test',
+      hash: 'test',
+      user: {
+        username: 'myUsername',
+        password: 'test',
+        hash: 'test'
       },
-      params: {},
-      query: {},
-      body: {},
-      session: {
-        user: {}
-      }
+      id: 1
     };
+    var censoredData = ResponseHandler.censorData(data);
+
+    censoredData.should.eql({
+      title: 'Test Title',
+      password: '<< CENSORED >>',
+      hash: '<< CENSORED >>',
+      user: {
+        username: 'myUsername',
+        password: '<< CENSORED >>',
+        hash: '<< CENSORED >>'
+      },
+      id: 1
+    });
+  });
 
   it('#handleSuccess should respond accordingly', function() {
     var jsonStub = sandbox.stub();
@@ -67,7 +92,7 @@ describe('Util: ResponseHandler', function() {
       params: testReq.params,
       query: testReq.query,
       body: testReq.body,
-      user: testReq.session.user
+      user: testReq.user
     });
 
     process.env.NODE_ENV = originalEnv;

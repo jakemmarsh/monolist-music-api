@@ -9,6 +9,15 @@ var ResponseHandler = require('../utils/ResponseHandler');
 
 /* ====================================================== */
 
+/**
+ * @api {get} /group/:identifier GetGroup
+ * @apiName GetGroup
+ * @apiGroup Group
+ *
+ * @apiParam {String} identifier ID or slug to retrieve group for
+ *
+ * @apiSuccess {Object} Retrieved group object
+ */
 exports.get = function(req, res) {
 
   var fetchGroup = function(identifier) {
@@ -31,7 +40,12 @@ exports.get = function(req, res) {
         {
           model: models.GroupMembership,
           as: 'Memberships',
-          include: [models.User]
+          include: [
+            {
+              model: models.User,
+              attributes: ['id', 'username', 'imageUrl']
+            }
+          ]
         },
         {
           model: models.GroupFollow,
@@ -92,6 +106,7 @@ exports.create = function(req, res) {
       OwnerId: currentUser.id,
       title: group.title || group.Title,
       description: group.description || group.Description,
+      tags: group.tags || group.Tags,
       privacy: group.privacy || group.Privacy,
       inviteLevel: group.inviteLevel || group.InviteLevel,
     };
@@ -140,6 +155,15 @@ exports.create = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {get} /group/:id/playlists GetGroupPlaylists
+ * @apiName GetGroupPlaylists
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id Group ID to retrieve playlists for
+ *
+ * @apiSuccess {Object[]} Playlists retrieved for group
+ */
 exports.getPlaylists = function(req, res) {
 
   var fetchPlaylists = function(groupId, limit, offset) {
@@ -174,14 +198,121 @@ exports.getPlaylists = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {get} /groups/trending GetTrendingGroups
+ * @apiName GetTrendingGroups
+ * @apiGroup Group
+ *
+ * @apiSuccess {Object[]} Retrieved trending groups
+ */
 exports.getTrending = function(req, res) {
 
-  var fetchGroups = function(limit) {
+  var getMemberships = function() {
     var deferred = when.defer();
 
-    limit = ( limit && limit < 50 ) ? limit : 20;
+    models.GroupMembership.findAll({
+      attributes: ['GroupId'],
+      order: [['createdAt', 'DESC']],
+      limit: 1000
+    }).then(function(memberships) {
+      deferred.resolve(memberships);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
 
-    // TODO: real logic here to determine trending
+    return deferred.promise;
+  };
+
+  var getFollows = function(memberships) {
+    var deferred = when.defer();
+
+    models.GroupFollow.findAll({
+      attributes: ['GroupId'],
+      order: [['createdAt', 'DESC']],
+      limit: 1000
+    }).then(function(follows) {
+      deferred.resolve([memberships, follows]);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var process = function(data) {
+    var deferred = when.defer();
+    var memberships = _.countBy(data[0], function(membership) { return membership.GroupId; });
+    var follows = _.countBy(data[1], function(follow) { return follow.GroupId; });
+    var merged = _.merge(memberships, follows, function(a, b) { return a + b; });
+    var formatted = [];
+    var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 30;
+    var results;
+
+    _.forOwn(merged, function(num, key) {
+      formatted.push({
+        GroupId: parseInt(key),
+        NumInteractions: num
+      });
+    });
+
+    results = _.sortBy(formatted, function(item) { return -item.NumInteractions; }).slice(0, limit);
+
+    deferred.resolve(_.pluck(results, 'GroupId'));
+
+    return deferred.promise;
+  };
+
+  var getGroups = function(groupIds) {
+    var deferred = when.defer();
+    var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 30;
+
+    models.Group.findAll({
+      where: {
+        id: groupIds,
+        privacy: 'public'
+      },
+      limit: limit,
+      include: [{
+        model: models.GroupMembership,
+        as: 'Memberships'
+      }]
+    }).then(function(groups) {
+      deferred.resolve(groups);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  getMemberships()
+  .then(getFollows)
+  .then(process)
+  .then(getGroups)
+  .then(function(groups) {
+    ResponseHandler.handleSuccess(res, 200, groups);
+  }).catch(function(err) {
+    ResponseHandler.handleError(req, res, err.status, err.body);
+  });
+
+};
+
+/* ====================================================== */
+
+/**
+ * @api {get} /groups/newest GetNewestGroups
+ * @apiName GetNewestGroups
+ * @apiGroup Group
+ *
+ * @apiSuccess {Object[]} Retrieved newest groups
+ */
+exports.getNewest = function(req, res) {
+
+  var getGroups = function(limit) {
+    var deferred = when.defer();
+
+    limit = ( limit && limit < 50 ) ? limit : 30;
+
     models.Group.findAll({
       where: { privacy: 'public' },
       limit: limit,
@@ -198,7 +329,7 @@ exports.getTrending = function(req, res) {
     return deferred.promise;
   };
 
-  fetchGroups(req.query.limit).then(function(groups) {
+  getGroups(req.query.limit).then(function(groups) {
     ResponseHandler.handleSuccess(res, 200, groups);
   }).catch(function(err) {
     ResponseHandler.handleError(req, res, err.status, err.body);
@@ -208,13 +339,47 @@ exports.getTrending = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {patch} /group/:id UpdateGroup
+ * @apiName UpdateGroup
+ * @apiGroup Group
+ *
+ * @apiParam {Number}   id            ID for group to update
+ * @apiParam {String}   [title]       New group title
+ * @apiParam {String}   [description] New group description
+ * @apiParam {String}   [privacy]     New group privacy
+ * @apiParam {String[]} [tags]        New group tags
+ * @apiParam {Number}   [inviteLevel] New group inviteLevel
+ *
+ * @apiSuccess {Object} Updated group object
+ */
 exports.update = function(req, res) {
 
   var fetchGroup = function(id, updates) {
     var deferred = when.defer();
 
     models.Group.find({
-      where: { id: id }
+      where: { id: id },
+      include: [
+        {
+          model: models.User,
+          as: 'Owner'
+        },
+        {
+          model: models.GroupMembership,
+          as: 'Memberships',
+          include: [
+            {
+              model: models.User,
+              attributes: ['id', 'username', 'imageUrl']
+            }
+          ]
+        },
+        {
+          model: models.GroupFollow,
+          as: 'Followers'
+        }
+      ]
     }).then(function(group) {
       if ( !_.isEmpty(group) ) {
         deferred.resolve([group, updates]);
@@ -244,12 +409,16 @@ exports.update = function(req, res) {
       sanitizedUpdates.privacy = updates.privacy || updates.Privacy;
     }
 
+    if ( updates.tags || updates.Tags ) {
+      sanitizedUpdates.tags = updates.tags || updates.Tags;
+    }
+
     if ( updates.inviteLevel || updates.InviteLevel ) {
       sanitizedUpdates.inviteLevel = updates.inviteLevel || updates.InviteLevel;
     }
 
-    retrievedGroup.updateAttributes(sanitizedUpdates).then(function(updatedGroup) {
-      deferred.resolve(updatedGroup);
+    retrievedGroup.updateAttributes(sanitizedUpdates).then(function() {
+      deferred.resolve(_.assign(retrievedGroup, sanitizedUpdates));
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
     });
@@ -269,6 +438,15 @@ exports.update = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {get} /groups/search/:query SearchGroups
+ * @apiName SearchGroups
+ * @apiGroup Group
+ *
+ * @apiParam {String} query Search query
+ *
+ * @apiSuccess {Object[]} Retrieved groups matching query
+ */
 exports.search = function(req, res) {
 
   var searchGroups = function(query) {
@@ -278,8 +456,11 @@ exports.search = function(req, res) {
       where: Sequelize.or(
         { title: { ilike: '%' + query + '%' } },
         Sequelize.or(
-          { slug: { ilike: '%' + query + '%' } },
-          { description: { ilike: '%' + query + '%' } }
+          { tags: { ilike: '%' + query + '%' } },
+          Sequelize.or(
+            { slug: { ilike: '%' + query + '%' } },
+            { description: { ilike: '%' + query + '%' } }
+          )
         )
       ),
       include: [
@@ -293,7 +474,7 @@ exports.search = function(req, res) {
           include: [
             {
               model: models.User,
-              attributes: ['id']
+              attributes: ['id', 'username', 'imageUrl']
             }
           ]
         }
@@ -324,6 +505,15 @@ exports.search = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {get} /group/:id/posts GetGroupPosts
+ * @apiName GetGroupPosts
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id ID for group to retrieve posts for
+ *
+ * @apiSuccess {Object[]} Retrieved posts for group
+ */
 exports.getPosts = function(req, res) {
 
   var fetchPosts = function(groupId, limit, offset) {
@@ -347,7 +537,7 @@ exports.getPosts = function(req, res) {
           as: 'Likes',
           include: [{
               model: models.User,
-              attributes: ['id', 'username']
+              attributes: ['id', 'username', 'imageUrl']
           }]
         },
         {
@@ -384,6 +574,15 @@ exports.getPosts = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {post} /group/:id/follow FollowGroup
+ * @apiName FollowGroup
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id ID for group to follow or unfollow
+ *
+ * @apiSuccess {String} Success message for follow or unfollow
+ */
 exports.follow = function(req, res) {
 
   var followGroup = function(currentUserId, groupId) {
@@ -398,7 +597,7 @@ exports.follow = function(req, res) {
     }).then(function(retrievedFollowing) {
       if ( _.isEmpty(retrievedFollowing) ) {
         models.GroupFollow.create(attributes).then(function(savedFollow) {
-          deferred.resolve(savedFollow);
+          deferred.resolve('Successfully followed group.');
         }).catch(function(err) {
           deferred.reject({ status: 500, body: err });
         });
@@ -424,6 +623,16 @@ exports.follow = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {post} /group/:id/member/:memberId AddMember
+ * @apiName AddMember
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id       ID for group
+ * @apiParam {Number} memberId ID for user to add as a member
+ *
+ * @apiSuccess {Object} Created Membership object
+ */
 exports.addMember = function(req, res) {
 
   var fetchGroup = function(groupId, actorId, memberId) {
@@ -534,6 +743,16 @@ exports.addMember = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {delete} /group/:id/member/:memberId RemoveMember
+ * @apiName RemoveMember
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id       ID for group
+ * @apiParam {Number} memberId ID for user to remove as a member
+ *
+ * @apiSuccess {String} Success message for member removal
+ */
 exports.removeMember = function(req, res) {
 
   // TODO: better checking to let admins remove members
@@ -594,6 +813,17 @@ exports.removeMember = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {post} /group/:id/member/:memberId/level/:newLevel UpdateMemberLevel
+ * @apiName UpdateMemberLevel
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id       ID for group to follow or unfollow
+ * @apiParam {Number} memberId ID for user to modify membership level
+ * @apiParam {Number} newLevel New level (1-3) for member
+ *
+ * @apiSuccess {Object} Updated Membership object
+ */
 exports.updateMemberLevel = function(req, res) {
 
   var getCurrentUserLevel = function(groupId, memberId, newLevel) {
@@ -676,6 +906,17 @@ exports.updateMemberLevel = function(req, res) {
 
 /* ====================================================== */
 
+/**
+ * @api {delete} /group/:id/member/:memberId/level/:newLevel DeleteGroup
+ * @apiName DeleteGroup
+ * @apiGroup Group
+ *
+ * @apiParam {Number} id       ID for group to follow or unfollow
+ * @apiParam {Number} memberId ID for user to modify membership level
+ * @apiParam {Number} newLevel New level (1-3) for member
+ *
+ * @apiSuccess {Object} Updated Membership object
+ */
 exports.delete = function(req, res) {
 
   var findAndEnsureUserCanDelete = function(currentUser, groupId) {

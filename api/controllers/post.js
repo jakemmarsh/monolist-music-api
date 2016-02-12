@@ -25,7 +25,7 @@ exports.get = function(req, res) {
           as: 'Likes',
           include: [{
               model: models.User,
-              attributes: ['id', 'username']
+              attributes: ['id', 'username', 'imageUrl']
           }]
         },
         {
@@ -82,7 +82,7 @@ exports.getNewest = function(req, res) {
           as: 'Likes',
           include: [{
               model: models.User,
-              attributes: ['id', 'username']
+              attributes: ['id', 'username', 'imageUrl']
           }]
         },
         {
@@ -155,7 +155,7 @@ exports.create = function(req, res) {
           as: 'Likes',
           include: [{
               model: models.User,
-              attributes: ['id', 'username']
+              attributes: ['id', 'username', 'imageUrl']
           }]
         },
         {

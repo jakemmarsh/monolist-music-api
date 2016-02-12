@@ -86,6 +86,7 @@ exports.search = function(query, limit, ip) {
     var searchUrl = 'https://www.googleapis.com/youtube/v3/search?';
     var searchParameters = {
       type: 'video',
+      videoEmbeddable: true,
       part: 'snippet',
       q: searchQuery.replace(/(%20)|( )/gi, '+'),
       restriction: userIP,
@@ -106,6 +107,7 @@ exports.search = function(query, limit, ip) {
           return {
             source: 'youtube',
             title: item.snippet.title,
+            artist: item.snippet.channelTitle && item.snippet.channelTitle.length ? item.snippet.channelTitle : null,
             imageUrl: item.snippet.thumbnails.high.url,
             sourceParam: item.id.videoId.toString(),
             sourceUrl: 'http://youtube.com/watch?v=' + item.id.videoId
@@ -138,10 +140,18 @@ exports.getDetails = function(req, res) {
   var getTrackDetails = function(videoUrl) {
     var deferred = when.defer();
     var infoUrl = 'https://www.googleapis.com/youtube/v3/videos?';
+    var videoId = qs.parse(url.parse(videoUrl).query).v;
+
+    // Video ID was not found in normal format, may be shortened URL
+    if ( !videoId ) {
+      var urlParts = videoUrl.split('/');
+      videoId = urlParts[urlParts.length - 1];
+    }
+
     var infoParameters = {
       part: 'snippet',
       key: process.env.YOUTUBE_KEY,
-      id: qs.parse(url.parse(videoUrl).query).v
+      id: videoId
     };
 
     infoUrl += qs.stringify(infoParameters);
@@ -156,6 +166,7 @@ exports.getDetails = function(req, res) {
           deferred.resolve({
             source: 'youtube',
             title: body.items[0].snippet.title,
+            artist: body.items[0].snippet.channelTitle && body.items[0].snippet.channelTitle.length ? body.items[0].snippet.channelTitle : null,
             imageUrl: body.items[0].snippet.thumbnails.high.url,
             sourceParam: body.items[0].id,
             sourceUrl: 'http://youtube.com/watch?v=' + body.items[0].id

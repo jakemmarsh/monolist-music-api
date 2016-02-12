@@ -4,7 +4,7 @@ var bcrypt = require('bcrypt');
 
 /* ====================================================== */
 
-function hashNewPasword(user, model, cb) {
+function processNewPassword(user, model, cb) {
   if ( user.hash ) {
     bcrypt.hash(user.hash, 10, function(err, hash) {
       if ( err ) { throw err; }
@@ -23,11 +23,10 @@ module.exports = function(sequelize, DataTypes) {
   var User = sequelize.define('User', {
     username:         {
       type: DataTypes.STRING,
-      unique: true,
       allowNull: false,
       validate: {
         notContains: {
-          args: ' ', // don't allow spaces in username
+          args: ' ',
           msg: 'Username cannot contain spaces.'
         }
       }
@@ -51,9 +50,12 @@ module.exports = function(sequelize, DataTypes) {
     passwordResetKey: { type: DataTypes.STRING }
   },
   {
+    indexes: [
+      { name: 'unique_username', unique: true, fields: [sequelize.fn('lower', sequelize.col('username'))], msg: 'test message' }
+    ],
     hooks: {
-      beforeCreate: hashNewPasword,
-      beforeUpdate: hashNewPasword
+      beforeCreate: processNewPassword,
+      beforeUpdate: processNewPassword
     },
     classMethods: {
       associate: function(models) {

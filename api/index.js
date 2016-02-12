@@ -56,6 +56,7 @@ api.get('/group/:identifier', controllers.group.get);
 api.get('/group/:id/playlists', controllers.group.getPlaylists);
 api.get('/group/:id/posts', controllers.group.getPosts);
 api.get('/groups/trending', controllers.group.getTrending);
+api.get('/groups/newest', controllers.group.getNewest);
 api.get('/groups/search/:query', controllers.group.search);
 api.patch('/group/:id', controllers.auth.isAuthenticated, controllers.group.update);
 api.post('/group/:id/follow', controllers.auth.isAuthenticated, controllers.group.follow);
@@ -72,6 +73,7 @@ api.get('/playlists/search/:query', controllers.playlist.search);
 api.get('/playlists/trending', controllers.playlist.getTrending);
 api.get('/playlists/newest', controllers.playlist.getNewest);
 api.get('/playlists/searches', controllers.playlist.getSearches);
+api.get('/playlists/played/recent', controllers.playlist.getRecentlyPlayed);
 api.post('/playlist', controllers.auth.isAuthenticated, controllers.playlist.create);
 api.patch('/playlist/:id', controllers.auth.isAuthenticated, controllers.playlist.update);
 api.post('/playlist/:id/play', controllers.playlist.recordPlay);
@@ -108,9 +110,7 @@ api.get('/sc_redirect', controllers.soundcloudRedirect);
 /* ====================================================== */
 
 // mp3 streaming endpoints
-// api.get('/stream/youtube/:videoId', controllers.sources.youtube.stream);
 api.get('/stream/soundcloud/:trackId', controllers.sources.soundcloud.stream);
-// api.get('/stream/spotify/:trackId', controllers.sources.spotify.stream);
 api.get('/stream/bandcamp/:trackUrl', controllers.sources.bandcamp.stream);
 api.get('/stream/audiomack/:trackUrl', controllers.sources.audiomack.stream);
 
@@ -119,7 +119,6 @@ api.get('/stream/audiomack/:trackUrl', controllers.sources.audiomack.stream);
 // track detail endpoints
 api.get('/details/youtube/:url', controllers.sources.youtube.getDetails);
 api.get('/details/soundcloud/:url', controllers.sources.soundcloud.getDetails);
-// api.get('/details/spotify/:trackId', controllers.sources.spotify.getDetails);
 api.get('/details/bandcamp/:url', controllers.sources.bandcamp.getDetails);
 
 /* ====================================================== */

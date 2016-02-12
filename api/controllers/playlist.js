@@ -144,7 +144,7 @@ exports.get = function(req, res) {
     if ( isFinite(slug) ) {
       query = { id: slug };
     } else {
-      query = { slug: slug };
+      query = { slug: { ilike: slug } };
     }
 
     models.Playlist.find({
@@ -152,14 +152,21 @@ exports.get = function(req, res) {
       include: [
         {
           model: models.Collaboration,
-          include: [models.User]
-        },
-        {
-          model: models.Track,
           include: [
             {
               model: models.User,
-              attributes: ['id', 'username']
+              attributes: ['id', 'username', 'imageUrl']
+            }
+          ]
+        },
+        {
+          model: models.Track,
+          order: [['createdAt', 'DESC']],
+          include: [
+            {
+              model: models.User,
+              attributes: ['id', 'username', 'imageUrl'],
+              order: [['createdAt', 'DESC']]
             },
             {
               model: models.TrackComment,
@@ -291,18 +298,26 @@ exports.search = function(req, res) {
   };
 
   var recordSearch = function(currentUser, query, results) {
+    var deferred = when.defer();
     var attributes = {
       UserId: currentUser ? currentUser.id : null,
       query: query,
       results: _.pluck(results, 'id')
     };
 
-    models.PlaylistSearch.create(attributes);
+    models.PlaylistSearch.create(attributes).then(function() {
+      deferred.resolve();
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
   };
 
   searchPlaylists(req.params.query, req.query.limit, req.query.offset).then(function(playlists) {
-    recordSearch(req.user, req.params.query, playlists);
-    ResponseHandler.handleSuccess(res, 200, playlists);
+    recordSearch(req.user, req.params.query, playlists).then(function() {
+      ResponseHandler.handleSuccess(res, 200, playlists);
+    });
   }).catch(function(err) {
     ResponseHandler.handleError(req, res, err.status, err.body);
   });
@@ -318,7 +333,8 @@ exports.getTrending = function(req, res) {
 
     models.PlaylistLike.findAll({
       attributes: ['PlaylistId'],
-      order: ['createdAt']
+      order: [['createdAt', 'DESC']],
+      limit: 1000
     }).then(function(likes) {
       deferred.resolve(likes);
     }).catch(function(err) {
@@ -333,9 +349,28 @@ exports.getTrending = function(req, res) {
 
     models.PlaylistPlay.findAll({
       attributes: ['PlaylistId'],
-      order: ['createdAt']
+      order: [['createdAt', 'DESC']],
+      limit: 1000
     }).then(function(plays) {
       deferred.resolve([likes, plays]);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var getFollows = function(data) {
+    var deferred = when.defer();
+    var likes = data[0];
+    var plays = data[1];
+
+    models.PlaylistFollow.findAll({
+      attributes: ['PlaylistId'],
+      order: [['createdAt', 'DESC']],
+      limit: 1000
+    }).then(function(follows) {
+      deferred.resolve([likes, plays, follows]);
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
     });
@@ -346,16 +381,17 @@ exports.getTrending = function(req, res) {
   var process = function(data) {
     var deferred = when.defer();
     var likes = _.countBy(data[0], function(like) { return like.PlaylistId; });
-    var plays = _.countBy(data[0], function(play) { return play.PlaylistId; });
-    var merged = _.merge(likes, plays, function(a, b) { return a + b; });
+    var plays = _.countBy(data[1], function(play) { return play.PlaylistId; });
+    var follows = _.countBy(data[2], function(follow) { return follow.PlaylistId; });
+    var merged = _.merge(likes, plays, follows, function(a, b) { return a + b; });
     var formatted = [];
-    var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 20;
+    var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 30;
     var results;
 
     _.forOwn(merged, function(num, key) {
       formatted.push({
-        'PlaylistId': parseInt(key),
-        'NumInteractions': num
+        PlaylistId: parseInt(key),
+        NumInteractions: num
       });
     });
 
@@ -368,9 +404,6 @@ exports.getTrending = function(req, res) {
 
   var getPlaylists = function(playlistIds) {
     var deferred = when.defer();
-    var limit = req.query.limit;
-
-    limit = ( limit && limit < 50 ) ? limit : 20;
 
     models.Playlist.findAll({
       where: Sequelize.and(
@@ -389,7 +422,6 @@ exports.getTrending = function(req, res) {
           )
         )
       ),
-      limit: limit,
       include: [
         {
           model: models.PlaylistLike,
@@ -411,6 +443,7 @@ exports.getTrending = function(req, res) {
 
   getLikes()
   .then(getPlays)
+  .then(getFollows)
   .then(process)
   .then(getPlaylists)
   .then(function(playlists) {
@@ -428,7 +461,7 @@ exports.getNewest = function(req, res) {
   var getPlaylists = function(limit) {
     var deferred = when.defer();
 
-    limit = ( limit && limit < 50 ) ? limit : 20;
+    limit = ( limit && limit < 50 ) ? limit : 30;
 
     models.Playlist.findAll({
       where: Sequelize.or(
@@ -445,7 +478,7 @@ exports.getNewest = function(req, res) {
         )
       ),
       limit: limit,
-      order: ['createdAt'],
+      order: [['createdAt', 'DESC']],
       include: [
         {
           model: models.PlaylistLike,
@@ -486,7 +519,7 @@ exports.getSearches = function(req, res) {
     offset = offset || 0;
 
     models.PlaylistSearch.findAll({
-      order: ['createdAt'],
+      order: [['createdAt', 'DESC']],
       limit: limit,
       offset: offset
     }).then(function(searches) {
@@ -508,6 +541,71 @@ exports.getSearches = function(req, res) {
 
 /* ====================================================== */
 
+exports.getRecentlyPlayed = function(req, res) {
+
+  var getRecentPlays = function() {
+    var deferred = when.defer();
+
+    models.PlaylistPlay.findAll({
+      where: {
+        createdAt: {
+          $gt: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
+        }
+      },
+      order: [['createdAt', 'DESC']],
+      limit: 500
+    }).then(function(plays) {
+      deferred.resolve(plays);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var getPlaylists = function(plays) {
+    var deferred = when.defer();
+    var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 20;
+    var playlistIds = _.pluck(plays, 'PlaylistId');
+
+    models.Playlist.findAll({
+      where: {
+        id: playlistIds,
+        privacy: 'public'
+      },
+      limit: limit,
+      include: [
+        {
+          model: models.PlaylistLike,
+          as: 'Likes'
+        },
+        {
+          model: models.PlaylistPlay,
+          as: 'Plays'
+        }
+      ],
+      order: [[{ model: models.PlaylistPlay, as: 'Plays' }, 'createdAt', 'DESC']]
+    }).then(function(playlists) {
+      deferred.resolve(playlists);
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  getRecentPlays()
+  .then(getPlaylists)
+  .then(function(playlists) {
+    ResponseHandler.handleSuccess(res, 200, playlists);
+  }).catch(function(err) {
+    ResponseHandler.handleError(req, res, err.status, err.body);
+  });
+
+};
+
+/* ====================================================== */
+
 exports.create = function(req, res) {
 
   var createPlaylist = function(playlist) {
@@ -520,8 +618,6 @@ exports.create = function(req, res) {
       tags: playlist.tags || playlist.Tags,
       privacy: playlist.privacy || playlist.Privacy
     };
-
-    playlist.tags = _.map(playlist.tags, function(tag) { return tag.toLowerCase(); });
 
     models.Playlist.create(playlist).then(function(savedPlaylist) {
       var model = models[changeCase.pascal(savedPlaylist.ownerType)];
@@ -561,10 +657,79 @@ exports.update = function(req, res) {
     var deferred = when.defer();
 
     models.Playlist.find({
-      where: { id: id }
+      where: { id: id },
+      include: [
+        {
+          model: models.Collaboration,
+          include: [
+            {
+              model: models.User,
+              attributes: ['id', 'username', 'imageUrl']
+            }
+          ]
+        },
+        {
+          model: models.Track,
+          include: [
+            {
+              model: models.User,
+              attributes: ['id', 'username', 'imageUrl']
+            },
+            {
+              model: models.TrackComment,
+              as: 'Comments',
+              order: [['createdAt', 'DESC']],
+              include: [{
+                model: models.User,
+                attributes: ['id', 'username', 'imageUrl']
+              }]
+            },
+            {
+              model: models.TrackUpvote,
+              as: 'Upvotes',
+              attributes: ['id', 'UserId']
+            },
+            {
+              model: models.TrackDownvote,
+              as: 'Downvotes',
+              attributes: ['id', 'UserId']
+            }
+          ]
+        },
+        {
+          model: models.PlaylistFollow,
+          as: 'Followers'
+        },
+        {
+          model: models.PlaylistLike,
+          as: 'Likes',
+          attributes: ['id', 'UserId']
+        },
+        {
+          model: models.PlaylistPlay,
+          as: 'Plays',
+          attributes: ['id']
+        }
+      ]
     }).then(function(playlist) {
       if ( !_.isEmpty(playlist) ) {
-        deferred.resolve([playlist, updates]);
+        var ownerModel = playlist.ownerType === 'user' ? models.User : models.Group;
+        var includes = [];
+
+        if ( playlist.ownerType === 'group' ) {
+          includes.push({
+            model: models.GroupMembership,
+            as: 'Memberships'
+          });
+        }
+
+        ownerModel.find({
+          where: { id: playlist.ownerId },
+          include: includes
+        }).then(function(owner) {
+          var collaborators = _.pluck(playlist.Collaborations, 'User');
+          deferred.resolve([playlist, updates, owner, collaborators]);
+        });
       } else {
         deferred.reject({ status: 404, body: 'Playlist could not be found at the ID: ' + id });
       }
@@ -577,6 +742,8 @@ exports.update = function(req, res) {
     var deferred = when.defer();
     var retrievedPlaylist = data[0];
     var updates = data[1];
+    var owner = data[2];
+    var collaborators = data[3];
     var sanitizedUpdates = {};
 
     if ( updates.title || updates.Title ) {
@@ -587,8 +754,16 @@ exports.update = function(req, res) {
       sanitizedUpdates.privacy = updates.privacy || updates.Privacy;
     }
 
-    retrievedPlaylist.updateAttributes(sanitizedUpdates).then(function(updatedPlaylist) {
-      deferred.resolve(updatedPlaylist);
+    if ( updates.tags || updates.Tags ) {
+      sanitizedUpdates.tags = updates.tags || updates.Tags;
+    }
+
+    retrievedPlaylist.updateAttributes(sanitizedUpdates).then(function() {
+      retrievedPlaylist  = retrievedPlaylist.toJSON();
+      retrievedPlaylist.Owner = owner;
+      retrievedPlaylist.Collaborators = collaborators;
+
+      deferred.resolve(_.assign(retrievedPlaylist, sanitizedUpdates));
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
     });
