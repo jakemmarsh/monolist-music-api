@@ -6,6 +6,16 @@ var ResponseHandler = require('../utils/ResponseHandler');
 
 /* ====================================================== */
 
+/**
+ * @api {post} /contact Contact
+ * @apiName Contact
+ * @apiGroup Email
+ *
+ * @apiParam {String} type Entity type for which the image is being uploaded
+ * @apiParam {String} id   ID of entity to be updated
+ *
+ * @apiSuccess {Object} Updated entity
+ */
 exports.contact = function(req, res) {
 
   var sendContactEmail = function(userEmail, body) {

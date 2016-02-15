@@ -91,6 +91,11 @@ server.use(function(req, res, next) {
 
 /* ====================================================== */
 
+// Serve static documentation
+server.use('/doc', express.static(__dirname + '/doc'));
+
+/* ====================================================== */
+
 // Mount the API
 server.use('/v1', api);
 
