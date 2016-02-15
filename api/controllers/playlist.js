@@ -161,7 +161,7 @@ exports.get = function(req, res) {
         },
         {
           model: models.Track,
-          order: [['createdAt', 'DESC']],
+          order: [['order', 'ASC']],
           include: [
             {
               model: models.User,

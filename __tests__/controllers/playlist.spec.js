@@ -24,6 +24,8 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
       res.body.data.should.have.property('slug');
       res.body.data.should.have.property('tags');
       res.body.data.should.have.property('privacy');
+      res.body.data.should.have.property('Tracks');
+      res.body.data.Tracks.should.be.instanceof(Array);
       done();
     });
   });
