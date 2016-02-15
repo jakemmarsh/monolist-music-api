@@ -17,9 +17,30 @@ module.exports = function(sequelize, DataTypes) {
         }
       }
     },
-    imageUrl:    { type: DataTypes.STRING }
+    imageUrl:    { type: DataTypes.STRING },
+    order:       { type: DataTypes.INTEGER }
   },
   {
+    hooks: {
+      beforeCreate: function(track, model, cb) {
+        var order = 0;
+        var query = {
+          source: track.source,
+          sourceParam: track.sourceParam,
+          PlaylistId: track.PlaylistId
+        };
+
+        Track.count({
+          where: query
+        }).then(function(c) {
+          if ( c > 0 ) {
+            order = c;
+          }
+          track.setDataValue('order', order);
+          cb(null, track);
+        });
+      }
+    },
     classMethods: {
       associate: function(models) {
         Track.belongsTo(models.User);

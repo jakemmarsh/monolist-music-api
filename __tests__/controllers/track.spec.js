@@ -19,6 +19,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Track', function() 
       res.body.data.should.have.property('title');
       res.body.data.should.have.property('source');
       res.body.data.should.have.property('sourceParam');
+      res.body.data.should.have.property('order');
       done();
     });
   });
