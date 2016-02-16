@@ -161,17 +161,14 @@ exports.get = function(req, res) {
         },
         {
           model: models.Track,
-          order: [['order', 'ASC']],
           include: [
             {
               model: models.User,
-              attributes: ['id', 'username', 'imageUrl'],
-              order: [['createdAt', 'DESC']]
+              attributes: ['id', 'username', 'imageUrl']
             },
             {
               model: models.TrackComment,
               as: 'Comments',
-              order: [['createdAt', 'DESC']],
               include: [{
                 model: models.User,
                 attributes: ['id', 'username', 'imageUrl']
@@ -203,6 +200,10 @@ exports.get = function(req, res) {
           as: 'Plays',
           attributes: ['id']
         }
+      ],
+      order: [
+        [models.Track, 'order', 'ASC'],
+        [models.Track, { model: models.TrackComment, as: 'Comments' }, 'createdAt', 'DESC']
       ]
     }).then(function(playlist) {
       if ( _.isEmpty(playlist) ) {
@@ -678,7 +679,6 @@ exports.update = function(req, res) {
             {
               model: models.TrackComment,
               as: 'Comments',
-              order: [['createdAt', 'DESC']],
               include: [{
                 model: models.User,
                 attributes: ['id', 'username', 'imageUrl']
@@ -710,6 +710,10 @@ exports.update = function(req, res) {
           as: 'Plays',
           attributes: ['id']
         }
+      ],
+      order: [
+        [models.Track, 'order', 'ASC'],
+        [models.Track, { model: models.TrackComment, as: 'Comments' }, 'createdAt', 'DESC']
       ]
     }).then(function(playlist) {
       if ( !_.isEmpty(playlist) ) {
