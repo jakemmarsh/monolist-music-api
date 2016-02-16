@@ -23,16 +23,13 @@ module.exports = function(sequelize, DataTypes) {
   {
     hooks: {
       beforeCreate: function(track, model, cb) {
-        if ( track.PlaylistId ) {
+        var playlistId = track.getDataValue('PlaylistId');
+
+        if ( playlistId ) {
           var order = 0;
-          var query = {
-            source: track.source,
-            sourceParam: track.sourceParam,
-            PlaylistId: track.PlaylistId
-          };
 
           Track.count({
-            where: query
+            where: { PlaylistId: playlistId }
           }).then(function(c) {
             if ( c > 0 ) {
               order = c;
