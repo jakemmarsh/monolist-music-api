@@ -64,12 +64,13 @@ exports.search = function(query, limit) {
 
   var getSearchResults = function(searchQuery, queryLimit) {
     var deferred = when.defer();
+    var scRegex = new RegExp('soundcloud.com', 'i');
     var searchParameters = {
       q: searchQuery,
       show: 'songs',
       limit: queryLimit
     };
-    var searchResults;
+    var searchResults = [];
 
     oauth.get(
       API_ROOT + 'search?' + qs.stringify(searchParameters),
@@ -81,15 +82,17 @@ exports.search = function(query, limit) {
         } else {
           data = JSON.parse(data);
 
-          searchResults = _.map(data.results, function(track) {
-            return {
-              source: 'audiomack',
-              title: track.title,
-              artist: track.artist,
-              imageUrl: track.image,
-              sourceParam: track.id,
-              sourceUrl: 'http://audiomack.com/song/' + track.uploader.url_slug + '/' + track.url_slug
-            };
+           _.forEach(data.results, function(track) {
+            if ( !scRegex.test(track.streaming_url) ) {
+              searchResults.push({
+                source: 'audiomack',
+                title: track.title,
+                artist: track.artist,
+                imageUrl: track.image,
+                sourceParam: track.id,
+                sourceUrl: 'http://audiomack.com/song/' + track.uploader.url_slug + '/' + track.url_slug
+              });
+            }
           });
 
           deferred.resolve(searchResults);
