@@ -2,6 +2,7 @@
 
 var when            = require('when');
 var _               = require('lodash');
+var audiomack       = require('./sources/audiomack');
 var bandcamp        = require('./sources/bandcamp');
 var soundcloud      = require('./sources/soundcloud');
 var youtube         = require('./sources/youtube');
@@ -67,6 +68,7 @@ exports.search = function(req, res) {
    */
   var getSearchPromises = function() {
     var sourcePromisesMap = {
+      'audiomack': audiomack.search,
       'bandcamp': bandcamp.search,
       'soundcloud': soundcloud.search,
       'youtube': youtube.search
@@ -84,6 +86,7 @@ exports.search = function(req, res) {
       });
     } else {
       searchPromises = [
+        sourcePromisesMap.audiomack(req.params.query, limit, ip),
         sourcePromisesMap.bandcamp(req.params.query, limit, ip),
         sourcePromisesMap.soundcloud(req.params.query, limit, ip),
         sourcePromisesMap.youtube(req.params.query, limit, ip)
@@ -109,11 +112,12 @@ exports.search = function(req, res) {
     _.each(resultsBySource, function(results) {
       searchResults = searchResults.concat(results);
     });
+
     searchResults = _.sortBy(searchResults, 'title');
 
     ResponseHandler.handleSuccess(res, 200,  searchResults);
-  }, function(err) {
-    res.status(err.status).json({ status: err.status, message: err.body });
+  }).catch(function(err) {
+    ResponseHandler.handleError(req, res, err.status, err.body);
   });
 
 };

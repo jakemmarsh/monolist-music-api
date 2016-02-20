@@ -12,7 +12,7 @@ describe('bandcamp routes', function() {
 
     var passThrough = new stream.PassThrough();
 
-    passThrough.on('data', function(chunk) {
+    passThrough.on('data', function() {
       // Stream has begun successfully once chunks are being received
       passThrough.end();
       // TODO: more robust checking here?
@@ -25,6 +25,8 @@ describe('bandcamp routes', function() {
   });
 
   it('should get the details of a track from URL', function(done) {
+    this.timeout(5000);
+
     var videoUrl = 'http://hopalong.bandcamp.com/track/tibetan-pop-stars';
 
     request(url)

@@ -2,7 +2,7 @@
 
 var request = require('supertest');
 
-describe('soundcloud routes', function() {
+describe('audiomack routes', function() {
 
   var url = 'http://localhost:3000/v1/';
 
@@ -10,7 +10,7 @@ describe('soundcloud routes', function() {
     this.timeout(10000);
 
     request(url)
-    .get('stream/soundcloud/193393571')
+    .get('stream/audiomack/http%3A%2F%2Faudiomack.com%2Fsong%2Fdirty-glove-bastard%2Fabout-the-money-cdq')
     .end(function(err, res) {
       res.status.should.be.equal(200);
       res.headers['content-type'].should.match(/audio/);
@@ -19,10 +19,10 @@ describe('soundcloud routes', function() {
   });
 
   it('should get the details of a track from URL', function(done) {
-    var trackUrl = 'https://soundcloud.com/nickraymondg/skizzy-mars-weekend-millionaires-remix';
+    var trackUrl = 'http://www.audiomack.com/song/mixtape-republic/panda';
 
     request(url)
-    .get('details/soundcloud/' + encodeURIComponent(trackUrl))
+    .get('details/audiomack/' + encodeURIComponent(trackUrl))
     .end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
