@@ -117,6 +117,7 @@ api.get('/stream/soundcloud/:trackId', controllers.sources.soundcloud.stream);
 /* ====================================================== */
 
 // track detail endpoints
+api.get('/details/audiomack/:url', controllers.sources.audiomack.getDetails);
 api.get('/details/bandcamp/:url', controllers.sources.bandcamp.getDetails);
 api.get('/details/soundcloud/:url', controllers.sources.soundcloud.getDetails);
 api.get('/details/youtube/:url', controllers.sources.youtube.getDetails);
