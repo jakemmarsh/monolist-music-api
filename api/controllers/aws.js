@@ -144,6 +144,17 @@ function updateEntity(data) {
 
 /* ====================================================== */
 
+/**
+ * @api {post} /upload/:type/:id Upload
+ * @apiName Upload
+ * @apiGroup AWS
+ *
+ * @apiParam {File}   file Image file to be uploaded
+ * @apiParam {String} type Entity type for which the image is being uploaded
+ * @apiParam {String} id   ID of entity to be updated
+ *
+ * @apiSuccess {Object} Updated entity
+ */
 exports.upload = function(req, res) {
 
   req.pipe(req.busboy);

@@ -17,7 +17,7 @@ exports.get = function(req, res) {
     var query = { id: identifier };
 
     if ( isNaN(parseInt(identifier)) ) {
-      query = { username: identifier };
+      query = { username: { ilike: identifier } };
     }
 
     models.User.find({
@@ -534,13 +534,13 @@ exports.getCollaborations = function(req, res) {
     models.Playlist.findAll({
       where: Sequelize.and(
         { id: _.pluck(collaborations, 'PlaylistId') },
-        // Sequelize.or(
-          // { privacy: 'public' },
+        Sequelize.or(
+          { privacy: 'public' },
           Sequelize.and(
             { ownerId: req.user ? req.user.id : null },
             { ownerType: 'user' }
           )
-        // )
+        )
       ),
       include: [
         {

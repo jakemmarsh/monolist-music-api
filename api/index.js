@@ -56,6 +56,7 @@ api.get('/group/:identifier', controllers.group.get);
 api.get('/group/:id/playlists', controllers.group.getPlaylists);
 api.get('/group/:id/posts', controllers.group.getPosts);
 api.get('/groups/trending', controllers.group.getTrending);
+api.get('/groups/newest', controllers.group.getNewest);
 api.get('/groups/search/:query', controllers.group.search);
 api.patch('/group/:id', controllers.auth.isAuthenticated, controllers.group.update);
 api.post('/group/:id/follow', controllers.auth.isAuthenticated, controllers.group.follow);

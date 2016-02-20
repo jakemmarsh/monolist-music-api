@@ -144,7 +144,7 @@ exports.get = function(req, res) {
     if ( isFinite(slug) ) {
       query = { id: slug };
     } else {
-      query = { slug: slug };
+      query = { slug: { ilike: slug } };
     }
 
     models.Playlist.find({
@@ -161,10 +161,12 @@ exports.get = function(req, res) {
         },
         {
           model: models.Track,
+          order: [['createdAt', 'DESC']],
           include: [
             {
               model: models.User,
-              attributes: ['id', 'username', 'imageUrl']
+              attributes: ['id', 'username', 'imageUrl'],
+              order: [['createdAt', 'DESC']]
             },
             {
               model: models.TrackComment,
@@ -383,7 +385,7 @@ exports.getTrending = function(req, res) {
     var follows = _.countBy(data[2], function(follow) { return follow.PlaylistId; });
     var merged = _.merge(likes, plays, follows, function(a, b) { return a + b; });
     var formatted = [];
-    var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 20;
+    var limit = ( req.query.limit && req.query.limit < 50 ) ? req.query.limit : 30;
     var results;
 
     _.forOwn(merged, function(num, key) {
@@ -402,9 +404,6 @@ exports.getTrending = function(req, res) {
 
   var getPlaylists = function(playlistIds) {
     var deferred = when.defer();
-    var limit = req.query.limit;
-
-    limit = ( limit && limit < 50 ) ? limit : 30;
 
     models.Playlist.findAll({
       where: Sequelize.and(
@@ -423,7 +422,6 @@ exports.getTrending = function(req, res) {
           )
         )
       ),
-      limit: limit,
       include: [
         {
           model: models.PlaylistLike,
@@ -554,7 +552,8 @@ exports.getRecentlyPlayed = function(req, res) {
           $gt: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
         }
       },
-      order: [['createdAt', 'DESC']]
+      order: [['createdAt', 'DESC']],
+      limit: 500
     }).then(function(plays) {
       deferred.resolve(plays);
     }).catch(function(err) {
@@ -584,7 +583,8 @@ exports.getRecentlyPlayed = function(req, res) {
           model: models.PlaylistPlay,
           as: 'Plays'
         }
-      ]
+      ],
+      order: [[{ model: models.PlaylistPlay, as: 'Plays' }, 'createdAt', 'DESC']]
     }).then(function(playlists) {
       deferred.resolve(playlists);
     }).catch(function(err) {
@@ -618,8 +618,6 @@ exports.create = function(req, res) {
       tags: playlist.tags || playlist.Tags,
       privacy: playlist.privacy || playlist.Privacy
     };
-
-    playlist.tags = _.map(playlist.tags, function(tag) { return tag.toLowerCase(); });
 
     models.Playlist.create(playlist).then(function(savedPlaylist) {
       var model = models[changeCase.pascal(savedPlaylist.ownerType)];
@@ -754,6 +752,10 @@ exports.update = function(req, res) {
 
     if ( updates.privacy || updates.Privacy ) {
       sanitizedUpdates.privacy = updates.privacy || updates.Privacy;
+    }
+
+    if ( updates.tags || updates.Tags ) {
+      sanitizedUpdates.tags = updates.tags || updates.Tags;
     }
 
     retrievedPlaylist.updateAttributes(sanitizedUpdates).then(function() {
