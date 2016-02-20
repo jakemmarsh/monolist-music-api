@@ -110,16 +110,16 @@ api.get('/sc_redirect', controllers.soundcloudRedirect);
 /* ====================================================== */
 
 // mp3 streaming endpoints
-api.get('/stream/soundcloud/:trackId', controllers.sources.soundcloud.stream);
-api.get('/stream/bandcamp/:trackUrl', controllers.sources.bandcamp.stream);
 api.get('/stream/audiomack/:trackUrl', controllers.sources.audiomack.stream);
+api.get('/stream/bandcamp/:trackUrl', controllers.sources.bandcamp.stream);
+api.get('/stream/soundcloud/:trackId', controllers.sources.soundcloud.stream);
 
 /* ====================================================== */
 
 // track detail endpoints
-api.get('/details/youtube/:url', controllers.sources.youtube.getDetails);
-api.get('/details/soundcloud/:url', controllers.sources.soundcloud.getDetails);
 api.get('/details/bandcamp/:url', controllers.sources.bandcamp.getDetails);
+api.get('/details/soundcloud/:url', controllers.sources.soundcloud.getDetails);
+api.get('/details/youtube/:url', controllers.sources.youtube.getDetails);
 
 /* ====================================================== */
 

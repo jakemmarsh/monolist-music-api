@@ -19,10 +19,10 @@ describe('soundcloud routes', function() {
   });
 
   it('should get the details of a track from URL', function(done) {
-    var videoUrl = 'https://soundcloud.com/nickraymondg/skizzy-mars-weekend-millionaires-remix';
+    var trackUrl = 'https://soundcloud.com/nickraymondg/skizzy-mars-weekend-millionaires-remix';
 
     request(url)
-    .get('details/soundcloud/' + encodeURIComponent(videoUrl))
+    .get('details/soundcloud/' + encodeURIComponent(trackUrl))
     .end(function(err, res) {
       res.status.should.be.equal(200);
       res.body.should.be.instanceof(Object);
