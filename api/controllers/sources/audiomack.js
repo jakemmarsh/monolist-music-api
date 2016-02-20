@@ -24,29 +24,37 @@ var oauth = new OAuth.OAuth(
 
 /* ====================================================== */
 
-// function authorize() {
+function getTrackDetails(url) {
+  var deferred = when.defer();
+  var urlParts = url.split('/');
+  var track = urlParts[urlParts.length - 1];
+  var artist = urlParts[urlParts.length - 2];
 
-//   var deferred = when.defer();
+  oauth.get(
+    API_ROOT + 'music/song/' + artist + '/' + track,
+    null,
+    null,
+    function(err, data) {
+      if ( err ) {
+        deferred.reject(err);
+      } else {
+        data = JSON.parse(data);
 
-//   exports.oauth.getOAuthAccessToken('', { grant_type: 'client_credentials' }, function(err, accessToken, refreshToken, results) {
-//     console.log('\n\n==================================================================================');
-//     if ( err ) {
-//       console.log('error:', err);
-//       deferred.reject(err);
-//     } else {
-//       console.log('accessToken:', accessToken);
-//       console.log('\n');
-//       console.log('refreshToken:', refreshToken);
-//       console.log('\n');
-//       console.log('results:', results);
-//       deferred.resolve(accessToken);
-//     }
-//     console.log('==================================================================================\n\n');
-//   });
+        deferred.resolve({
+          source: 'audiomack',
+            title: data.results.title,
+            artist: data.results.artist,
+            imageUrl: data.results.image,
+            sourceParam: data.results.id,
+            sourceUrl: 'http://audiomack.com/song/' + data.results.uploader.url_slug + '/' + data.results.url_slug,
+            streamUrl: data.results.streaming_url
+        });
+      }
+    }
+  )
 
-//   return deferred.promise;
-
-// };
+  return deferred.promise;
+}
 
 /* ====================================================== */
 
@@ -79,8 +87,7 @@ exports.search = function(query, limit) {
               title: track.title,
               artist: track.artist,
               imageUrl: track.image,
-              sourceId: track.id,
-              sourceParam: track.streaming_url,
+              sourceParam: track.id,
               sourceUrl: 'http://audiomack.com/song/' + track.uploader.url_slug + '/' + track.url_slug
             };
           });
@@ -108,13 +115,16 @@ exports.search = function(query, limit) {
 exports.stream = function(req, res) {
 
   var url = decodeURIComponent(req.params.trackUrl);
-  var stream = request.get(url);
 
-  stream.on('error', function(err) {
-    ResponseHandler.handleError(req, res, 500, err);
+  getTrackDetails(url).then(function(details) {
+    var stream = request.get(details.streamUrl);
+
+    stream.on('error', function(err) {
+      ResponseHandler.handleError(req, res, 500, err);
+    });
+
+    stream.pipe(res);
   });
-
-  stream.pipe(res);
 
 };
 
@@ -122,39 +132,8 @@ exports.stream = function(req, res) {
 
 exports.getDetails = function(req, res) {
 
-  var getTrackDetails = function(url) {
-    var deferred = when.defer();
-    var urlParts = url.split('/');
-    var track = urlParts[urlParts.length - 1];
-    var artist = urlParts[urlParts.length - 2];
-
-    oauth.get(
-      API_ROOT + 'music/song/' + artist + '/' + track,
-      null,
-      null,
-      function(err, data) {
-        if ( err ) {
-          deferred.reject(err);
-        } else {
-          data = JSON.parse(data);
-
-          deferred.resolve({
-            source: 'audiomack',
-              title: data.results.title,
-              artist: data.results.artist,
-              imageUrl: data.results.image,
-              sourceId: data.results.id,
-              sourceParam: data.results.streaming_url,
-              sourceUrl: 'http://audiomack.com/song/' + data.results.uploader.url_slug + '/' + data.results.url_slug
-          });
-        }
-      }
-    )
-
-    return deferred.promise;
-  };
-
   getTrackDetails(decodeURIComponent(req.params.url)).then(function(details) {
+    delete details.streamUrl;
     ResponseHandler.handleSuccess(res, 200, details);
   }).catch(function(err) {
     ResponseHandler.handleError(req, res, err.status, err.body);

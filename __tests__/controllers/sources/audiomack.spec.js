@@ -10,7 +10,7 @@ describe('audiomack routes', function() {
     this.timeout(10000);
 
     request(url)
-    .get('stream/audiomack/https%3A%2F%2Fd1pr08d0h9gmdu.cloudfront.net%2Fstreaming%2Fmixtape-republic%2Fpanda-prod-by-the-menace.mp3%3FExpires%3D1455939953%26Signature%3DI9kR67y5JxpvJxPmblwSqY669URRLaEA5GLR44rFRM~LT-Ra5r3DHtwDT-OqybrkATscn6PD1Zqi7YAX83ZQ1G9PNsAPz0JtlN4HAgEbq8KX7isuQJuR6ByAW3zuwhBMd92FfS8oJ8gq9NhltT~Pj16uhRgFAyEfDeHGEAoBBGk_%26Key-Pair-Id%3DAPKAIKAIRXBA2H7FXITA')
+    .get('stream/audiomack/http%3A%2F%2Faudiomack.com%2Fsong%2Fdirty-glove-bastard%2Fabout-the-money-cdq')
     .end(function(err, res) {
       res.status.should.be.equal(200);
       res.headers['content-type'].should.match(/audio/);
@@ -29,7 +29,6 @@ describe('audiomack routes', function() {
       res.body.should.have.property('data');
       res.body.data.should.be.instanceof(Object);
       res.body.data.should.have.property('source');
-      res.body.data.should.have.property('sourceId');
       res.body.data.should.have.property('sourceParam');
       res.body.data.should.have.property('sourceUrl');
       res.body.data.should.have.property('imageUrl');
