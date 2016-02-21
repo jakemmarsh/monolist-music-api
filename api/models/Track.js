@@ -21,6 +21,12 @@ module.exports = function(sequelize, DataTypes) {
     order:       { type: DataTypes.INTEGER, defaultValue: 0 }
   },
   {
+    setterMethods: {
+      sourceParam: function(v) {
+        // Always convert to string
+        return this.setDataValue('sourceParam',  v + '');
+      }
+    },
     hooks: {
       beforeCreate: function(track, model, cb) {
         var playlistId = track.getDataValue('PlaylistId');
