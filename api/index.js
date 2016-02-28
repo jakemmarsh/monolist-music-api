@@ -7,6 +7,15 @@ var controllers     = require('./controllers');
 
 /* ====================================================== */
 
+var cache = require('express-redis-cache')({ 
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  auth_pass: process.env.REDIS_AUTH,
+  expires: 60 * 5 // cache responses for five minutes
+});
+
+/* ====================================================== */
+
 setupPassport();
 
 /* ====================================================== */
@@ -23,26 +32,26 @@ api.post('/auth/logout', controllers.auth.isAuthenticated, controllers.auth.logo
 /* ====================================================== */
 
 // User endpoints
-api.get('/user/:identifier', controllers.user.get);
-api.get('/users/search/:query', controllers.user.search);
+api.get('/user/:identifier', cache.route(), controllers.user.get);
+api.get('/users/search/:query', cache.route(), controllers.user.search);
 api.patch('/user/:id', controllers.auth.isAuthenticated, controllers.user.update);
 api.delete('/user/:id', controllers.auth.isAuthenticated, controllers.user.delete);
 api.get('/user/:id/notifications', controllers.auth.isAuthenticated, controllers.user.getNotifications);
 api.post('/user/:userId/notifications/:ids/read', controllers.auth.isAuthenticated, controllers.user.markNotificationsAsRead);
 api.post('/user/:id/follow', controllers.auth.isAuthenticated, controllers.user.follow);
-api.get('/user/:id/playlists', controllers.user.getPlaylists);
-api.get('/user/:id/editable', controllers.auth.isAuthenticated, controllers.user.getEditablePlaylists);
-api.get('/user/:id/collaborations', controllers.user.getCollaborations);
-api.get('/user/:id/groups', controllers.user.getGroups);
-api.get('/user/:id/likes', controllers.user.getLikes);
-api.get('/user/:id/stars', controllers.user.getStars);
+api.get('/user/:id/playlists', cache.route(), controllers.user.getPlaylists);
+api.get('/user/:id/editable', cache.route(), controllers.auth.isAuthenticated, controllers.user.getEditablePlaylists);
+api.get('/user/:id/collaborations', cache.route(), controllers.user.getCollaborations);
+api.get('/user/:id/groups', cache.route(), controllers.user.getGroups);
+api.get('/user/:id/likes', cache.route(), controllers.user.getLikes);
+api.get('/user/:id/stars', cache.route(), controllers.user.getStars);
 
 /* ====================================================== */
 
 // Post endpoints
 api.post('/post', controllers.auth.isAuthenticated, controllers.post.create);
-api.get('/post/:id', controllers.post.get);
-api.get('/posts/newest', controllers.post.getNewest);
+api.get('/post/:id', cache.route(), controllers.post.get);
+api.get('/posts/newest', cache.route(), controllers.post.getNewest);
 api.post('/post/:id/like', controllers.auth.isAuthenticated, controllers.post.like);
 api.post('/post/:id/comment', controllers.auth.isAuthenticated, controllers.post.addComment);
 api.delete('/post/:id/comment/:commentId', controllers.auth.isAuthenticated, controllers.post.removeComment);
@@ -52,12 +61,12 @@ api.delete('/post/:id', controllers.auth.isAuthenticated, controllers.post.delet
 
 // Group endpoints
 api.post('/group', controllers.auth.isAuthenticated, controllers.group.create);
-api.get('/group/:identifier', controllers.group.get);
-api.get('/group/:id/playlists', controllers.group.getPlaylists);
-api.get('/group/:id/posts', controllers.group.getPosts);
-api.get('/groups/trending', controllers.group.getTrending);
-api.get('/groups/newest', controllers.group.getNewest);
-api.get('/groups/search/:query', controllers.group.search);
+api.get('/group/:identifier', cache.route(), controllers.group.get);
+api.get('/group/:id/playlists', cache.route(), controllers.group.getPlaylists);
+api.get('/group/:id/posts', cache.route(), controllers.group.getPosts);
+api.get('/groups/trending', cache.route(), controllers.group.getTrending);
+api.get('/groups/newest', cache.route(), controllers.group.getNewest);
+api.get('/groups/search/:query', cache.route(), controllers.group.search);
 api.patch('/group/:id', controllers.auth.isAuthenticated, controllers.group.update);
 api.post('/group/:id/follow', controllers.auth.isAuthenticated, controllers.group.follow);
 api.post('/group/:groupId/member/:memberId', controllers.auth.isAuthenticated, controllers.group.addMember);
@@ -68,12 +77,12 @@ api.delete('/group/:id', controllers.auth.isAuthenticated, controllers.group.del
 /* ====================================================== */
 
 // Playlist endpoints
-api.get('/playlist/:slug', controllers.playlist.get);
-api.get('/playlists/search/:query', controllers.playlist.search);
-api.get('/playlists/trending', controllers.playlist.getTrending);
-api.get('/playlists/newest', controllers.playlist.getNewest);
-api.get('/playlists/searches', controllers.playlist.getSearches);
-api.get('/playlists/played/recent', controllers.playlist.getRecentlyPlayed);
+api.get('/playlist/:slug', cache.route(), controllers.playlist.get);
+api.get('/playlists/search/:query', cache.route(), controllers.playlist.search);
+api.get('/playlists/trending', cache.route(), controllers.playlist.getTrending);
+api.get('/playlists/newest', cache.route(), controllers.playlist.getNewest);
+api.get('/playlists/searches', cache.route(), controllers.playlist.getSearches);
+api.get('/playlists/played/recent', cache.route(), controllers.playlist.getRecentlyPlayed);
 api.post('/playlist', controllers.auth.isAuthenticated, controllers.playlist.create);
 api.patch('/playlist/:id', controllers.auth.isAuthenticated, controllers.playlist.update);
 api.post('/playlist/:id/play', controllers.playlist.recordPlay);
@@ -88,9 +97,9 @@ api.delete('/playlist/:playlistId/track/:trackId', controllers.auth.isAuthentica
 /* ====================================================== */
 
 // Track endpoints
-api.get('/track/:id', controllers.track.get);
-api.get('/tracks/search/:query', controllers.track.search);
-api.get('/tracks/searches', controllers.track.getSearches);
+api.get('/track/:id', cache.route(), controllers.track.get);
+api.get('/tracks/search/:query', cache.route(), controllers.track.search);
+api.get('/tracks/searches', cache.route(), controllers.track.getSearches);
 api.post('/track/star', controllers.auth.isAuthenticated, controllers.track.star);
 api.post('/track/:id/upvote', controllers.auth.isAuthenticated, controllers.track.upvote);
 api.post('/track/:id/downvote', controllers.auth.isAuthenticated, controllers.track.downvote);
@@ -117,10 +126,10 @@ api.get('/stream/soundcloud/:trackId', controllers.sources.soundcloud.stream);
 /* ====================================================== */
 
 // track detail endpoints
-api.get('/details/audiomack/:url', controllers.sources.audiomack.getDetails);
-api.get('/details/bandcamp/:url', controllers.sources.bandcamp.getDetails);
-api.get('/details/soundcloud/:url', controllers.sources.soundcloud.getDetails);
-api.get('/details/youtube/:url', controllers.sources.youtube.getDetails);
+api.get('/details/audiomack/:url', cache.route(), controllers.sources.audiomack.getDetails);
+api.get('/details/bandcamp/:url', cache.route(), controllers.sources.bandcamp.getDetails);
+api.get('/details/soundcloud/:url', cache.route(), controllers.sources.soundcloud.getDetails);
+api.get('/details/youtube/:url', cache.route(), controllers.sources.youtube.getDetails);
 
 /* ====================================================== */
 

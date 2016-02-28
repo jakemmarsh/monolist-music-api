@@ -22,6 +22,7 @@
     "dotenv": "^0.5.1",
     "email-templates": "^1.1.2",
     "express": "^4.7.2",
+    "express-redis-cache": "^0.2.0",
     "express-session": "^1.9.1",
     "knox": "^0.9.1",
     "kue": "^0.9.4",
