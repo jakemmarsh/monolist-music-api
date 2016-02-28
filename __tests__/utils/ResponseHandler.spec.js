@@ -7,6 +7,7 @@ describe('Util: ResponseHandler', function() {
   var testReq = {
     error: {},
     url: '/foo',
+    method: 'POST',
     headers: {
       referer: '/bar'
     },
@@ -88,6 +89,7 @@ describe('Util: ResponseHandler', function() {
     sinon.assert.calledWith(loggerStub, {
       error: error,
       url: testReq.url,
+      method: testReq.method,
       referer: testReq.headers.referer,
       params: testReq.params,
       query: testReq.query,

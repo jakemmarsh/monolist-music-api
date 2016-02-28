@@ -73,6 +73,7 @@ exports.handleError = function(req, res, status, error, shouldLog) {
     exports.logger.error(exports.censorData({
       error: error,
       url: req.url,
+      method: req.method,
       referer: req.headers.referer,
       params: req.params,
       query: req.query,
