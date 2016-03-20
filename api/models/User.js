@@ -51,7 +51,12 @@ module.exports = function(sequelize, DataTypes) {
   },
   {
     indexes: [
-      { name: 'unique_username', unique: true, fields: [sequelize.fn('lower', sequelize.col('username'))], msg: 'test message' }
+      {
+        name: 'unique_username',
+        unique: true,
+        fields: [sequelize.fn('lower', sequelize.col('username'))],
+        msg: 'That username is already taken.'
+      }
     ],
     hooks: {
       beforeCreate: processNewPassword,
