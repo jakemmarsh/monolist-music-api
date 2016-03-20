@@ -36,26 +36,26 @@ api.post('/auth/logout', controllers.auth.isAuthenticated, controllers.auth.logo
 /* ====================================================== */
 
 // User endpoints
-api.get('/user/:identifier', conditionalCache, controllers.user.get);
+api.get('/user/:identifier', controllers.user.get);
 api.get('/users/search/:query', conditionalCache, controllers.user.search);
 api.patch('/user/:id', controllers.auth.isAuthenticated, controllers.user.update);
 api.delete('/user/:id', controllers.auth.isAuthenticated, controllers.user.delete);
 api.get('/user/:id/notifications', controllers.auth.isAuthenticated, controllers.user.getNotifications);
 api.post('/user/:userId/notifications/:ids/read', controllers.auth.isAuthenticated, controllers.user.markNotificationsAsRead);
 api.post('/user/:id/follow', controllers.auth.isAuthenticated, controllers.user.follow);
-api.get('/user/:id/playlists', conditionalCache, controllers.user.getPlaylists);
-api.get('/user/:id/editable', conditionalCache, controllers.auth.isAuthenticated, controllers.user.getEditablePlaylists);
-api.get('/user/:id/collaborations', conditionalCache, controllers.user.getCollaborations);
-api.get('/user/:id/groups', conditionalCache, controllers.user.getGroups);
-api.get('/user/:id/likes', conditionalCache, controllers.user.getLikes);
-api.get('/user/:id/stars', conditionalCache, controllers.user.getStars);
+api.get('/user/:id/playlists', controllers.user.getPlaylists);
+api.get('/user/:id/editable', controllers.auth.isAuthenticated, controllers.user.getEditablePlaylists);
+api.get('/user/:id/collaborations', controllers.user.getCollaborations);
+api.get('/user/:id/groups', controllers.user.getGroups);
+api.get('/user/:id/likes', controllers.user.getLikes);
+api.get('/user/:id/stars', controllers.user.getStars);
 
 /* ====================================================== */
 
 // Post endpoints
 api.post('/post', controllers.auth.isAuthenticated, controllers.post.create);
-api.get('/post/:id', conditionalCache, controllers.post.get);
-api.get('/posts/newest', conditionalCache, controllers.post.getNewest);
+api.get('/post/:id', controllers.post.get);
+api.get('/posts/newest', controllers.post.getNewest);
 api.post('/post/:id/like', controllers.auth.isAuthenticated, controllers.post.like);
 api.post('/post/:id/comment', controllers.auth.isAuthenticated, controllers.post.addComment);
 api.delete('/post/:id/comment/:commentId', controllers.auth.isAuthenticated, controllers.post.removeComment);
@@ -65,12 +65,12 @@ api.delete('/post/:id', controllers.auth.isAuthenticated, controllers.post.delet
 
 // Group endpoints
 api.post('/group', controllers.auth.isAuthenticated, controllers.group.create);
-api.get('/group/:identifier', conditionalCache, controllers.group.get);
-api.get('/group/:id/playlists', conditionalCache, controllers.group.getPlaylists);
-api.get('/group/:id/posts', conditionalCache, controllers.group.getPosts);
-api.get('/groups/trending', conditionalCache, controllers.group.getTrending);
-api.get('/groups/newest', conditionalCache, controllers.group.getNewest);
-api.get('/groups/search/:query', conditionalCache, controllers.group.search);
+api.get('/group/:identifier', controllers.group.get);
+api.get('/group/:id/playlists', controllers.group.getPlaylists);
+api.get('/group/:id/posts', controllers.group.getPosts);
+api.get('/groups/trending', controllers.group.getTrending);
+api.get('/groups/newest', controllers.group.getNewest);
+api.get('/groups/search/:query', controllers.group.search);
 api.patch('/group/:id', controllers.auth.isAuthenticated, controllers.group.update);
 api.post('/group/:id/follow', controllers.auth.isAuthenticated, controllers.group.follow);
 api.post('/group/:groupId/member/:memberId', controllers.auth.isAuthenticated, controllers.group.addMember);
@@ -81,12 +81,12 @@ api.delete('/group/:id', controllers.auth.isAuthenticated, controllers.group.del
 /* ====================================================== */
 
 // Playlist endpoints
-api.get('/playlist/:slug', conditionalCache, controllers.playlist.get);
+api.get('/playlist/:slug', controllers.playlist.get);
 api.get('/playlists/search/:query', conditionalCache, controllers.playlist.search);
-api.get('/playlists/trending', conditionalCache, controllers.playlist.getTrending);
-api.get('/playlists/newest', conditionalCache, controllers.playlist.getNewest);
-api.get('/playlists/searches', conditionalCache, controllers.playlist.getSearches);
-api.get('/playlists/played/recent', conditionalCache, controllers.playlist.getRecentlyPlayed);
+api.get('/playlists/trending', controllers.playlist.getTrending);
+api.get('/playlists/newest', controllers.playlist.getNewest);
+api.get('/playlists/searches', controllers.playlist.getSearches);
+api.get('/playlists/played/recent', controllers.playlist.getRecentlyPlayed);
 api.post('/playlist', controllers.auth.isAuthenticated, controllers.playlist.create);
 api.patch('/playlist/:id', controllers.auth.isAuthenticated, controllers.playlist.update);
 api.post('/playlist/:id/play', controllers.playlist.recordPlay);
@@ -101,9 +101,9 @@ api.delete('/playlist/:playlistId/track/:trackId', controllers.auth.isAuthentica
 /* ====================================================== */
 
 // Track endpoints
-api.get('/track/:id', conditionalCache, controllers.track.get);
+api.get('/track/:id', controllers.track.get);
 api.get('/tracks/search/:query', conditionalCache, controllers.track.search);
-api.get('/tracks/searches', conditionalCache, controllers.track.getSearches);
+api.get('/tracks/searches', controllers.track.getSearches);
 api.post('/track/star', controllers.auth.isAuthenticated, controllers.track.star);
 api.post('/track/:id/upvote', controllers.auth.isAuthenticated, controllers.track.upvote);
 api.post('/track/:id/downvote', controllers.auth.isAuthenticated, controllers.track.downvote);
