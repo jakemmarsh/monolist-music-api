@@ -19,6 +19,8 @@ describe('audiomack routes', function() {
   });
 
   it('should get the details of a track from URL', function(done) {
+    this.timeout(5000);
+
     var trackUrl = 'http://www.audiomack.com/song/mixtape-republic/panda';
 
     request(url)
