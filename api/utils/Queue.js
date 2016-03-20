@@ -60,7 +60,7 @@ exports.activity = function(activity) {
   var deferred = when.defer();
 
   // Can be assumed activity is sanitized since coming from ActivityManager
-  var job = jobQueue.create('activity', activity)
+  jobQueue.create('activity', activity)
   .removeOnComplete(true)
   .save(function(err){
     if( err ) {
@@ -83,7 +83,7 @@ exports.notifications = function(notifications) {
   var queueNotification = function(notification) {
     var deferred = when.defer();
 
-    var job = jobQueue.create('notification', notification)
+    jobQueue.create('notification', notification)
     .removeOnComplete(true)
     .save(function(err){
       if( err ) {

@@ -319,7 +319,7 @@ exports.follow = function(req, res) {
     // Only create activity if a follow object was returned,
     // because otherwise a follow was deleted
     if ( _.isObject(result) ) {
-      ActivityManager.queue('user', req.params.id, 'follow', req.user.id)
+      ActivityManager.queue('user', req.params.id, 'follow', req.user.id);
     }
 
     return when(result);
@@ -402,7 +402,7 @@ exports.getEditablePlaylists = function(req, res) {
       }
     }).then(function(groups) {
       deferred.resolve(_.pluck(groups, 'id'));
-    }).catch(function(err) {
+    }).catch(function() {
       // Resolve to still pass
       deferred.resolve([]);
     });
@@ -426,7 +426,7 @@ exports.getEditablePlaylists = function(req, res) {
         return membership.Group.id;
       });
       deferred.resolve(_.union(groupIds, membershipGroupIds));
-    }).catch(function(err) {
+    }).catch(function() {
       // Resolve to still pass
       deferred.resolve([]);
     });

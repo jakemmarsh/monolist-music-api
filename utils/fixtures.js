@@ -100,13 +100,13 @@ module.exports = {
       duration: 181
     },
     {
-      title: "Lotto ft. 50 Cent",
-      artist: "Rotimi",
+      title: 'Lotto ft. 50 Cent',
+      artist: 'Rotimi',
       duration: 207.927,
-      source: "soundcloud",
-      sourceParam: "210947367",
-      sourceUrl: "https://soundcloud.com/rotimi-music/lotto-ft-50-cent",
-      imageUrl: "https://i1.sndcdn.com/artworks-000120656742-db2e6p-large.jpg",
+      source: 'soundcloud',
+      sourceParam: '210947367',
+      sourceUrl: 'https://soundcloud.com/rotimi-music/lotto-ft-50-cent',
+      imageUrl: 'https://i1.sndcdn.com/artworks-000120656742-db2e6p-large.jpg',
       PlaylistId: 1,
       UserId: 1
     }

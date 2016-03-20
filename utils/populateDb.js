@@ -5,7 +5,7 @@ var fixtures = require('./fixtures');
 
 /* ====================================================== */
 
-module.exports = function(models, mailer) {
+module.exports = function(models/*, mailer*/) {
 
   var createUser = function() {
     var deferred = when.defer();

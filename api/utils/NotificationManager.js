@@ -142,13 +142,13 @@ exports.getPlaylistUserIds = function(playlistId, action, actorId, recipientId) 
       }).then(function(follows) {
         var userIds = _.pluck(follows, 'FollowerId');
         deferred.resolve(_(ids).concat(userIds).uniq().value());
-      })
+      });
     } else {
       deferred.resolve(ids);
     }
 
     return deferred.promise;
-  }
+  };
 
   getPlaylistUsers()
   .then(getFollowingUsers)
@@ -175,7 +175,7 @@ exports.getTrackUserIds = function(trackId, actorId) {
 
   return deferred.promise;
 
-}
+};
 
 /* ====================================================== */
 
@@ -195,7 +195,7 @@ exports.getUserIdsForActivity = function(activity) {
     return when([]);
   }
 
-}
+};
 
 /* ====================================================== */
 
@@ -211,7 +211,7 @@ exports.buildNotifications = function(activity) {
         entityType: activity.entityType,
         entityId: activity.entityId,
         action: activity.action
-      }
+      };
     }));
   });
 

@@ -32,7 +32,7 @@ fs.readdirSync(__dirname)
 });
 
 _.forEach(Object.keys(db), function(modelName) {
-  if ("associate" in db[modelName]) {
+  if ('associate' in db[modelName]) {
     db[modelName].associate(db);
   }
 });

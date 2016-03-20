@@ -1,9 +1,9 @@
 'use strict';
 
-var request = require('supertest');
+var request  = require('supertest');
 var fixtures = require('./fixtures');
-var url     = 'http://localhost:3000/v1/';
-var agent   = request.agent(url);
+var url      = 'http://localhost:3000/v1/';
+var agent    = request.agent(url);
 
 module.exports = function(name, tests) {
 

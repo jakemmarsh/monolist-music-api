@@ -134,7 +134,7 @@ exports.create = function(req, res) {
 
     models.GroupMembership.create(membership).then(function() {
       deferred.resolve(group);
-    }).catch(function(err) {
+    }).catch(function() {
       // Still resolve since group was already created
       deferred.resolve(group);
     });
@@ -558,7 +558,7 @@ exports.getPosts = function(req, res) {
       });
       deferred.resolve(posts);
     }).catch(function(err) {
-      deferred.reject({ status: 500, body: err })
+      deferred.reject({ status: 500, body: err });
     });
 
     return deferred.promise;
@@ -596,7 +596,7 @@ exports.follow = function(req, res) {
       where: attributes
     }).then(function(retrievedFollowing) {
       if ( _.isEmpty(retrievedFollowing) ) {
-        models.GroupFollow.create(attributes).then(function(savedFollow) {
+        models.GroupFollow.create(attributes).then(function() {
           deferred.resolve('Successfully followed group.');
         }).catch(function(err) {
           deferred.reject({ status: 500, body: err });
@@ -682,7 +682,6 @@ exports.addMember = function(req, res) {
   var createMembership = function(data) {
     var deferred = when.defer();
     var groupId = data[0];
-    var actorId = data[1];
     var memberId = data[2];
     var membership = {
       GroupId: groupId,
@@ -783,7 +782,6 @@ exports.removeMember = function(req, res) {
   var destroyMembership = function(data) {
     var deferred = when.defer();
     var groupId = data[0];
-    var actorId = data[1];
     var memberId = data[2];
 
     models.GroupMembership.destroy({

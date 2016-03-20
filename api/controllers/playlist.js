@@ -24,7 +24,7 @@ function ensureCurrentUserCanEdit(req, playlistId) {
       }
     }).then(function(groups) {
       deferred.resolve([userId, _.pluck(groups, 'id')]);
-    }).catch(function(err) {
+    }).catch(function() {
       // Resolve to still pass
       deferred.resolve([userId, []]);
     });
@@ -50,7 +50,7 @@ function ensureCurrentUserCanEdit(req, playlistId) {
         return membership.Group.id;
       });
       deferred.resolve(_.union(groupIds, membershipGroupIds));
-    }).catch(function(err) {
+    }).catch(function() {
       // Resolve to still pass
       deferred.resolve([]);
     });
@@ -526,7 +526,7 @@ exports.getSearches = function(req, res) {
     }).then(function(searches) {
       deferred.resolve(searches);
     }).catch(function(err) {
-      deferred.reject({ status: 500, body: err })
+      deferred.reject({ status: 500, body: err });
     });
 
     return deferred.promise;
@@ -629,7 +629,7 @@ exports.create = function(req, res) {
         savedPlaylist = savedPlaylist.toJSON();
         savedPlaylist.owner = retrievedEntity;
         deferred.resolve(savedPlaylist);
-      }).catch(function(err) {
+      }).catch(function() {
         // Still resolve
         deferred.resolve(savedPlaylist);
       });
@@ -852,7 +852,7 @@ exports.follow = function(req, res) {
     // Only create activity if a follow object was returned,
     // because otherwise a follow was deleted
     if ( _.isObject(result) ) {
-      ActivityManager.queue('playlist', req.params.id, 'follow', req.user.id)
+      ActivityManager.queue('playlist', req.params.id, 'follow', req.user.id);
     }
 
     return when(result);
@@ -902,7 +902,7 @@ exports.like = function(req, res) {
     // Only create activity if a like object was returned,
     // because otherwise a like was deleted
     if ( _.isObject(result) ) {
-      ActivityManager.queue('playlist', req.params.id, 'like', req.user.id)
+      ActivityManager.queue('playlist', req.params.id, 'like', req.user.id);
     }
 
     return when(result);
@@ -1109,7 +1109,7 @@ exports.delete = function(req, res) {
     var deferred = when.defer();
 
     if ( !_.isEmpty(originalImageUrl) ) {
-      awsRoutes.delete(originalImageUrl).then(function(res) {
+      awsRoutes.delete(originalImageUrl).then(function() {
         deferred.resolve(playlistId);
       }).catch(function() {
         // Still resolve since playlist was successfully deleted

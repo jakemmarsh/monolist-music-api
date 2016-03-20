@@ -96,15 +96,15 @@ exports.search = function(req, res) {
     return searchPromises;
   };
 
-  var recordSearch = function(currentUser, query, results) {
-    var attributes = {
-      UserId: currentUser ? currentUser.id : null,
-      query: query,
-      results: results
-    };
+  // var recordSearch = function(currentUser, query, results) {
+  //   var attributes = {
+  //     UserId: currentUser ? currentUser.id : null,
+  //     query: query,
+  //     results: results
+  //   };
 
-    models.TrackSearch.create(attributes);
-  };
+  //   models.TrackSearch.create(attributes);
+  // };
 
   when.all(getSearchPromises()).then(function(resultsBySource) {
     var searchResults = [];
@@ -139,7 +139,7 @@ exports.getSearches = function(req, res) {
     }).then(function(searches) {
       deferred.resolve(searches);
     }).catch(function(err) {
-      deferred.reject({ status: 500, body: err })
+      deferred.reject({ status: 500, body: err });
     });
 
     return deferred.promise;

@@ -227,7 +227,7 @@ exports.like = function(req, res) {
     // Only create activity if a like object was returned,
     // because otherwise a like was deleted
     if ( _.isObject(result) ) {
-      ActivityManager.queue('post', req.params.id, 'like', req.user.id)
+      ActivityManager.queue('post', req.params.id, 'like', req.user.id);
     }
 
     return when(result);
