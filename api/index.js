@@ -68,7 +68,7 @@ api.post('/group', controllers.auth.isAuthenticated, controllers.group.create);
 api.get('/group/:identifier', controllers.group.get);
 api.get('/group/:id/playlists', controllers.group.getPlaylists);
 api.get('/group/:id/posts', controllers.group.getPosts);
-api.get('/groups/trending', controllers.group.getTrending);
+api.get('/groups/trending', conditionalCache, controllers.group.getTrending);
 api.get('/groups/newest', controllers.group.getNewest);
 api.get('/groups/search/:query', controllers.group.search);
 api.patch('/group/:id', controllers.auth.isAuthenticated, controllers.group.update);
@@ -83,7 +83,7 @@ api.delete('/group/:id', controllers.auth.isAuthenticated, controllers.group.del
 // Playlist endpoints
 api.get('/playlist/:slug', controllers.playlist.get);
 api.get('/playlists/search/:query', conditionalCache, controllers.playlist.search);
-api.get('/playlists/trending', controllers.playlist.getTrending);
+api.get('/playlists/trending', conditionalCache, controllers.playlist.getTrending);
 api.get('/playlists/newest', controllers.playlist.getNewest);
 api.get('/playlists/searches', controllers.playlist.getSearches);
 api.get('/playlists/played/recent', controllers.playlist.getRecentlyPlayed);
