@@ -563,15 +563,22 @@ exports.getSearches = function(req, res) {
 
 exports.getRecentlyPlayed = function(req, res) {
 
+  const userId = !isNaN(req.params.userId) ? parseInt(req.params.userId) : null;
+  const query = {
+    createdAt: {
+      $gt: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
+    }
+  };
+
+  if ( userId ) {
+    query['UserId'] = userId;
+  }
+
   var getRecentPlays = function() {
     var deferred = when.defer();
 
     models.PlaylistPlay.findAll({
-      where: {
-        createdAt: {
-          $gt: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
-        }
-      },
+      where: query,
       order: [['createdAt', 'DESC']],
       limit: 500
     }).then(function(plays) {
