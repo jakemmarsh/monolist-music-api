@@ -19,7 +19,7 @@ describe('soundcloud routes', function() {
   });
 
   it('should get the details of a track from URL', function(done) {
-    var trackUrl = 'https://soundcloud.com/nickraymondg/skizzy-mars-weekend-millionaires-remix';
+    var trackUrl = 'https://soundcloud.com/dallascotton/something-new';
 
     request(url)
     .get('details/soundcloud/' + encodeURIComponent(trackUrl))
