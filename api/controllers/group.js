@@ -665,14 +665,10 @@ exports.addMember = function(req, res) {
         UserId: req.user.id
       }
     }).then(function(retrievedMembership) {
-      if ( !_.isEmpty(retrievedMembership) ) {
-        if ( group.privacy !== 'public' && group.inviteLevel > retrievedMembership.level ) {
-          deferred.reject({ status: 401, body: 'User does not have permission to add members to that group.' });
-        } else {
-          deferred.resolve([group.id, actorId, memberId]);
-        }
-      } else {
-        deferred.reject({ status: 401, body: 'Current user is not a member of that group.' });
+      if ( group.privacy === 'public' ) {
+        deferred.resolve([group.id, actorId, memberId]);
+      } else if ( group.inviteLevel > retrievedMembership.level ) {
+        deferred.reject({ status: 401, body: 'User does not have permission to add members to that group.' });
       }
     });
 
