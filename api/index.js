@@ -83,7 +83,7 @@ api.delete('/group/:id', controllers.auth.isAuthenticated, controllers.group.del
 // Playlist endpoints
 api.get('/playlist/:slug', controllers.playlist.get);
 api.get('/playlists/search/:query', conditionalCache, controllers.playlist.search);
-api.get('/playlists/trending', conditionalCache, controllers.playlist.getTrending);
+api.get('/playlists/trending/:window?', conditionalCache, controllers.playlist.getTrending);
 api.get('/playlists/newest', controllers.playlist.getNewest);
 api.get('/playlists/searches', controllers.playlist.getSearches);
 api.get('/playlists/played/recent', controllers.playlist.getRecentlyPlayed);

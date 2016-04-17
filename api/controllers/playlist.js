@@ -329,10 +329,27 @@ exports.search = function(req, res) {
 
 exports.getTrending = function(req, res) {
 
+  const WINDOW_TYPES = ['day', 'week', 'month', 'year'];
+  const WINDOW_IN_DAYS = {
+    day: 1,
+    week: 7,
+    month: 30,
+    year: 365
+  };
+
+  req.params.window = req.params.window || 'week';
+
+  const windowIndex = WINDOW_TYPES.indexOf(req.params.window.toLowerCase());
+  const window = windowIndex === -1 ? WINDOW_TYPES[1] : WINDOW_TYPES[windowIndex];
+
+  const previousDate = new Date();
+  previousDate.setDate(previousDate.getDate() - WINDOW_IN_DAYS[window]);
+
   var getLikes = function() {
     var deferred = when.defer();
 
     models.PlaylistLike.findAll({
+      where: { createdAt: { $gte: previousDate } },
       attributes: ['PlaylistId'],
       order: [['createdAt', 'DESC']],
       limit: 1000
@@ -349,6 +366,7 @@ exports.getTrending = function(req, res) {
     var deferred = when.defer();
 
     models.PlaylistPlay.findAll({
+      where: { createdAt: { $gte: previousDate } },
       attributes: ['PlaylistId'],
       order: [['createdAt', 'DESC']],
       limit: 1000
@@ -367,6 +385,7 @@ exports.getTrending = function(req, res) {
     var plays = data[1];
 
     models.PlaylistFollow.findAll({
+      where: { createdAt: { $gte: previousDate } },
       attributes: ['PlaylistId'],
       order: [['createdAt', 'DESC']],
       limit: 1000
