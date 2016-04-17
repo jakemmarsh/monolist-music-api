@@ -11,6 +11,23 @@ var ResponseHandler = require('../utils/ResponseHandler');
 
 /* ====================================================== */
 
+const WINDOW_TYPES = ['day', 'week', 'month', 'year'];
+const WINDOW_IN_DAYS = {
+  day: 1,
+  week: 7,
+  month: 30,
+  year: 365
+};
+
+function getQueryWindow(win, fallback) {
+  win = win || fallback;
+  const windowIndex = WINDOW_TYPES.indexOf(win.toLowerCase());
+
+  return windowIndex === -1 ? WINDOW_TYPES[1] : WINDOW_TYPES[windowIndex];
+}
+
+/* ====================================================== */
+
 function ensureCurrentUserCanEdit(req, playlistId) {
 
   var mainDeferred = when.defer();
@@ -329,19 +346,7 @@ exports.search = function(req, res) {
 
 exports.getTrending = function(req, res) {
 
-  const WINDOW_TYPES = ['day', 'week', 'month', 'year'];
-  const WINDOW_IN_DAYS = {
-    day: 1,
-    week: 7,
-    month: 30,
-    year: 365
-  };
-
-  req.params.window = req.params.window || 'week';
-
-  const windowIndex = WINDOW_TYPES.indexOf(req.params.window.toLowerCase());
-  const window = windowIndex === -1 ? WINDOW_TYPES[1] : WINDOW_TYPES[windowIndex];
-
+  const window = getQueryWindow(req.query.window, 'week');
   const previousDate = new Date();
   previousDate.setDate(previousDate.getDate() - WINDOW_IN_DAYS[window]);
 
@@ -563,10 +568,13 @@ exports.getSearches = function(req, res) {
 
 exports.getRecentlyPlayed = function(req, res) {
 
-  const userId = !isNaN(req.params.userId) ? parseInt(req.params.userId) : null;
+  const userId = !isNaN(req.query.userId) ? parseInt(req.query.userId) : null;
+  const window = getQueryWindow(req.query.window, 'week');
+  const previousDate = new Date();
+  previousDate.setDate(previousDate.getDate() - WINDOW_IN_DAYS[window]);
   const query = {
     createdAt: {
-      $gt: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
+      $gte: previousDate
     }
   };
 
