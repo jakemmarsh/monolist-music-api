@@ -19,7 +19,7 @@ describe('soundcloud routes', function() {
   });
 
   it('should get the details of a track from URL', function(done) {
-    var trackUrl = 'https://soundcloud.com/dallascotton/something-new';
+    var trackUrl = 'https://soundcloud.com/grantbowtie/odesza-say-my-name-feat-zyra-grant-bowtie-remix';
 
     request(url)
     .get('details/soundcloud/' + encodeURIComponent(trackUrl))
