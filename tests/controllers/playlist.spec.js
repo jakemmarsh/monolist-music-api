@@ -159,18 +159,20 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     });
   });
 
-  it('should reorder all passed tracks', function() {
+  it.only('should reorder all passed tracks', function(done) {
     var req = request(url).post('playlist/1/reorder');
     var updates = [
       {
         track: fixtures.tracks[0],
-        newIndex: fixtures.tracks[0].index + 1
+        newIndex: fixtures.tracks[0].order + 1
       },
       {
         track: fixtures.tracks[1],
-        newIndex: fixtures.tracks[1].index - 1
+        newIndex: fixtures.tracks[1].order - 1
       }
     ];
+
+    req.cookies = global.cookies;
 
     req.send(updates).end(function(err, res) {
       res.status.should.be.equal(200);
@@ -179,6 +181,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
       res.body.data[0].should.have.property('source');
       res.body.data[0].should.have.property('sourceParam');
       res.body.data[0].should.have.property('order');
+      done();
     });
   });
 

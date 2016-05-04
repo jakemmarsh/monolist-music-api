@@ -97,6 +97,7 @@ api.post('/playlist/:playlistId/collaborator/:userId', controllers.auth.isAuthen
 api.delete('/playlist/:playlistId/collaborator/:userId', controllers.auth.isAuthenticated, controllers.playlist.removeCollaborator);
 api.post('/playlist/:id/track', controllers.auth.isAuthenticated, controllers.playlist.addTrack);
 api.delete('/playlist/:playlistId/track/:trackId', controllers.auth.isAuthenticated, controllers.playlist.removeTrack);
+api.post('/playlist/:id/reorder', controllers.auth.isAuthenticated, controllers.playlist.reorderTracks);
 
 /* ====================================================== */
 

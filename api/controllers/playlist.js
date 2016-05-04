@@ -821,6 +821,97 @@ exports.update = function(req, res) {
 
 /* ====================================================== */
 
+exports.reorderTracks = function(req, res) {
+
+  var updateIndividualTrack = function(track, newIndex) {
+    var deferred = when.defer();
+
+    models.Track.update(
+      { order: newIndex },
+      {
+        where: {
+          id: track.id,
+          PlaylistId: req.params.id
+        }
+      }
+    ).then(function() {
+      deferred.resolve();
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var updateTracks = function() {
+    var deferred = when.defer();
+    var updates = req.body;
+    var promises = _.map(updates, function(update) {
+      return updateIndividualTrack(update.track, update.newIndex);
+    });
+
+    when.all(promises).then(function() {
+      deferred.resolve();
+    }).catch(function(err) {
+      deferred.reject({ status: 500, body: err });
+    });
+
+    return deferred.promise;
+  };
+
+  var retrieveAllTracksForPlaylist = function() {
+    var playlistId = req.params.id;
+    var deferred = when.defer();
+
+    models.Track.findAll({
+      where: { PlaylistId: playlistId },
+      include: [
+        {
+          model: models.User,
+          attributes: ['id', 'username', 'imageUrl']
+        },
+        {
+          model: models.TrackComment,
+          as: 'Comments',
+          include: [{
+            model: models.User,
+            attributes: ['id', 'username', 'imageUrl']
+          }]
+        },
+        {
+          model: models.TrackUpvote,
+          as: 'Upvotes',
+          attributes: ['id', 'UserId']
+        },
+        {
+          model: models.TrackDownvote,
+          as: 'Downvotes',
+          attributes: ['id', 'UserId']
+        }
+      ]
+    }).then(function(tracks) {
+      deferred.resolve(tracks);
+    }).catch(function() {
+      // Still resolve
+      deferred.resolve([]);
+    });
+
+    return deferred.promise;
+  };
+
+  ensureCurrentUserCanEdit(req, req.params.id)
+  .then(updateTracks)
+  .then(retrieveAllTracksForPlaylist)
+  .then(function(allTracks) {
+    ResponseHandler.handleSuccess(res, 200, allTracks);
+  }).catch(function(err) {
+    ResponseHandler.handleError(req, res, err.status, err.body);
+  });
+
+};
+
+/* ====================================================== */
+
 exports.recordPlay = function(req, res) {
 
   var userId = req.user ? req.user.id : null;

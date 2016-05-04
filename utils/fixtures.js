@@ -97,7 +97,8 @@ module.exports = {
       sourceParam: '159945668',
       sourceUrl: 'http://soundcloud.com/rustie/attak-feat-danny-brown',
       title: 'Attak (feat. Danny Brown)',
-      duration: 181
+      duration: 181,
+      order: 0
     },
     {
       title: 'Lotto ft. 50 Cent',
@@ -108,7 +109,8 @@ module.exports = {
       sourceUrl: 'https://soundcloud.com/rotimi-music/lotto-ft-50-cent',
       imageUrl: 'https://i1.sndcdn.com/artworks-000120656742-db2e6p-large.jpg',
       PlaylistId: 1,
-      UserId: 1
+      UserId: 1,
+      order: 1
     }
   ],
 
