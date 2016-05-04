@@ -688,8 +688,10 @@ exports.create = function(req, res) {
 
 exports.update = function(req, res) {
 
-  var fetchPlaylist = function(id, updates) {
+  var fetchPlaylist = function() {
     var deferred = when.defer();
+    var id = req.params.id;
+    var updates = req.body;
 
     models.Playlist.find({
       where: { id: id },
@@ -809,7 +811,8 @@ exports.update = function(req, res) {
     return deferred.promise;
   };
 
-  fetchPlaylist(req.params.id, req.body)
+  ensureCurrentUserCanEdit(req, req.params.id)
+  .then(fetchPlaylist)
   .then(updatePlaylist)
   .then(function(updatedPlaylist) {
     ResponseHandler.handleSuccess(res, 200, updatedPlaylist);
