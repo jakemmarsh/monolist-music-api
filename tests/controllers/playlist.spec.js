@@ -159,7 +159,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     });
   });
 
-  it.only('should reorder all passed tracks', function(done) {
+  it('should reorder all passed tracks', function(done) {
     var req = request(url).post('playlist/1/reorder');
     var updates = [
       {
