@@ -159,6 +159,29 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     });
   });
 
+  it('should reorder all passed tracks', function() {
+    var req = request(url).post('playlist/1/reorder');
+    var updates = [
+      {
+        track: fixtures.tracks[0],
+        newIndex: fixtures.tracks[0].index + 1
+      },
+      {
+        track: fixtures.tracks[1],
+        newIndex: fixtures.tracks[1].index - 1
+      }
+    ];
+
+    req.send(updates).end(function(err, res) {
+      res.status.should.be.equal(200);
+      res.body.data.should.be.instanceof(Array);
+      res.body.data[0].should.have.property('title');
+      res.body.data[0].should.have.property('source');
+      res.body.data[0].should.have.property('sourceParam');
+      res.body.data[0].should.have.property('order');
+    });
+  });
+
   it('should successfully record a play', function(done) {
     var req = request(url).post('playlist/1/play');
 
