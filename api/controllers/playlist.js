@@ -891,7 +891,8 @@ exports.reorderTracks = function(req, res) {
           as: 'Downvotes',
           attributes: ['id', 'UserId']
         }
-      ]
+      ],
+      order: [['order', 'ASC']]
     }).then(function(tracks) {
       deferred.resolve(tracks);
     }).catch(function() {

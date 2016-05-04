@@ -181,6 +181,7 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
       res.body.data[0].should.have.property('source');
       res.body.data[0].should.have.property('sourceParam');
       res.body.data[0].should.have.property('order');
+      res.body.data[0].order.should.be.lessThan(res.body.data[1].order);
       done();
     });
   });
