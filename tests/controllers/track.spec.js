@@ -125,6 +125,8 @@ require('../../utils/createAuthenticatedSuite')('Controller: Track', function() 
       res.body.data.should.have.property('UserId');
       res.body.data.should.have.property('TrackId');
       res.body.data.should.have.property('body');
+      res.body.data.should.have.property('user');
+      res.body.data.user.should.be.instanceof(Object);
       done();
     });
   });

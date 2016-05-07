@@ -304,7 +304,14 @@ exports.addComment = function(req, res) {
     };
 
     models.TrackComment.create(comment).then(function(savedComment) {
-      deferred.resolve(savedComment);
+      models.User.find({
+        where: { id: userId }
+      }).then(function(user) {
+        savedComment = savedComment.toJSON();
+        savedComment.user = user;
+
+        deferred.resolve(savedComment);
+      });
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
     });
