@@ -71,7 +71,7 @@ exports.handleError = function(req, res, status, error, shouldLog) {
 
   if ( shouldLog && process.env.NODE_ENV === 'production' ) {
     exports.logger.error(exports.censorData({
-      error: error,
+      error: error.message || error,
       url: req.url,
       method: req.method,
       referer: req.headers.referer,
