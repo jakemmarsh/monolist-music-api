@@ -6,6 +6,7 @@ var models          = require('../models');
 var Sequelize       = require('sequelize');
 var ActivityManager = require('../utils/ActivityManager');
 var ResponseHandler = require('../utils/ResponseHandler');
+var queryAttributes = require('../utils/queryAttributes');
 
 /* ====================================================== */
 
@@ -177,6 +178,7 @@ exports.getPlaylists = function(req, res) {
         ownerId: groupId,
         ownerType: 'group'
       },
+      attributes: queryAttributes.playlist,
       limit: limit,
       offset: offset
     }).then(function(retrievedPlaylists) {

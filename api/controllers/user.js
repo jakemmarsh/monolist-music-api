@@ -7,6 +7,7 @@ var models          = require('../models');
 var awsRoutes       = require('./aws');
 var ActivityManager = require('../utils/ActivityManager');
 var ResponseHandler = require('../utils/ResponseHandler');
+var queryAttributes = require('../utils/queryAttributes');
 
 /* ====================================================== */
 
@@ -359,16 +360,7 @@ exports.getPlaylists = function(req, res) {
           )
         )
       ),
-      include: [
-        {
-          model: models.PlaylistLike,
-          as: 'Likes'
-        },
-        {
-          model: models.PlaylistPlay,
-          as: 'Plays'
-        }
-      ]
+      attributes: queryAttributes.playlist
     }).then(function(playlists) {
       deferred.resolve(playlists);
     }).catch(function(err) {
@@ -477,16 +469,7 @@ exports.getEditablePlaylists = function(req, res) {
           )
         )
       ),
-      include: [
-        {
-          model: models.PlaylistLike,
-          as: 'Likes'
-        },
-        {
-          model: models.PlaylistPlay,
-          as: 'Plays'
-        }
-      ]
+      attributes: queryAttributes.playlist
     }).then(function(playlists) {
       deferred.resolve(playlists);
     }).catch(function(err) {
@@ -542,16 +525,7 @@ exports.getCollaborations = function(req, res) {
           )
         )
       ),
-      include: [
-        {
-          model: models.PlaylistLike,
-          as: 'Likes'
-        },
-        {
-          model: models.PlaylistPlay,
-          as: 'Plays'
-        }
-      ]
+      attributes: queryAttributes.playlist,
     }).then(function(collaborationPlaylists) {
       deferred.resolve(collaborationPlaylists);
     }).catch(function(err) {
@@ -603,16 +577,7 @@ exports.getLikes = function(req, res) {
           )
         )
       ),
-      include: [
-        {
-          model: models.PlaylistLike,
-          as: 'Likes'
-        },
-        {
-          model: models.PlaylistPlay,
-          as: 'Plays'
-        }
-      ]
+      attributes: queryAttributes.playlist
     }).then(function(likedPlaylists) {
       deferred.resolve(likedPlaylists);
     }).catch(function(err) {
