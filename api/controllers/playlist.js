@@ -161,7 +161,7 @@ exports.get = function(req, res) {
     if ( isFinite(slug) ) {
       query = { id: slug };
     } else {
-      query = { slug: { ilike: slug } };
+      query = { slug: slug };
     }
 
     models.Playlist.find({

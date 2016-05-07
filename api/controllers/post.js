@@ -39,9 +39,13 @@ exports.get = function(req, res) {
         }
       ]
     }).then(function(post) {
-      post = post.toJSON();
-      delete post.UserId;
-      deferred.resolve(post);
+      if ( post ) {
+        post = post.toJSON();
+        delete post.UserId;
+        deferred.resolve(post);
+      } else {
+        deferred.reject({ status: 400, body: 'That post could not be found.' });
+      }
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
     });
