@@ -7,7 +7,7 @@ module.exports = function(sequelize) {
     classMethods: {
       associate: function(models) {
         PostLike.belongsTo(models.User);
-        PostLike.belongsTo(models.Post, { as: 'Likes' });
+        PostLike.belongsTo(models.Post);
       }
     }
   });

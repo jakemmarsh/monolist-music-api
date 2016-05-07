@@ -7,7 +7,7 @@ module.exports = function(sequelize) {
     classMethods: {
       associate: function(models) {
         TrackUpvote.belongsTo(models.User);
-        TrackUpvote.belongsTo(models.Track, { as: 'Upvotes' });
+        TrackUpvote.belongsTo(models.Track);
       }
     }
   });
