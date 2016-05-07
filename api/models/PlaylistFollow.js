@@ -8,6 +8,10 @@ module.exports = function(sequelize) {
       {
         fields: ['PlaylistId'],
         method: 'BTREE'
+      },
+      {
+        fields: ['createdAt'],
+        method: 'BTREE'
       }
     ],
     classMethods: {

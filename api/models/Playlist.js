@@ -53,6 +53,14 @@ module.exports = function(sequelize, DataTypes) {
       {
         fields: ['slug'],
         method: 'BTREE'
+      },
+      {
+        fields: ['id', 'privacy', 'ownerType', 'ownerId'],
+        method: 'BTREE'
+      },
+      {
+        fields: ['id', 'privacy'],
+        method: 'BTREE'
       }
     ],
     setterMethods: {
