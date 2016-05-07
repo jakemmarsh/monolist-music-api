@@ -13,7 +13,7 @@ module.exports = function(sequelize) {
     classMethods: {
       associate: function(models) {
         PlaylistLike.belongsTo(models.User);
-        PlaylistLike.belongsTo(models.Playlist, { as: 'Likes' });
+        PlaylistLike.belongsTo(models.Playlist);
       }
     }
   });
