@@ -28,6 +28,11 @@ function getQueryWindow(win, fallback) {
 
 /* ====================================================== */
 
+const playlistQueryAttributes = Object.keys(models.Playlist.rawAttributes)
+  .concat([[Sequelize.literal('(SELECT COUNT(*)::numeric FROM "PlaylistPlays" WHERE "PlaylistPlays"."PlaylistId" = "Playlist".id)'), 'Plays']]);
+
+/* ====================================================== */
+
 function ensureCurrentUserCanEdit(req, playlistId) {
 
   var mainDeferred = when.defer();
@@ -166,7 +171,7 @@ exports.get = function(req, res) {
 
     models.Playlist.find({
       where: query,
-      attributes: Object.keys(models.Playlist.rawAttributes).concat([[Sequelize.literal('(SELECT COUNT(*) FROM "PlaylistPlays" WHERE "PlaylistPlays"."PlaylistId" = "Playlist".id)'), 'Plays']]),
+      attributes: playlistQueryAttributes,
       include: [
         {
           model: models.Collaboration,
@@ -247,8 +252,6 @@ exports.get = function(req, res) {
             delete playlist.ownerId;
             playlist.collaborators = _.pluck(playlist.Collaborations, 'User');
             delete playlist.Collaborations;
-
-            playlist.Plays = parseInt(playlist.Plays);
 
             deferred.resolve(playlist);
           });
@@ -447,14 +450,12 @@ exports.getTrending = function(req, res) {
           )
         )
       ),
+      attributes: playlistQueryAttributes,
       include: [
         {
           model: models.PlaylistLike,
-          as: 'Likes'
-        },
-        {
-          model: models.PlaylistPlay,
-          as: 'Plays'
+          as: 'Likes',
+          attributes: ['UserId']
         }
       ]
     }).then(function(playlists) {
@@ -504,16 +505,12 @@ exports.getNewest = function(req, res) {
       ),
       limit: limit,
       order: [['createdAt', 'DESC']],
+      attributes: playlistQueryAttributes,
       include: [
         {
           model: models.PlaylistLike,
           as: 'Likes',
-          attributes: ['id', 'UserId']
-        },
-        {
-          model: models.PlaylistPlay,
-          as: 'Plays',
-          attributes: ['id']
+          attributes: ['UserId']
         }
       ]
     }).then(function(playlists) {
@@ -609,17 +606,14 @@ exports.getRecentlyPlayed = function(req, res) {
         privacy: 'public'
       },
       limit: limit,
+      attributes: playlistQueryAttributes,
       include: [
         {
           model: models.PlaylistLike,
-          as: 'Likes'
-        },
-        {
-          model: models.PlaylistPlay,
-          as: 'Plays'
+          as: 'Likes',
+          attributes: ['UserId']
         }
-      ],
-      order: [[{ model: models.PlaylistPlay, as: 'Plays' }, 'createdAt', 'DESC']]
+      ]
     }).then(function(playlists) {
       deferred.resolve(playlists);
     }).catch(function(err) {
@@ -695,7 +689,7 @@ exports.update = function(req, res) {
 
     models.Playlist.find({
       where: { id: id },
-      attributes: Object.keys(models.Playlist.rawAttributes).concat([[Sequelize.literal('(SELECT COUNT(*) FROM "PlaylistPlays" WHERE "PlaylistPlays"."PlaylistId" = "Playlist".id)'), 'Plays']]),
+      attributes: playlistQueryAttributes,
       include: [
         {
           model: models.Collaboration,
@@ -1136,14 +1130,12 @@ exports.addTrack = function(req, res) {
 
     models.Playlist.find({
       where: { id: req.params.id },
+      attributes: playlistQueryAttributes,
       include: [
         {
           model: models.PlaylistLike,
-          as: 'Likes'
-        },
-        {
-          model: models.PlaylistPlay,
-          as: 'Plays'
+          as: 'Likes',
+          attributes: ['UserId']
         }
       ]
     }).then(function(playlist) {
