@@ -166,6 +166,7 @@ exports.get = function(req, res) {
 
     models.Playlist.find({
       where: query,
+      attributes: Object.keys(models.Playlist.rawAttributes).concat([[Sequelize.literal('(SELECT COUNT(*) FROM "PlaylistPlays" WHERE "PlaylistPlays"."PlaylistId" = "Playlist".id)'), 'Plays']]),
       include: [
         {
           model: models.Collaboration,
@@ -205,17 +206,13 @@ exports.get = function(req, res) {
         },
         {
           model: models.PlaylistFollow,
-          as: 'Followers'
+          as: 'Followers',
+          attributes: ['id', 'UserId']
         },
         {
           model: models.PlaylistLike,
           as: 'Likes',
           attributes: ['id', 'UserId']
-        },
-        {
-          model: models.PlaylistPlay,
-          as: 'Plays',
-          attributes: ['id']
         }
       ],
       order: [
@@ -250,6 +247,9 @@ exports.get = function(req, res) {
             delete playlist.ownerId;
             playlist.collaborators = _.pluck(playlist.Collaborations, 'User');
             delete playlist.Collaborations;
+
+            playlist.Plays = parseInt(playlist.Plays);
+
             deferred.resolve(playlist);
           });
         } else {
