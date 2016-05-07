@@ -695,6 +695,7 @@ exports.update = function(req, res) {
 
     models.Playlist.find({
       where: { id: id },
+      attributes: Object.keys(models.Playlist.rawAttributes).concat([[Sequelize.literal('(SELECT COUNT(*) FROM "PlaylistPlays" WHERE "PlaylistPlays"."PlaylistId" = "Playlist".id)'), 'Plays']]),
       include: [
         {
           model: models.Collaboration,
@@ -734,17 +735,13 @@ exports.update = function(req, res) {
         },
         {
           model: models.PlaylistFollow,
-          as: 'Followers'
+          as: 'Followers',
+          attributes: ['id', 'UserId']
         },
         {
           model: models.PlaylistLike,
           as: 'Likes',
           attributes: ['id', 'UserId']
-        },
-        {
-          model: models.PlaylistPlay,
-          as: 'Plays',
-          attributes: ['id']
         }
       ],
       order: [
