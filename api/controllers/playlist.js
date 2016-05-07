@@ -8,6 +8,7 @@ var models          = require('../models');
 var awsRoutes       = require('./aws');
 var ActivityManager = require('../utils/ActivityManager');
 var ResponseHandler = require('../utils/ResponseHandler');
+var queryAttributes = require('../utils/queryAttributes');
 
 /* ====================================================== */
 
@@ -25,11 +26,6 @@ function getQueryWindow(win, fallback) {
 
   return windowIndex === -1 ? WINDOW_TYPES[1] : WINDOW_TYPES[windowIndex];
 }
-
-/* ====================================================== */
-
-const playlistQueryAttributes = Object.keys(models.Playlist.rawAttributes)
-  .concat([[Sequelize.literal('(SELECT COUNT(*)::numeric FROM "PlaylistPlays" WHERE "PlaylistPlays"."PlaylistId" = "Playlist".id)'), 'Plays']]);
 
 /* ====================================================== */
 
@@ -171,7 +167,7 @@ exports.get = function(req, res) {
 
     models.Playlist.find({
       where: query,
-      attributes: playlistQueryAttributes,
+      attributes: queryAttributes.playlist,
       include: [
         {
           model: models.Collaboration,
@@ -200,24 +196,24 @@ exports.get = function(req, res) {
             {
               model: models.TrackUpvote,
               as: 'Upvotes',
-              attributes: ['id', 'UserId']
+              attributes: ['UserId']
             },
             {
               model: models.TrackDownvote,
               as: 'Downvotes',
-              attributes: ['id', 'UserId']
+              attributes: ['UserId']
             }
           ]
         },
         {
           model: models.PlaylistFollow,
           as: 'Followers',
-          attributes: ['id', 'UserId']
+          attributes: ['UserId']
         },
         {
           model: models.PlaylistLike,
           as: 'Likes',
-          attributes: ['id', 'UserId']
+          attributes: ['UserId']
         }
       ],
       order: [
@@ -450,7 +446,7 @@ exports.getTrending = function(req, res) {
           )
         )
       ),
-      attributes: playlistQueryAttributes,
+      attributes: queryAttributes.playlist,
       include: [
         {
           model: models.PlaylistLike,
@@ -505,7 +501,7 @@ exports.getNewest = function(req, res) {
       ),
       limit: limit,
       order: [['createdAt', 'DESC']],
-      attributes: playlistQueryAttributes,
+      attributes: queryAttributes.playlist,
       include: [
         {
           model: models.PlaylistLike,
@@ -606,7 +602,7 @@ exports.getRecentlyPlayed = function(req, res) {
         privacy: 'public'
       },
       limit: limit,
-      attributes: playlistQueryAttributes,
+      attributes: queryAttributes.playlist,
       include: [
         {
           model: models.PlaylistLike,
@@ -689,7 +685,7 @@ exports.update = function(req, res) {
 
     models.Playlist.find({
       where: { id: id },
-      attributes: playlistQueryAttributes,
+      attributes: queryAttributes.playlist,
       include: [
         {
           model: models.Collaboration,
@@ -1130,7 +1126,7 @@ exports.addTrack = function(req, res) {
 
     models.Playlist.find({
       where: { id: req.params.id },
-      attributes: playlistQueryAttributes,
+      attributes: queryAttributes.playlist,
       include: [
         {
           model: models.PlaylistLike,
