@@ -15,7 +15,7 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         TrackComment.belongsTo(models.User);
-        TrackComment.belongsTo(models.Track, { as: 'Comments' });
+        TrackComment.belongsTo(models.Track);
       }
     }
   });
