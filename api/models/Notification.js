@@ -21,6 +21,10 @@ module.exports = function(sequelize, DataTypes) {
     }
   },
   {
+    fields: ['RecipientId'],
+    method: 'BTREE'
+  },
+  {
     classMethods: {
       associate: function(models) {
         Notification.belongsTo(models.User, { as: 'Recipient' });

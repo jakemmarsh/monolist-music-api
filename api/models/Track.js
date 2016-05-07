@@ -21,6 +21,12 @@ module.exports = function(sequelize, DataTypes) {
     order:       { type: DataTypes.INTEGER, defaultValue: 0 }
   },
   {
+    indexes: [
+      {
+        fields: ['PlaylistId'],
+        method: 'BTREE'
+      }
+    ],
     setterMethods: {
       sourceParam: function(v) {
         // Always convert to string

@@ -4,6 +4,12 @@ module.exports = function(sequelize) {
 
   var PlaylistFollow = sequelize.define('PlaylistFollow', {},
   {
+    indexes: [
+      {
+        fields: ['PlaylistId'],
+        method: 'BTREE'
+      }
+    ],
     classMethods: {
       associate: function(models) {
         PlaylistFollow.belongsTo(models.Playlist, { as: 'Playlist' });

@@ -30,6 +30,12 @@ module.exports = function(sequelize, DataTypes) {
     }
   },
   {
+    indexes: [
+      {
+        fields: ['slug'],
+        method: 'BTREE'
+      }
+    ],
     setterMethods: {
       tags: function(v) {
         var tags = v.map(function(tag) {

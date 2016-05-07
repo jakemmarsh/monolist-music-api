@@ -13,6 +13,16 @@ module.exports = function(sequelize, DataTypes) {
     }
   },
   {
+    indexes: [
+      {
+        fields: ['GroupId'],
+        method: 'BTREE'
+      },
+      {
+        fields: ['UserId'],
+        method: 'BTREE'
+      }
+    ],
     classMethods: {
       associate: function(models) {
         GroupMembership.belongsTo(models.Group);

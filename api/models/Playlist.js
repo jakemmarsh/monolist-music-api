@@ -45,6 +45,16 @@ module.exports = function(sequelize, DataTypes) {
     privacy:   { type: DataTypes.ENUM('public', 'private'), defaultValue: 'public' }
   },
   {
+    indexes: [
+      {
+        fields: ['ownerType', 'ownerId'],
+        method: 'BTREE'
+      },
+      {
+        fields: ['slug'],
+        method: 'BTREE'
+      }
+    ],
     setterMethods: {
       tags: function(v) {
         var tags = v.map(function(tag) {

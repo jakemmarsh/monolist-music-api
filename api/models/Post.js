@@ -7,6 +7,12 @@ module.exports = function(sequelize, DataTypes) {
     track: { type: DataTypes.JSON, allowNull: true }
   },
   {
+    indexes: [
+      {
+        fields: ['GroupId'],
+        method: 'BTREE'
+      },
+    ],
     classMethods: {
       associate: function(models) {
         Post.belongsTo(models.User);

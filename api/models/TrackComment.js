@@ -6,6 +6,12 @@ module.exports = function(sequelize, DataTypes) {
     body: { type: DataTypes.STRING, allowNull: false }
   },
   {
+    indexes: [
+      {
+        fields: ['TrackId'],
+        method: 'BTREE'
+      }
+    ],
     classMethods: {
       associate: function(models) {
         TrackComment.belongsTo(models.User);

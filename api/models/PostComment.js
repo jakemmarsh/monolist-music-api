@@ -6,6 +6,12 @@ module.exports = function(sequelize, DataTypes) {
     body: { type: DataTypes.STRING, allowNull: false }
   },
   {
+    indexes: [
+      {
+        fields: ['PostId'],
+        method: 'BTREE'
+      }
+    ],
     classMethods: {
       associate: function(models) {
         PostComment.belongsTo(models.User);
