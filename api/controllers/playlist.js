@@ -289,19 +289,7 @@ exports.search = function(req, res) {
           { title: { ilike: '%' + query + '%' } },
           { tags: { ilike: '%' + query + '%' } }
         ),
-        Sequelize.or(
-          { privacy: 'public' },
-          Sequelize.or(
-            Sequelize.and(
-              { ownerType: 'user' },
-              { ownerId: req.user ? req.user.id : null }
-            ),
-            Sequelize.and(
-              { ownerType: 'group' },
-              { ownerId: req.user ? req.user.groups : null }
-            )
-          )
-        )
+        { privacy: 'public' }
       ),
       limit: limit,
       offset: offset
@@ -430,22 +418,10 @@ exports.getTrending = function(req, res) {
     var deferred = when.defer();
 
     models.Playlist.findAll({
-      where: Sequelize.and(
-        { id: playlistIds },
-        Sequelize.or(
-          { privacy: 'public' },
-          Sequelize.or(
-            Sequelize.and(
-              { ownerType: 'user' },
-              { ownerId: req.user ? req.user.id : null }
-            ),
-            Sequelize.and(
-              { ownerType: 'group' },
-              { ownerId: req.user ? req.user.groups : null }
-            )
-          )
-        )
-      ),
+      where: {
+        id: playlistIds,
+        privacy: 'public'
+      },
       attributes: queryAttributes.playlist,
       include: [
         {
@@ -486,19 +462,7 @@ exports.getNewest = function(req, res) {
     limit = ( limit && limit < 50 ) ? limit : 30;
 
     models.Playlist.findAll({
-      where: Sequelize.or(
-        { privacy: 'public' },
-        Sequelize.or(
-          Sequelize.and(
-            { ownerType: 'user' },
-            { ownerId: req.user ? req.user.id : null }
-          ),
-          Sequelize.and(
-            { ownerType: 'group' },
-            { ownerId: req.user ? req.user.groups : null }
-          )
-        )
-      ),
+      where: { privacy: 'public' },
       limit: limit,
       order: [['createdAt', 'DESC']],
       attributes: queryAttributes.playlist,
