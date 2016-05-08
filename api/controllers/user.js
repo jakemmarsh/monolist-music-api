@@ -515,7 +515,7 @@ exports.getCollaborations = function(req, res) {
     var deferred = when.defer();
     var query;
 
-    if ( req.user && req.params.id === req.user.id ) {
+    if ( req.user && parseInt(req.params.id) === parseInt(req.user.id) ) {
       query = { id: _.pluck(collaborations, 'PlaylistId') };
     } else {
       query = Sequelize.and(
@@ -574,7 +574,7 @@ exports.getLikes = function(req, res) {
     var deferred = when.defer();
     var query;
 
-    if ( req.user && req.params.id === req.user.id ) {
+    if ( req.user && parseInt(req.params.id) === parseInt(req.user.id) ) {
       query = { id: _.pluck(likes, 'PlaylistId') };
     } else {
       query = Sequelize.and(
