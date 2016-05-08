@@ -513,9 +513,12 @@ exports.getCollaborations = function(req, res) {
 
   var fetchCollaborationPlaylists = function(collaborations) {
     var deferred = when.defer();
+    var query;
 
-    models.Playlist.findAll({
-      where: Sequelize.and(
+    if ( req.user && req.params.id === req.user.id ) {
+      query = { id: _.pluck(collaborations, 'PlaylistId') };
+    } else {
+      query = Sequelize.and(
         { id: _.pluck(collaborations, 'PlaylistId') },
         Sequelize.or(
           { privacy: 'public' },
@@ -524,7 +527,11 @@ exports.getCollaborations = function(req, res) {
             { ownerType: 'user' }
           )
         )
-      ),
+      );
+    }
+
+    models.Playlist.findAll({
+      where: query,
       attributes: queryAttributes.playlist,
     }).then(function(collaborationPlaylists) {
       deferred.resolve(collaborationPlaylists);
@@ -565,9 +572,12 @@ exports.getLikes = function(req, res) {
 
   var fetchPlaylists = function(likes) {
     var deferred = when.defer();
+    var query;
 
-    models.Playlist.findAll({
-      where: Sequelize.and(
+    if ( req.user && req.params.id === req.user.id ) {
+      query = { id: _.pluck(likes, 'PlaylistId') };
+    } else {
+      query = Sequelize.and(
         { id: _.pluck(likes, 'PlaylistId') },
         Sequelize.or(
           { privacy: 'public' },
@@ -576,7 +586,11 @@ exports.getLikes = function(req, res) {
             { ownerType: 'user' }
           )
         )
-      ),
+      );
+    }
+
+    models.Playlist.findAll({
+      where: query,
       attributes: queryAttributes.playlist
     }).then(function(likedPlaylists) {
       deferred.resolve(likedPlaylists);
