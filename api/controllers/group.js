@@ -924,7 +924,7 @@ exports.delete = function(req, res) {
       if ( currentUser.role !== 'admin' || group.OwnerId === currentUser.id ) {
         deferred.resolve(group);
       } else {
-        deferred.reject({ status: 401, body: 'You do not have permission to delete that group.'});
+        deferred.reject({ status: 401, body: 'You do not have permission to delete that group.' });
       }
     }).catch(function(err) {
       deferred.reject({ status: 500, body: err });
