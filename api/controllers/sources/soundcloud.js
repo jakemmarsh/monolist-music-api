@@ -89,7 +89,11 @@ exports.stream = function(req, res) {
 
     SC.get(queryUrl, function(err, trackInfo) {
       if ( err ) {
-        deferred.reject({ status: 500, body: err.message || err });
+        err = err[0].error_message;
+
+        var status = err.indexOf('401') > -1 ? 401 : 500;
+
+        deferred.reject({ status: status, body: err });
       } else {
         deferred.resolve(request.get(trackInfo.location));
       }
