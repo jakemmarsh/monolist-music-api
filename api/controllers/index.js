@@ -1,3 +1,5 @@
+exports.status             = require('./status');
+
 exports.auth               = require('./auth');
 
 exports.user               = require('./user');

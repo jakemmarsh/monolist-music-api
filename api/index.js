@@ -24,6 +24,12 @@ function conditionalCache(req, res, next) {
 
 /* ====================================================== */
 
+// API status endpoints
+api.get('/status/postgres', controllers.status.postgres);
+api.get('/status/redis', controllers.status.redis);
+
+/* ====================================================== */
+
 // Auth endpoints
 api.post('/auth/register', controllers.auth.register);
 api.get('/auth/check', controllers.auth.checkAuthentication);
