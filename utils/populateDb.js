@@ -263,24 +263,28 @@ module.exports = function(models/*, mailer*/) {
     return deferred.promise;
   };
 
-  createUser()
-  .then(createSecondUser)
-  .then(createThirdUser)
-  .then(createUserFollows)
-  .then(createPlaylist)
-  .then(createSecondPlaylist)
-  .then(createCollaboration)
-  .then(createPlaylistLikes)
-  .then(createPlaylistPlays)
-  .then(addFirstTrackToPlaylist)
-  .then(addSecondTrackToPlaylist)
-  .then(createGroups)
-  .then(createMemberships)
-  .then(createGroupPlaylists)
-  .then(createPosts)
-  .then(createPlaylistSearches)
-  .then(createTrackSearches)
-  .then(createPostComments)
-  .then(createNotifications);
+  return new Promise((resolve, reject) => {
+    createUser()
+      .then(createSecondUser)
+      .then(createThirdUser)
+      .then(createUserFollows)
+      .then(createPlaylist)
+      .then(createSecondPlaylist)
+      .then(createCollaboration)
+      .then(createPlaylistLikes)
+      .then(createPlaylistPlays)
+      .then(addFirstTrackToPlaylist)
+      .then(addSecondTrackToPlaylist)
+      .then(createGroups)
+      .then(createMemberships)
+      .then(createGroupPlaylists)
+      .then(createPosts)
+      .then(createPlaylistSearches)
+      .then(createTrackSearches)
+      .then(createPostComments)
+      .then(createNotifications)
+      .then(resolve)
+      .catch(reject);
+  });
 
 };

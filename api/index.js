@@ -104,6 +104,7 @@ api.delete('/playlist/:playlistId/collaborator/:userId', controllers.auth.isAuth
 api.post('/playlist/:id/track', controllers.auth.isAuthenticated, controllers.playlist.addTrack);
 api.delete('/playlist/:playlistId/track/:trackId', controllers.auth.isAuthenticated, controllers.playlist.removeTrack);
 api.post('/playlist/:id/reorder', controllers.auth.isAuthenticated, controllers.playlist.reorderTracks);
+api.post('/playlist/:id/identify', controllers.auth.isAuthenticated, controllers.playlist.identifyTracks);
 
 /* ====================================================== */
 
