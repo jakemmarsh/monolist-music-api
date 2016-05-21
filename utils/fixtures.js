@@ -90,6 +90,17 @@ module.exports = {
 
   tracks: [
     {
+      title: 'West Coast',
+      artist: 'Coconut Records',
+      duration: 237,
+      source: 'youtube',
+      sourceParam: 'iR654dhhZNs',
+      sourceUrl: 'http://youtube.com/watch?v=iR654dhhZNs',
+      imageUrl: 'https://i.ytimg.com/vi/iR654dhhZNs/hqdefault.jpg',
+      PlaylistId: 1,
+      UserId: 1
+    },
+    {
       imageUrl: 'https://i1.sndcdn.com/artworks-000086001473-mw7dye-large.jpg',
       PlaylistId: 1,
       UserId: 1,
