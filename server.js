@@ -60,8 +60,7 @@ if ( process.env.NODE_ENV === 'production' ) {
     .done(setupTrackRecognitionJob);
 } else {
   models.sequelize.sync({ force: true }).done(function() {
-    populateDb(models, mailer)
-      .then(setupTrackRecognitionJob);
+    populateDb(models, mailer);
   });
 }
 
