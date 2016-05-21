@@ -292,6 +292,7 @@ exports.search = function(req, res) {
         ),
         { privacy: 'public' }
       ),
+      attributes: queryAttributes.playlist,
       limit: limit,
       offset: offset
     }).then(function(retrievedPlaylists) {
@@ -423,14 +424,7 @@ exports.getTrending = function(req, res) {
         id: playlistIds,
         privacy: 'public'
       },
-      attributes: queryAttributes.playlist,
-      include: [
-        {
-          model: models.PlaylistLike,
-          as: 'Likes',
-          attributes: ['UserId']
-        }
-      ]
+      attributes: queryAttributes.playlist
     }).then(function(playlists) {
       deferred.resolve(playlists);
     }).catch(function(err) {
@@ -466,14 +460,7 @@ exports.getNewest = function(req, res) {
       where: { privacy: 'public' },
       limit: limit,
       order: [['createdAt', 'DESC']],
-      attributes: queryAttributes.playlist,
-      include: [
-        {
-          model: models.PlaylistLike,
-          as: 'Likes',
-          attributes: ['UserId']
-        }
-      ]
+      attributes: queryAttributes.playlist
     }).then(function(playlists) {
       deferred.resolve(playlists);
     }).catch(function(err) {
@@ -567,14 +554,7 @@ exports.getRecentlyPlayed = function(req, res) {
         privacy: 'public'
       },
       limit: limit,
-      attributes: queryAttributes.playlist,
-      include: [
-        {
-          model: models.PlaylistLike,
-          as: 'Likes',
-          attributes: ['UserId']
-        }
-      ]
+      attributes: queryAttributes.playlist
     }).then(function(playlists) {
       deferred.resolve(playlists);
     }).catch(function(err) {
