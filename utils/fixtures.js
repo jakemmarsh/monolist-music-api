@@ -97,13 +97,11 @@ module.exports = {
       sourceParam: '159945668',
       sourceUrl: 'http://soundcloud.com/rustie/attak-feat-danny-brown',
       title: 'Attak (feat. Danny Brown)',
-      duration: 181,
-      order: 0
+      duration: 181
     },
     {
       PlaylistId: 1,
       UserId: 1,
-      order: 1,
       source: 'soundcloud',
       title: 'Mura Masa - Miss You (Taken from "Summer In Jakarta" Free DLL in description)',
       artist: 'Jakarta Records',
@@ -120,7 +118,6 @@ module.exports = {
       sourceParam: 'lgcg8ZFzfn0',
       sourceUrl: 'http://youtube.com/watch?v=lgcg8ZFzfn0',
       imageUrl: 'https://i.ytimg.com/vi/lgcg8ZFzfn0/hqdefault.jpg',
-      order: 2,
       PlaylistId: 1,
       UserId: 1
     }

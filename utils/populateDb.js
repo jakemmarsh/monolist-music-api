@@ -122,7 +122,10 @@ module.exports = function(models/*, mailer*/) {
   var createTracks = function() {
     var deferred = when.defer();
 
-    models.Track.bulkCreate(fixtures.tracks, { hooks: false, individualHooks: true }).then(function(createdTracks) {
+    models.Track.bulkCreate(fixtures.tracks, {
+      hooks: false,
+      individualHooks: true
+    }).then(function(createdTracks) {
       deferred.resolve(createdTracks);
     }).catch(function(err) {
       console.log('error creating tracks:', err);

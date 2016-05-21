@@ -163,12 +163,16 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
     var req = request(url).post('playlist/1/reorder');
     var updates = [
       {
-        track: fixtures.tracks[0],
-        newIndex: fixtures.tracks[0].order + 1
+        track: Object.assign({}, fixtures.tracks[0], { id: 0 }),
+        newIndex: 0
       },
       {
-        track: fixtures.tracks[1],
-        newIndex: fixtures.tracks[1].order - 1
+        track: Object.assign({}, fixtures.tracks[1], { id: 1 }),
+        newIndex: 1
+      },
+      {
+        track: Object.assign({}, fixtures.tracks[2], { id: 2 }),
+        newIndex: 2
       }
     ];
 
