@@ -111,6 +111,18 @@ module.exports = {
       duration: 246.566,
       sourceParam: '159925639',
       sourceUrl: 'https://soundcloud.com/jakarta-records/mura-masa-miss-you-taken-from-summer-in-jakarta'
+    },
+    {
+      title: 'Daughter - Youth',
+      artist: null,
+      duration: 255,
+      source: 'youtube',
+      sourceParam: 'lgcg8ZFzfn0',
+      sourceUrl: 'http://youtube.com/watch?v=lgcg8ZFzfn0',
+      imageUrl: 'https://i.ytimg.com/vi/lgcg8ZFzfn0/hqdefault.jpg',
+      order: 2,
+      PlaylistId: 1,
+      UserId: 1
     }
   ],
 

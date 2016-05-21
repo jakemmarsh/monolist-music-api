@@ -119,25 +119,13 @@ module.exports = function(models/*, mailer*/) {
     return deferred.promise;
   };
 
-  var addFirstTrackToPlaylist = function() {
+  var createTracks = function() {
     var deferred = when.defer();
 
-    models.Track.create(fixtures.tracks[0]).then(function(createdTrack) {
-      deferred.resolve(createdTrack);
+    models.Track.bulkCreate(fixtures.tracks, { hooks: false, individualHooks: true }).then(function(createdTracks) {
+      deferred.resolve(createdTracks);
     }).catch(function(err) {
-      deferred.reject('error creating first track:', err);
-    });
-
-    return deferred.promise;
-  };
-
-  var addSecondTrackToPlaylist = function() {
-    var deferred = when.defer();
-
-    models.Track.create(fixtures.tracks[1]).then(function(createdTrack) {
-      deferred.resolve(createdTrack);
-    }).catch(function(err) {
-      deferred.reject('error creating second track:', err);
+      console.log('error creating tracks:', err);
     });
 
     return deferred.promise;
@@ -273,8 +261,7 @@ module.exports = function(models/*, mailer*/) {
       .then(createCollaboration)
       .then(createPlaylistLikes)
       .then(createPlaylistPlays)
-      .then(addFirstTrackToPlaylist)
-      .then(addSecondTrackToPlaylist)
+      .then(createTracks)
       .then(createGroups)
       .then(createMemberships)
       .then(createGroupPlaylists)
