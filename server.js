@@ -9,7 +9,7 @@ var cookieParser    = require('cookie-parser');
 var session         = require('express-session');
 var passport        = require('passport');
 var trimBody        = require('trim-body');
-var CronJob         = require('cron').CronJob;
+// var CronJob         = require('cron').CronJob;
 var server          = express();
 var models          = require('./api/models');
 var populateDb      = require('./utils/populateDb');
@@ -17,7 +17,7 @@ var mailer          = require('./api/mailer');
 var api             = require('./api');
 var SequelizeStore  = require('connect-session-sequelize')(session.Store);
 
-var trackRecognition = require('./api/utils/trackRecognition');
+// var trackRecognition = require('./api/utils/trackRecognition');
 
 /* ====================================================== */
 
