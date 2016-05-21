@@ -1152,8 +1152,51 @@ exports.removeTrack = function(req, res) {
 
 exports.identifyTracks = function(req, res) {
 
-  trackRecognition.identifyAllTracksInPlaylist(req.params.id).then((numTracksUpdated) => {
-    ResponseHandler.handleSuccess(res, 200, numTracksUpdated + ' tracks successfully identified.');
+  var retrieveAllTracksForPlaylist = function() {
+    var playlistId = req.params.id;
+    var deferred = when.defer();
+
+    models.Track.findAll({
+      where: { PlaylistId: playlistId },
+      include: [
+        {
+          model: models.User,
+          attributes: ['id', 'username', 'imageUrl']
+        },
+        {
+          model: models.TrackComment,
+          as: 'Comments',
+          include: [{
+            model: models.User,
+            attributes: ['id', 'username', 'imageUrl']
+          }]
+        },
+        {
+          model: models.TrackUpvote,
+          as: 'Upvotes',
+          attributes: ['id', 'UserId']
+        },
+        {
+          model: models.TrackDownvote,
+          as: 'Downvotes',
+          attributes: ['id', 'UserId']
+        }
+      ],
+      order: [['order', 'ASC']]
+    }).then(function(tracks) {
+      deferred.resolve(tracks);
+    }).catch(function() {
+      // Still resolve
+      deferred.resolve([]);
+    });
+
+    return deferred.promise;
+  };
+
+  trackRecognition.identifyAllTracksInPlaylist(req.params.id)
+  .then(retrieveAllTracksForPlaylist)
+  .then((allTracks) => {
+    ResponseHandler.handleSuccess(res, 200, allTracks);
   }).catch((err) => {
     ResponseHandler.handleError(req, res, 500, err);
   });
