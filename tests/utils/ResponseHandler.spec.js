@@ -44,9 +44,28 @@ describe('Util: ResponseHandler', function() {
     });
   });
 
+  it('#handleSuccess should set the Content-Length header', function() {
+    var testRes = {
+      setHeader: sandbox.stub(),
+      status: sandbox.stub().returns({
+        json: sandbox.stub()
+      })
+    };
+    var data = {
+      test: 'test'
+    };
+    var expectedLength = Buffer.byteLength(data, 'utf8');
+
+    ResponseHandler.handleSuccess(testRes, 200, data);
+
+    sinon.assert.calledOnce(testRes.setHeader);
+    sinon.assert.calledWith(testRes.setHeader, 'Content-Length', expectedLength);
+  });
+
   it('#handleSuccess should respond accordingly', function() {
     var jsonStub = sandbox.stub();
     var testRes = {
+      setHeader: sandbox.stub(),
       status: function() {
         return {
           json: jsonStub
@@ -69,8 +88,28 @@ describe('Util: ResponseHandler', function() {
     });
   });
 
+  it('#handleError should set the Content-Length header', function() {
+    var testReq = {};
+    var testRes = {
+      setHeader: sandbox.stub(),
+      status: sandbox.stub().returns({
+        json: sandbox.stub()
+      })
+    };
+    var error = {
+      test: 'test'
+    };
+    var expectedLength = Buffer.byteLength(error, 'utf8');
+
+    ResponseHandler.handleError(testReq, testRes, 400, error);
+
+    sinon.assert.calledOnce(testRes.setHeader);
+    sinon.assert.calledWith(testRes.setHeader, 'Content-Length', expectedLength);
+  });
+
   it('#handleError should log the error', function() {
     var testRes = {
+      setHeader: sandbox.stub(),
       status: function() {
         return {
           json: function() {}
@@ -102,10 +141,9 @@ describe('Util: ResponseHandler', function() {
 
   it('#handleError should respond accordingly', function() {
     var jsonStub = sandbox.stub();
-    var testReq = {
-      ip: '192.168.1.1'
-    };
+    var testReq = {};
     var testRes = {
+      setHeader: sandbox.stub(),
       status: function() {
         return {
           json: jsonStub

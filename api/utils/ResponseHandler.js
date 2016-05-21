@@ -57,17 +57,31 @@ exports.censorData = function(data) {
 /* ====================================================== */
 
 exports.handleSuccess = function(res, status, data) {
-  return res.status(status).json({
+  const returnBody = {
     status: status,
     data: data,
     error: null
-  });
+  };
+
+  const dataLength = Buffer.byteLength(returnBody, 'utf8');
+
+  res.setHeader('Content-Length', dataLength);
+
+  return res.status(status).json(returnBody);
 };
 
 /* ====================================================== */
 
 exports.handleError = function(req, res, status, error, shouldLog) {
   shouldLog = typeof(shouldLog) === 'undefined' ? true : shouldLog;
+
+  const returnBody = {
+    status: status,
+    data: null,
+    error: error.message || error
+  };
+
+  const dataLength = Buffer.byteLength(returnBody, 'utf8');
 
   if ( shouldLog && process.env.NODE_ENV === 'production' ) {
     exports.logger.error(exports.censorData({
@@ -82,9 +96,7 @@ exports.handleError = function(req, res, status, error, shouldLog) {
     }));
   }
 
-  return res.status(status).json({
-    status: status,
-    data: null,
-    error: error.message || error
-  });
+  res.setHeader('Content-Length', dataLength);
+
+  return res.status(status).json(returnBody);
 };
