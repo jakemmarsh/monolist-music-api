@@ -173,6 +173,10 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
       {
         track: Object.assign({}, fixtures.tracks[2], { id: 2 }),
         newIndex: 2
+      },
+      {
+        track: Object.assign({}, fixtures.tracks[3], { id: 3 }),
+        newIndex: 3
       }
     ];
 
