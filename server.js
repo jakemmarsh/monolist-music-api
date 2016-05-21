@@ -56,8 +56,7 @@ function setupTrackRecognitionJob() {
 
 // Connect to database and initialize models
 if ( process.env.NODE_ENV === 'production' ) {
-  models.sequelize.sync()
-    .done(setupTrackRecognitionJob);
+  models.sequelize.sync();
 } else {
   models.sequelize.sync({ force: true }).done(function() {
     populateDb(models, mailer);
