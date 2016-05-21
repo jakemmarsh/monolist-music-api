@@ -2,7 +2,6 @@
 
 var express         = require('express');
 var morgan          = require('morgan');
-var compression     = require('compression');
 var methodOverride  = require('method-override');
 var bodyParser      = require('body-parser');
 var busboy          = require('connect-busboy');
@@ -20,7 +19,6 @@ var SequelizeStore  = require('connect-session-sequelize')(session.Store);
 /* ====================================================== */
 
 server.use(morgan('dev'));     // Logs all requests to the console
-server.use(compression());     // Compresses response data with gzip/deflate
 server.use(methodOverride());  // Simulates DELETE and PUT
 server.use(bodyParser.json()); // Parses req.body json from html POST
 server.use(bodyParser.urlencoded({ extended: true })); // Parses urlencoded req.body, including extended syntax
