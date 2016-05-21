@@ -6,12 +6,6 @@ var setupPassport   = require('./utils/passport');
 var cache           = require('./utils/cache');
 var controllers     = require('./controllers');
 
-// var trackRecognition = require('./utils/trackRecognition');
-
-// trackRecognition.recognizeTrack(1).then((data) => {
-//   console.log(data);
-// });
-
 /* ====================================================== */
 
 setupPassport();
