@@ -101,16 +101,16 @@ module.exports = {
       order: 0
     },
     {
-      title: 'Lotto ft. 50 Cent',
-      artist: 'Rotimi',
-      duration: 207.927,
-      source: 'soundcloud',
-      sourceParam: '210947367',
-      sourceUrl: 'https://soundcloud.com/rotimi-music/lotto-ft-50-cent',
-      imageUrl: 'https://i1.sndcdn.com/artworks-000120656742-db2e6p-large.jpg',
       PlaylistId: 1,
       UserId: 1,
-      order: 1
+      order: 1,
+      source: 'soundcloud',
+      title: 'Mura Masa - Miss You (Taken from "Summer In Jakarta" Free DLL in description)',
+      artist: 'Jakarta Records',
+      imageUrl: 'https://i1.sndcdn.com/artworks-000085988304-2krh0z-large.jpg',
+      duration: 246.566,
+      sourceParam: '159925639',
+      sourceUrl: 'https://soundcloud.com/jakarta-records/mura-masa-miss-you-taken-from-summer-in-jakarta'
     }
   ],
 

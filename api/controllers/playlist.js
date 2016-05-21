@@ -1,14 +1,15 @@
 'use strict';
 
-var when            = require('when');
-var _               = require('lodash');
-var Sequelize       = require('sequelize');
-var changeCase      = require('change-case');
-var models          = require('../models');
-var awsRoutes       = require('./aws');
-var ActivityManager = require('../utils/ActivityManager');
-var ResponseHandler = require('../utils/ResponseHandler');
-var queryAttributes = require('../utils/queryAttributes');
+var when             = require('when');
+var _                = require('lodash');
+var Sequelize        = require('sequelize');
+var changeCase       = require('change-case');
+var models           = require('../models');
+var awsRoutes        = require('./aws');
+var ActivityManager  = require('../utils/ActivityManager');
+var ResponseHandler  = require('../utils/ResponseHandler');
+var queryAttributes  = require('../utils/queryAttributes');
+var trackRecognition = require('../utils/trackRecognition');
 
 /* ====================================================== */
 
@@ -1143,6 +1144,18 @@ exports.removeTrack = function(req, res) {
     ResponseHandler.handleSuccess(res, 200, 'Track successfully deleted.');
   }).catch(function(err) {
     ResponseHandler.handleError(req, res, err.status, err.body);
+  });
+
+};
+
+/* ====================================================== */
+
+exports.identifyTracks = function(req, res) {
+
+  trackRecognition.identifyAllTracksInPlaylist(req.params.id).then((numTracksUpdated) => {
+    ResponseHandler.handleSuccess(res, 200, numTracksUpdated + ' tracks successfully identified.');
+  }).catch((err) => {
+    ResponseHandler.handleError(req, res, 500, err);
   });
 
 };

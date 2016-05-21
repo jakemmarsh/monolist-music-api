@@ -9,12 +9,15 @@ var cookieParser    = require('cookie-parser');
 var session         = require('express-session');
 var passport        = require('passport');
 var trimBody        = require('trim-body');
+var CronJob         = require('cron').CronJob;
 var server          = express();
 var models          = require('./api/models');
 var populateDb      = require('./utils/populateDb');
 var mailer          = require('./api/mailer');
 var api             = require('./api');
 var SequelizeStore  = require('connect-session-sequelize')(session.Store);
+
+var trackRecognition = require('./api/utils/trackRecognition');
 
 /* ====================================================== */
 
@@ -39,12 +42,26 @@ server.use(passport.session());
 
 /* ====================================================== */
 
+// Set up track recognition Cron job
+function setupTrackRecognitionJob() {
+  new CronJob({
+    cronTime: '00 00 00 * * *', // daily at midnight
+    onTick: trackRecognition.identifyeMostRecentTracks.bind(trackRecognition),
+    start: true,
+    runOnInit: true
+  });
+}
+
+/* ====================================================== */
+
 // Connect to database and initialize models
 if ( process.env.NODE_ENV === 'production' ) {
-  models.sequelize.sync();
+  models.sequelize.sync()
+    .done(setupTrackRecognitionJob);
 } else {
   models.sequelize.sync({ force: true }).done(function() {
-    populateDb(models, mailer);
+    populateDb(models, mailer)
+      .then(setupTrackRecognitionJob);
   });
 }
 

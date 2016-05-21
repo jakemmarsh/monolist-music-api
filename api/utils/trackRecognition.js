@@ -1,19 +1,59 @@
 'use strict';
 
-const fs            = require('fs');
-const http          = require('http');
-const child_process = require('child_process'); // eslint-disable-line camelcase
-const ecg           = require('echoprint-codegen');
-const models        = require('../models');
+const path    = require('path');
+const fs      = require('fs');
+const http    = require('http');
+const crypto  = require('crypto');
+const request = require('request');
+const _       = require('lodash');
+const models  = require('../models');
 
-class trackRecognition {
-  constructor() {}
+const ACR_OPTIONS = {
+  host: 'us-west-2.api.acrcloud.com',
+  endpoint: '/v1/identify',
+  signatureVersion: '1', // eslint-disable-line camelcase
+  dataType: 'audio',
+  secure: true,
+  accessKey: process.env.ACRCLOUD_KEY,
+  accessSecret: process.env.ACRCLOUD_SECRET
+};
+
+function buildStringToSign(method, uri, accessKey, dataType, signatureVersion, timestamp) {
+  return [method, uri, accessKey, dataType, signatureVersion, timestamp].join('\n');
+}
+
+function sign(signString, accessSecret) {
+  return crypto.createHmac('sha1', accessSecret)
+    .update(new Buffer(signString, 'utf-8'))
+    .digest().toString('base64');
+}
+
+const trackRecognition = {
+
+  buildFilePath(trackId) {
+    const rootFile = require.main.filename;
+    const finalSlashIndex = rootFile.lastIndexOf('/');
+    const fileNameLength = rootFile.slice(0 + finalSlashIndex).length;
+    const rootDirectory = rootFile.slice(0, -fileNameLength + 1);
+
+    return path.resolve(rootDirectory, 'audio_files/', `${trackId}.mp3`);
+  },
+
+  retrieveTrack(trackId) {
+    return new Promise((resolve, reject) => {
+      models.Track.find({
+        where: { id: trackId }
+      }).then((track) => {
+        resolve(track);
+      }).catch(reject);
+    });
+  },
 
   buildStreamUrl(track) {
     const apiUrl = process.env.NODE_ENV === 'production' ? 'http://api.monolist.co' : `http://localhost:${process.env.PORT || 3000}`;
 
     return new Promise((resolve) => {
-      let url = `${apiUrl}/stream/${track.source}/`;
+      let url = `${apiUrl}/v1/stream/${track.source}/`;
 
       if ( track.source === 'audiomack' ) {
         url += encodeURIComponent(track.sourceUrl);
@@ -21,28 +61,21 @@ class trackRecognition {
         url += encodeURIComponent(track.sourceParam);
       }
 
-      resolve(trackId, url);
+      resolve({
+        trackId: track.id,
+        url: url
+      });
     });
-  }
+  },
 
-  buildFilePath(trackId) {
-    return path.resolve(__dirname, 'audio_files/', `${trackId}`);
-  }
-
-  retrieveTrack(trackId) {
-    return new Promise((resolve, reject) => {
-      models.Track.find({
-        where: { id: trackId }
-      }).then(resolve).catch(reject);
-    });
-  }
-
-  downloadTrack(trackId, streamUrl) {
+  downloadTrack(data) {
+    const trackId = data.trackId;
+    const url = data.url;
     const destPath = this.buildFilePath(trackId);
     const destFile = fs.createWriteStream(destPath);
 
     return new Promise((resolve, reject) => {
-      http.get(streamUrl, (response) => {
+      http.get(url, (response) => {
         response.pipe(destFile);
 
         destFile.on('finish', () => {
@@ -51,72 +84,182 @@ class trackRecognition {
           resolve(trackId);
         });
       }).on('error', (err) => {
-        fs.unlink(dest);
+        fs.unlink(destPath);
 
         reject(err.message);
       });
     });
-  }
+  },
 
   generateFingerprint(trackId) {
     const filePath = this.buildFilePath(trackId);
-    const duration = 30;                 // Length of clip to extract
-    const numSamples = 11025 * duration; // Number of samples to read
-    const songOffset = 0;                // Start time of clip in seconds
-    const bytesPerSample = 4;            // Samples are 32 bit floats
-    const bufferSize = numSamples * bytesPerSample;
+    const duration = 30;
+    const startTime = 20;
 
     return new Promise((resolve, reject) => {
-      const ffmpeg = child_process.spawn('ffmpeg', [ // eslint-disable-line camelcase
-        '-i', filePath,       // MP3 file
-        '-f', 'f32le',        // 32 bit float PCM LE
-        '-ar', '11025',       // Sampling rate
-        '-ac', 1,             // Mono
-        '-t', duration,       // Duration in seconds
-        '-ss', songOffset,    // Start time in seconds
-        'pipe:1'              // Output on stdout
-      ]);
-
-      ffmpeg.stdout.on('readable', () => {
-        const buffer = ffmpeg.stdout.read(bufferSize);
-
-        if (buffer === null) {
-          return; // Not enough samples yet
+      codegen({
+        file: filePath,
+        index: startTime,
+        offset: duration
+      }, function(err, data) {
+        if ( err ) {
+          reject(err);
+        } else {
+          resolve({
+            trackId: trackId,
+            fingerprint: data
+          });
         }
-
-        ffmpeg.stdout.removeListener('readable', arguments.callee);
-        ffmpeg.kill('SIGHUP');
-
-        ecg(buffer, numSamples, songOffset, (fingerprint) => {
-          resolve(fingerprint);
-        });
-      });
-
-      ffmpeg.stdout.on('error', (err) => {
-        reject(err.message);
       });
     });
-  }
+  },
 
-  ingestFingerprint(fingerprint) {
-    console.log('fingerprint:', fingerprint);
+  identifyTrack(trackId) {
+    return new Promise((resolve, reject) => {
+      const filePath = this.buildFilePath(trackId);
+      const fileData = new Buffer(fs.readFileSync(filePath));
+      const currentDate = new Date();
+      const timestamp = currentDate.getTime()/1000;
+      const stringToSign = buildStringToSign(
+        'POST',
+        ACR_OPTIONS.endpoint,
+        ACR_OPTIONS.accessKey,
+        ACR_OPTIONS.dataType,
+        ACR_OPTIONS.signatureVersion,
+        timestamp
+      );
+      const signature = sign(stringToSign, ACR_OPTIONS.accessSecret);
+      const formData = {
+        sample: fileData,
+        access_key: ACR_OPTIONS.accessKey, // eslint-disable-line camelcase
+        data_type: ACR_OPTIONS.dataType, // eslint-disable-line camelcase
+        signature_version: ACR_OPTIONS.signatureVersion, // eslint-disable-line camelcase
+        signature: signature,
+        sample_bytes: fileData.length, // eslint-disable-line camelcase
+        timestamp: timestamp
+      };
 
-    return new Promise((resolve) => {
-      resolve('track data');
+      request.post({
+        url: `http://${ACR_OPTIONS.host}${ACR_OPTIONS.endpoint}`,
+        method: 'POST',
+        formData: formData
+      }, (err, httpResonse, body) => {
+        if ( err ) {
+          reject(err);
+        } else {
+          body = JSON.parse(body);
+
+          const musicData = body.metadata && body.metadata.music ? body.metadata.music[0] : {};
+          const artistData = musicData.artists ? musicData.artists[0] : {};
+          const trackData = {
+            title: musicData.title,
+            artist: artistData.name
+          };
+
+          resolve({
+            trackId: trackId,
+            trackData: trackData
+          });
+        }
+      });
     });
-  }
+  },
 
-  recognizeTrack(trackId) {
+  deleteTrack(data) {
+    const trackId = data.trackId;
+    const trackData = data.trackData;
+    const filePath = this.buildFilePath(trackId);
+
+    return new Promise((resolve, reject) => {
+      fs.stat(filePath, (err) => {
+        if ( err ) {
+          reject(err);
+        } else {
+          fs.unlink(filePath, (err) => {
+            if ( err ) {
+              reject(err);
+            } else {
+              resolve({
+                trackId: trackId,
+                trackData: trackData
+              });
+            }
+          });
+        }
+      });
+    });
+  },
+
+  updateTrack(data) {
+    return new Promise((resolve, reject) => {
+      const trackId = data.trackId;
+      const trackData = data.trackData;
+      const updates = {};
+
+      if ( trackData.title ) {
+        updates.title = trackData.title;
+      }
+
+      if ( trackData.artist ) {
+        updates.artist = trackData.artist;
+      }
+
+      if ( !_.isEmpty(updates) ) {
+        models.Track.update(
+          updates,
+          { where: { id: trackId } }
+        ).then(resolve).catch(reject);
+      } else {
+        resolve();
+      }
+    });
+  },
+
+  processTrack(trackId) {
     return new Promise((resolve, reject) => {
       this.retrieveTrack(trackId)
-        .then(this.buildStreamUrl)
-        .then(this.downloadTrack)
-        .then(this.generateFingerprint)
-        .then(this.ingestFingerprint)
+        .then(this.buildStreamUrl.bind(this))
+        .then(this.downloadTrack.bind(this))
+        .then(this.identifyTrack.bind(this))
+        .then(this.deleteTrack.bind(this))
+        .then(this.updateTrack.bind(this))
         .then(resolve)
         .catch(reject);
     });
+  },
+
+  processAllTracks(tracks) {
+    return new Promise((resolve, reject) => {
+      const promises = [];
+
+      tracks.forEach((track) => {
+        promises.push(this.processTrack(track.id));
+      });
+
+      Promise.all(promises).then(resolve).catch(reject);
+    });
+  },
+
+  identifyAllTracksInPlaylist(playlistId) {
+    return new Promise((resolve, reject) => {
+      models.Track.findAll({
+        where: { PlaylistId: playlistId },
+        attributes: ['id']
+      }).then(this.processAllTracks.bind(this)).catch(reject);
+    });
+  },
+
+  identifyeMostRecentTracks() {
+    return new Promise((resolve, reject) => {
+      const yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
+
+      models.Track.findAll({
+        where: { createdAt: { $gte: yesterday } },
+        attributes: ['id']
+      }).then(this.processAllTracks.bind(this)).catch(reject);
+    });
   }
-}
+
+};
 
 module.exports = trackRecognition;
