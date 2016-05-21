@@ -42,15 +42,14 @@ server.use(passport.session());
 
 /* ====================================================== */
 
-// Set up track recognition Cron job
-function setupTrackRecognitionJob() {
-  new CronJob({
-    cronTime: '00 00 00 * * *', // daily at midnight
-    onTick: trackRecognition.identifyeMostRecentTracks.bind(trackRecognition),
-    start: true,
-    runOnInit: true
-  });
-}
+// function setupTrackRecognitionJob() {
+//   new CronJob({
+//     cronTime: '00 00 00 * * *', // daily at midnight
+//     onTick: trackRecognition.identifyeMostRecentTracks.bind(trackRecognition),
+//     start: true,
+//     runOnInit: true
+//   });
+// }
 
 /* ====================================================== */
 
