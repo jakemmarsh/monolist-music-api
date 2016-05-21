@@ -6,6 +6,7 @@ const http    = require('http');
 const crypto  = require('crypto');
 const request = require('request');
 const _       = require('lodash');
+const ytdl    = require('ytdl-core');
 const models  = require('../models');
 
 const ACR_OPTIONS = {
@@ -49,20 +50,27 @@ const trackRecognition = {
     });
   },
 
-  buildStreamUrl(track) {
+  buildDownloadUrl(track) {
     const apiUrl = process.env.NODE_ENV === 'production' ? 'http://api.monolist.co' : `http://localhost:${process.env.PORT || 3000}`;
 
     return new Promise((resolve) => {
-      let url = `${apiUrl}/v1/stream/${track.source}/`;
+      let url;
 
-      if ( track.source === 'audiomack' ) {
-        url += encodeURIComponent(track.sourceUrl);
+      if ( track.source === 'youtube' ) {
+        url = `http://youtube.com/watch?v=${track.sourceParam}`;
       } else {
-        url += encodeURIComponent(track.sourceParam);
+        url = `${apiUrl}/v1/stream/${track.source}/`;
+
+        if ( track.source === 'audiomack' ) {
+          url += encodeURIComponent(track.sourceUrl);
+        } else {
+          url += encodeURIComponent(track.sourceParam);
+        }
       }
 
       resolve({
         trackId: track.id,
+        trackSource: track.source,
         url: url
       });
     });
@@ -70,24 +78,41 @@ const trackRecognition = {
 
   downloadTrack(data) {
     const trackId = data.trackId;
+    const trackSource = data.trackSource;
     const url = data.url;
     const destPath = this.buildFilePath(trackId);
     const destFile = fs.createWriteStream(destPath);
 
     return new Promise((resolve, reject) => {
-      http.get(url, (response) => {
-        response.pipe(destFile);
+      if ( trackSource === 'youtube' ) {
+        ytdl(url, {
+          filter: 'audioonly'
+        })
+        .on('response', (response) => {
+          console.log('response:', response);
+        })
+        .pipe(destFile);
 
         destFile.on('finish', () => {
           destFile.close();
 
           resolve(trackId);
         });
-      }).on('error', (err) => {
-        fs.unlink(destPath);
+      } else {
+        http.get(url, (response) => {
+          response.pipe(destFile);
 
-        reject(err.message);
-      });
+          destFile.on('finish', () => {
+            destFile.close();
+
+            resolve(trackId);
+          });
+        }).on('error', (err) => {
+          fs.unlink(destPath);
+
+          reject(err.message);
+        });
+      }
     });
   },
 
@@ -218,7 +243,7 @@ const trackRecognition = {
   processTrack(trackId) {
     return new Promise((resolve, reject) => {
       this.retrieveTrack(trackId)
-        .then(this.buildStreamUrl.bind(this))
+        .then(this.buildDownloadUrl.bind(this))
         .then(this.downloadTrack.bind(this))
         .then(this.identifyTrack.bind(this))
         .then(this.deleteTrack.bind(this))
@@ -245,7 +270,10 @@ const trackRecognition = {
       models.Track.findAll({
         where: { PlaylistId: playlistId },
         attributes: ['id']
-      }).then(this.processAllTracks.bind(this)).catch(reject);
+      }).then(this.processAllTracks.bind(this)).catch((err) => {
+        console.log('ERROR IN TRACK IDENTIFICATION:', err);
+        reject(err);
+      });
     });
   },
 
@@ -256,7 +284,10 @@ const trackRecognition = {
       models.Track.findAll({
         where: { createdAt: { $gte: yesterday } },
         attributes: ['id']
-      }).then(this.processAllTracks.bind(this)).catch(reject);
+      }).then(this.processAllTracks.bind(this)).catch((err) => {
+        console.log('ERROR IN TRACK IDENTIFICATION:', err);
+        reject(err);
+      });
     });
   }
 
