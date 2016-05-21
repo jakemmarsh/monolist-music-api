@@ -5,6 +5,7 @@ var kue                 = require('kue');
 var _                   = require('lodash');
 var ActivityManager     = require('./ActivityManager');
 var NotificationManager = require('./NotificationManager');
+var trackRecognition    = require('./trackRecognition');
 var jobQueue            = kue.createQueue({
                             redis: {
                               port: process.env.REDIS_PORT,
@@ -44,13 +45,19 @@ if ( process.env.NODE_ENV === 'development' ) {
 /* ====================================================== */
 
 jobQueue.process('activity', function(job, done) {
-  ActivityManager.create(job.data).then(done);
+  ActivityManager.create(job.data).then(done).catch(done);
+});
+
+/* ====================================================== */
+
+jobQueue.process('trackIdentification', function(job, done) {
+  trackRecognition.processTrack(job.data).then(done).catch(done);
 });
 
 /* ====================================================== */
 
 jobQueue.process('notification', function(job, done) {
-  NotificationManager.create(job.data).then(done);
+  NotificationManager.create(job.data).then(done).catch(done);
 });
 
 /* ====================================================== */
@@ -74,7 +81,25 @@ exports.activity = function(activity) {
 
 };
 
-  /* ====================================================== */
+/* ====================================================== */
+
+exports.trackIdentification = function(track) {
+
+  return new Promise((resolve, reject) => {
+    jobQueue.create('trackIdentification', track)
+    .removeOnComplete(true)
+    .save((err) => {
+      if ( err ) {
+        reject(err);
+      } else {
+        resolve(track);
+      }
+    });
+  });
+
+};
+
+/* ====================================================== */
 
 exports.notifications = function(notifications) {
 

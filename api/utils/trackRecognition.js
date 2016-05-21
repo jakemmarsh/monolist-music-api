@@ -8,6 +8,7 @@ const request = require('request');
 const _       = require('lodash');
 const ytdl    = require('ytdl-core');
 const models  = require('../models');
+const Queue   = require('./Queue');
 
 const ACR_OPTIONS = {
   host: 'us-west-2.api.acrcloud.com',
@@ -222,7 +223,7 @@ const trackRecognition = {
       const promises = [];
 
       tracks.forEach((track) => {
-        promises.push(this.processTrack(track.id));
+        promises.push(Queue.trackIdentification(track));
       });
 
       Promise.all(promises).then(resolve).catch(reject);
