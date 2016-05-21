@@ -40,16 +40,6 @@ const trackRecognition = {
     return path.resolve(rootDirectory, 'audio_files/', `${trackId}.mp3`);
   },
 
-  retrieveTrack(trackId) {
-    return new Promise((resolve, reject) => {
-      models.Track.find({
-        where: { id: trackId }
-      }).then((track) => {
-        resolve(track);
-      }).catch(reject);
-    });
-  },
-
   buildDownloadUrl(track) {
     const apiUrl = process.env.NODE_ENV === 'production' ? 'http://api.monolist.co' : `http://localhost:${process.env.PORT || 3000}`;
 
@@ -88,9 +78,7 @@ const trackRecognition = {
         ytdl(url, {
           filter: 'audioonly'
         })
-        .on('response', (response) => {
-          console.log('response:', response);
-        })
+        .on('error', reject)
         .pipe(destFile);
 
         destFile.on('finish', () => {
@@ -113,29 +101,6 @@ const trackRecognition = {
           reject(err.message);
         });
       }
-    });
-  },
-
-  generateFingerprint(trackId) {
-    const filePath = this.buildFilePath(trackId);
-    const duration = 30;
-    const startTime = 20;
-
-    return new Promise((resolve, reject) => {
-      codegen({
-        file: filePath,
-        index: startTime,
-        offset: duration
-      }, function(err, data) {
-        if ( err ) {
-          reject(err);
-        } else {
-          resolve({
-            trackId: trackId,
-            fingerprint: data
-          });
-        }
-      });
     });
   },
 
@@ -240,10 +205,9 @@ const trackRecognition = {
     });
   },
 
-  processTrack(trackId) {
+  processTrack(track) {
     return new Promise((resolve, reject) => {
-      this.retrieveTrack(trackId)
-        .then(this.buildDownloadUrl.bind(this))
+      this.buildDownloadUrl(track)
         .then(this.downloadTrack.bind(this))
         .then(this.identifyTrack.bind(this))
         .then(this.deleteTrack.bind(this))
@@ -268,8 +232,7 @@ const trackRecognition = {
   identifyAllTracksInPlaylist(playlistId) {
     return new Promise((resolve, reject) => {
       models.Track.findAll({
-        where: { PlaylistId: playlistId },
-        attributes: ['id']
+        where: { PlaylistId: playlistId }
       }).then(this.processAllTracks.bind(this)).catch((err) => {
         console.log('ERROR IN TRACK IDENTIFICATION:', err);
         reject(err);
@@ -282,8 +245,7 @@ const trackRecognition = {
       const yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
 
       models.Track.findAll({
-        where: { createdAt: { $gte: yesterday } },
-        attributes: ['id']
+        where: { createdAt: { $gte: yesterday } }
       }).then(this.processAllTracks.bind(this)).catch((err) => {
         console.log('ERROR IN TRACK IDENTIFICATION:', err);
         reject(err);
