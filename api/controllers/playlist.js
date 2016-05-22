@@ -180,6 +180,16 @@ exports.get = function(req, res) {
           ]
         },
         {
+          model: models.PlaylistComment,
+          as: 'Comments',
+          include: [
+            {
+              model: models.User,
+              attributes: ['id', 'username', 'imageUrl']
+            }
+          ]
+        },
+        {
           model: models.Track,
           include: [
             {
