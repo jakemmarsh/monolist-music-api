@@ -24,7 +24,13 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
       res.body.data.should.have.property('slug');
       res.body.data.should.have.property('tags');
       res.body.data.should.have.property('privacy');
+      res.body.data.should.have.property('playCount');
+      res.body.data.should.have.property('likeCount');
       res.body.data.should.have.property('Tracks');
+      res.body.data.should.have.property('Comments');
+      res.body.data.should.have.property('Followers');
+      res.body.data.should.have.property('Likes');
+      res.body.data.should.have.property('collaborators');
       res.body.data.Tracks.should.be.instanceof(Array);
       done();
     });
@@ -60,6 +66,8 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
       res.body.data[0].should.have.property('slug');
       res.body.data[0].should.have.property('tags');
       res.body.data[0].should.have.property('privacy');
+      res.body.data[0].should.have.property('playCount');
+      res.body.data[0].should.have.property('likeCount');
       done();
     });
   });
@@ -76,6 +84,8 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
       res.body.data[0].should.have.property('slug');
       res.body.data[0].should.have.property('tags');
       res.body.data[0].should.have.property('privacy');
+      res.body.data[0].should.have.property('playCount');
+      res.body.data[0].should.have.property('likeCount');
       done();
     });
   });
@@ -109,6 +119,8 @@ require('../../utils/createAuthenticatedSuite')('Controller: Playlist', function
       res.body.data[0].should.have.property('slug');
       res.body.data[0].should.have.property('tags');
       res.body.data[0].should.have.property('privacy');
+      res.body.data[0].should.have.property('playCount');
+      res.body.data[0].should.have.property('likeCount');
       done();
     });
   });
