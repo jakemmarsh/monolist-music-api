@@ -6,6 +6,7 @@ var _                   = require('lodash');
 var ActivityManager     = require('./ActivityManager');
 var NotificationManager = require('./NotificationManager');
 var trackRecognition    = require('./trackRecognition');
+console.log('process.env.REDISTOGO_URL:', process.env.REDISTOGO_URL);
 var jobQueue            = kue.createQueue({
                             redis: process.env.REDISTOGO_URL
                           });
