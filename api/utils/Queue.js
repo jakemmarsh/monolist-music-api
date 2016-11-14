@@ -1,14 +1,19 @@
 'use strict';
 
+var url                 = require('url');
 var when                = require('when');
 var kue                 = require('kue');
 var _                   = require('lodash');
 var ActivityManager     = require('./ActivityManager');
 var NotificationManager = require('./NotificationManager');
 var trackRecognition    = require('./trackRecognition');
-console.log('process.env.REDISTOGO_URL:', process.env.REDISTOGO_URL);
+var redisUrlParts       = url.parse(process.env.REDISTOGO_URL);
 var jobQueue            = kue.createQueue({
-                            redis: process.env.REDISTOGO_URL
+                            redis: {
+                              port: redisUrlParts.port,
+                              host: redisUrlParts.hostname,
+                              auth: redisUrlParts.auth.split(':')[1]
+                            }
                           });
 
 /* ====================================================== */

@@ -1,9 +1,11 @@
 'use strict';
 
-var cache = require('express-redis-cache')({
-  host: process.env.REDIS_HOST,
-  port: process.env.REDIS_PORT,
-  auth_pass: process.env.REDIS_AUTH, // eslint-disable-line camelcase
+var url           = require('url');
+var redisUrlParts = url.parse(process.env.REDISTOGO_URL);
+var cache         = require('express-redis-cache')({
+  port: redisUrlParts.port,
+  host: redisUrlParts.hostname,
+  auth_pass: redisUrlParts.auth.split(':')[1], // eslint-disable-line camelcase
   expires: 60 * 5 // cache responses for five minutes
 });
 
