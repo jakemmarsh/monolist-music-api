@@ -7,11 +7,7 @@ var ActivityManager     = require('./ActivityManager');
 var NotificationManager = require('./NotificationManager');
 var trackRecognition    = require('./trackRecognition');
 var jobQueue            = kue.createQueue({
-                            redis: {
-                              port: process.env.REDIS_PORT,
-                              host: process.env.REDIS_HOST,
-                              auth: process.env.REDIS_AUTH
-                            }
+                            redis: process.env.REDISTOGO_URL
                           });
 
 /* ====================================================== */
