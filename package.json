@@ -7,6 +7,7 @@
     "type": "git",
     "url": "https://github.com/jakemmarsh/monolist-api.git"
   },
+  "main": "server.js",
   "private": true,
   "engines": {
     "node": "4.3.0"
