@@ -12,7 +12,7 @@ var jobQueue            = kue.createQueue({
                             redis: {
                               port: redisUrlParts.port,
                               host: redisUrlParts.hostname,
-                              auth: redisUrlParts.auth.split(':')[1]
+                              auth: redisUrlParts.auth ? redisUrlParts.auth.split(':')[1] : ''
                             }
                           });
 
