@@ -21,7 +21,7 @@ exports.sendContact = function(userEmail, body) {
   var deferred = when.defer();
   var mailOptions = {
     from: 'Monolist <jake@monolist.co>',
-    to: 'jake@monolist.co',
+    to: 'jakemmarsh@gmail.com',
     subject: 'Message sent from monolist.co - ' + userEmail,
     html: body,
     text: body
